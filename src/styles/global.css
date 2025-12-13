@@ -1,14 +1,18 @@
-@import "tailwindcss";
-
 /* ═══════════════════════════════════════════════════════════
    RETRO-FUTURISTIC PORTFOLIO - Global Styles
    Aesthetic: Terminal Cyberpunk / Blade Runner / Tron
+
+   Import order matters: @import rules must precede all other rules
    ═══════════════════════════════════════════════════════════ */
 
-/* ─────────────────────────────────────────────────────────────
-   FONTS
-   ───────────────────────────────────────────────────────────── */
+/* Fonts (must be before tailwind) */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+/* Theme system */
+@import './themes.css';
+
+/* Tailwind CSS */
+@import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
    CSS CUSTOM PROPERTIES (Theme)
@@ -79,12 +83,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-neon-cyan);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neon-magenta);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Selection */
@@ -125,7 +129,7 @@ body {
     var(--color-scanline) 2px,
     var(--color-scanline) 4px
   );
-  opacity: 0.4;
+  opacity: var(--overlay-opacity, 0.4);
 }
 
 .crt-overlay::before {
@@ -439,7 +443,7 @@ body {
     linear-gradient(90deg, var(--color-neon-cyan) 1px, transparent 1px);
   background-size: 50px 50px;
   background-position: center;
-  opacity: 0.05;
+  opacity: var(--grid-opacity, 0.05);
 }
 
 .grid-bg-animated {
@@ -599,7 +603,7 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 9998;
-  opacity: 0.03;
+  opacity: var(--noise-opacity, 0.03);
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
