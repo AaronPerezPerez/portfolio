@@ -1,88 +1,58 @@
 ---
-import { skills } from '../lib/data';
+import { skills, currentFocus, techDetails } from '../lib/data';
 
-const skillCategories = [
-  { key: 'architecture', label: 'Architecture', icon: '⬡', featured: true },
-  { key: 'languages', label: 'Languages', icon: '{ }' },
-  { key: 'backend', label: 'Backend', icon: '⚙' },
-  { key: 'frontend', label: 'Frontend', icon: '◱' },
-  { key: 'databases', label: 'Databases', icon: '◉' },
-  { key: 'devops', label: 'DevOps', icon: '⟲' },
-] as const;
-
-const levelToPercent = {
-  expert: 100,
-  advanced: 80,
-  intermediate: 60,
-};
+const skillCategories = Object.entries(skills);
 ---
 
 <section id="skills" class="section skills-section">
   <div class="container">
     <h2 class="section-title reveal">
-      <span class="title-prefix">//</span> Skills Matrix
+      <span class="title-prefix">//</span> Tech Stack
     </h2>
 
-    <div class="skills-grid">
-      {skillCategories.map((category, index) => {
-        const categorySkills = skills[category.key as keyof typeof skills];
-        return (
+    <div class="skills-container">
+      <!-- Main skills grid -->
+      <div class="skills-grid">
+        {skillCategories.map(([key, category], index) => (
           <div
-            class={`skill-card ${category.featured ? 'featured' : ''} reveal`}
-            style={`--delay: ${index * 100}ms`}
+            class={`skill-category ${key === 'core' ? 'featured' : ''} reveal`}
+            style={`--delay: ${index * 80}ms`}
           >
-            <div class="card-header">
-              <span class="card-icon">{category.icon}</span>
-              <h3 class="card-title">{category.label}</h3>
-              {category.featured && (
-                <span class="featured-badge">Core</span>
-              )}
+            <div class="category-header">
+              <span class="category-icon">{category.icon}</span>
+              <h3 class="category-label">{category.label}</h3>
             </div>
 
-            <div class="card-content">
-              {categorySkills.map((skill) => (
-                <div class="skill-item">
-                  <div class="skill-info">
-                    <span class="skill-name">{skill.name}</span>
-                    <span class={`skill-level ${skill.level}`}>
-                      {skill.level}
-                    </span>
-                  </div>
-                  <div class="skill-bar">
-                    <div
-                      class={`skill-bar-fill ${skill.level}`}
-                      style={`--width: ${levelToPercent[skill.level as keyof typeof levelToPercent]}%`}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div class="card-footer">
-              <span class="module-id">
-                MODULE_{category.key.toUpperCase()}
-              </span>
+            <div class="category-items">
+              {category.items.map((item) => {
+                const details = techDetails[item];
+                return (
+                  <span
+                    class={`skill-tag ${key === 'core' ? 'highlight' : ''}`}
+                    style={details ? `--hover-color: ${details.color}` : ''}
+                  >
+                    {details && (
+                      <span class="skill-icon" set:html={details.icon} />
+                    )}
+                    <span class="skill-name">{item}</span>
+                  </span>
+                );
+              })}
             </div>
           </div>
-        );
-      })}
-    </div>
+        ))}
+      </div>
 
-    <!-- Skill level legend -->
-    <div class="skills-legend reveal delay-6">
-      <span class="legend-title">// PROFICIENCY_LEVELS</span>
-      <div class="legend-items">
-        <div class="legend-item">
-          <span class="legend-bar expert"></span>
-          <span class="legend-label">Expert (100%)</span>
+      <!-- Currently Focusing On -->
+      <div class="focus-section reveal delay-6">
+        <div class="focus-header">
+          <span class="focus-prefix">//</span>
+          <span class="focus-label">CURRENTLY_FOCUSING_ON</span>
         </div>
-        <div class="legend-item">
-          <span class="legend-bar advanced"></span>
-          <span class="legend-label">Advanced (80%)</span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-bar intermediate"></span>
-          <span class="legend-label">Intermediate (60%)</span>
+        <div class="focus-items">
+          {currentFocus.map((item) => (
+            <span class="focus-tag">{item}</span>
+          ))}
         </div>
       </div>
     </div>
@@ -103,294 +73,236 @@ const levelToPercent = {
     margin-right: 12px;
   }
 
+  .skills-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Skills grid */
   .skills-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
   }
 
-  /* Skill card */
-  .skill-card {
+  /* Skill category card */
+  .skill-category {
     background: var(--color-bg-terminal);
-    border: 1px solid rgba(0, 255, 247, 0.2);
+    border: 1px solid rgba(0, 255, 247, 0.15);
     border-radius: 8px;
-    padding: 0;
+    padding: 20px 24px;
     transition: all 0.3s ease;
     transition-delay: var(--delay);
-    overflow: hidden;
-    position: relative;
   }
 
-  .skill-card::before {
+  .skill-category:hover {
+    border-color: rgba(0, 255, 247, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 247, 0.1);
+  }
+
+  /* Featured (Daily Driver) spans full width */
+  .skill-category.featured {
+    grid-column: span 2;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 255, 247, 0.05) 0%,
+      var(--color-bg-terminal) 100%
+    );
+    border-color: rgba(0, 255, 247, 0.3);
+  }
+
+  /* Category header */
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .category-icon {
+    font-size: 1.2rem;
+    color: var(--color-neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 255, 247, 0.4);
+  }
+
+  .category-label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+  }
+
+  .skill-category.featured .category-label {
+    color: var(--color-neon-cyan);
+  }
+
+  /* Skill tags */
+  .category-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .skill-tag {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--color-text-primary);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    --hover-color: var(--color-neon-cyan);
+  }
+
+  .skill-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+    transition: all 0.25s ease;
+  }
+
+  .skill-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .skill-tag:hover {
+    border-color: var(--hover-color);
+    background: color-mix(in srgb, var(--hover-color) 10%, transparent);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--hover-color) 25%, transparent);
+  }
+
+  .skill-tag:hover .skill-icon {
+    opacity: 1;
+    color: var(--hover-color);
+  }
+
+  .skill-tag:hover .skill-name {
+    color: var(--hover-color);
+  }
+
+  /* Highlighted skill (TypeScript) */
+  .skill-tag.highlight {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 24px;
+    background: color-mix(in srgb, var(--hover-color) 15%, transparent);
+    border-color: var(--hover-color);
+    color: var(--hover-color);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--hover-color) 50%, transparent);
+  }
+
+  .skill-tag.highlight .skill-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    color: var(--hover-color);
+  }
+
+  .skill-tag.highlight .skill-name {
+    color: var(--hover-color);
+  }
+
+  .skill-tag.highlight:hover {
+    background: color-mix(in srgb, var(--hover-color) 20%, transparent);
+    box-shadow: 0 0 25px color-mix(in srgb, var(--hover-color) 40%, transparent);
+  }
+
+  /* Focus section */
+  .focus-section {
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(255, 0, 255, 0.2);
+    border-radius: 8px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .focus-section::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-neon-cyan), var(--color-neon-magenta));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--color-neon-magenta),
+      var(--color-neon-cyan),
+      var(--color-neon-magenta)
+    );
   }
 
-  .skill-card:hover {
-    border-color: var(--color-neon-cyan);
-    box-shadow: 0 0 30px rgba(0, 255, 247, 0.15);
-    transform: translateY(-5px);
-  }
-
-  .skill-card:hover::before {
-    opacity: 1;
-  }
-
-  .skill-card.featured {
-    grid-column: span 2;
-    border-color: rgba(0, 255, 247, 0.4);
-  }
-
-  .skill-card.featured::before {
-    opacity: 1;
-    background: linear-gradient(90deg, var(--color-neon-cyan), var(--color-neon-green), var(--color-neon-cyan));
-    animation: gradient-flow 3s linear infinite;
-  }
-
-  @keyframes gradient-flow {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-  }
-
-  .skill-card.featured::before {
-    background-size: 200% 100%;
-  }
-
-  /* Card header */
-  .card-header {
+  .focus-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 20px 24px;
-    border-bottom: 1px solid rgba(0, 255, 247, 0.1);
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  .card-icon {
-    font-size: 1.5rem;
-    color: var(--color-neon-cyan);
-    text-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
-  }
-
-  .card-title {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0;
-    flex: 1;
-  }
-
-  .featured-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 4px 10px;
-    background: rgba(0, 255, 247, 0.1);
-    border: 1px solid var(--color-neon-cyan);
-    color: var(--color-neon-cyan);
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  /* Card content */
-  .card-content {
-    padding: 20px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .skill-item {
-    display: flex;
-    flex-direction: column;
     gap: 8px;
+    margin-bottom: 16px;
   }
 
-  .skill-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .skill-name {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    color: var(--color-text-primary);
-  }
-
-  .skill-level {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .skill-level.expert {
-    background: rgba(0, 255, 247, 0.1);
-    color: var(--color-neon-cyan);
-    border: 1px solid rgba(0, 255, 247, 0.3);
-  }
-
-  .skill-level.advanced {
-    background: rgba(255, 0, 255, 0.1);
-    color: var(--color-neon-magenta);
-    border: 1px solid rgba(255, 0, 255, 0.3);
-  }
-
-  .skill-level.intermediate {
-    background: rgba(255, 107, 53, 0.1);
-    color: var(--color-neon-orange);
-    border: 1px solid rgba(255, 107, 53, 0.3);
-  }
-
-  /* Skill bar */
-  .skill-bar {
-    height: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .skill-bar-fill {
-    height: 100%;
-    width: 0;
-    border-radius: 3px;
-    transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-  }
-
-  .skill-bar-fill.expert {
-    background: linear-gradient(90deg, var(--color-neon-cyan), var(--color-neon-green));
-    box-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
-  }
-
-  .skill-bar-fill.advanced {
-    background: linear-gradient(90deg, var(--color-neon-magenta), var(--color-neon-cyan));
-    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
-  }
-
-  .skill-bar-fill.intermediate {
-    background: linear-gradient(90deg, var(--color-neon-orange), var(--color-neon-yellow));
-    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
-  }
-
-  /* Animate bars when visible */
-  .skill-card.visible .skill-bar-fill {
-    width: var(--width);
-  }
-
-  /* Card footer */
-  .card-footer {
-    padding: 12px 24px;
-    border-top: 1px solid rgba(0, 255, 247, 0.1);
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  .module-id {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--color-text-muted);
-    letter-spacing: 2px;
-  }
-
-  /* Legend */
-  .skills-legend {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    padding: 24px;
-    background: var(--color-bg-terminal);
-    border: 1px solid rgba(0, 255, 247, 0.1);
-    border-radius: 8px;
-  }
-
-  .legend-title {
+  .focus-prefix {
+    color: var(--color-neon-green);
     font-family: var(--font-mono);
     font-size: 12px;
+  }
+
+  .focus-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
     color: var(--color-text-muted);
     letter-spacing: 2px;
   }
 
-  .legend-items {
+  .focus-items {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 24px;
+    gap: 12px;
   }
 
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .legend-bar {
-    width: 40px;
-    height: 6px;
-    border-radius: 3px;
-  }
-
-  .legend-bar.expert {
-    background: linear-gradient(90deg, var(--color-neon-cyan), var(--color-neon-green));
-  }
-
-  .legend-bar.advanced {
-    background: linear-gradient(90deg, var(--color-neon-magenta), var(--color-neon-cyan));
-  }
-
-  .legend-bar.intermediate {
-    background: linear-gradient(90deg, var(--color-neon-orange), var(--color-neon-yellow));
-  }
-
-  .legend-label {
+  .focus-tag {
     font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--color-text-secondary);
+    font-size: 13px;
+    padding: 8px 16px;
+    background: rgba(255, 0, 255, 0.05);
+    border: 1px solid rgba(255, 0, 255, 0.3);
+    border-radius: 4px;
+    color: var(--color-neon-magenta);
+    transition: all 0.2s ease;
+  }
+
+  .focus-tag:hover {
+    background: rgba(255, 0, 255, 0.1);
+    border-color: var(--color-neon-magenta);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
   }
 
   /* Responsive */
-  @media (max-width: 900px) {
-    .skill-card.featured {
-      grid-column: span 1;
-    }
-  }
-
   @media (max-width: 768px) {
     .skills-grid {
       grid-template-columns: 1fr;
     }
 
-    .legend-items {
+    .skill-category.featured {
+      grid-column: span 1;
+    }
+
+    .focus-items {
       flex-direction: column;
-      align-items: flex-start;
+    }
+
+    .focus-tag {
+      text-align: center;
     }
   }
 </style>
-
-<script>
-  // Animate skill bars when cards become visible
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.3 });
-
-  document.querySelectorAll('.skill-card').forEach(card => {
-    observer.observe(card);
-  });
-</script>

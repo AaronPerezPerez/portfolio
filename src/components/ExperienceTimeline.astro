@@ -24,9 +24,32 @@ import { experiences } from '../lib/data';
           <div class="timeline-card">
             <div class="card-header">
               <div class="card-company">
-                <span class="company-bracket">{'{'}</span>
-                <span class="company-name">{exp.company}</span>
-                <span class="company-bracket">{'}'}</span>
+                <a
+                  href={exp.companyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="company-logo"
+                  style={`--logo-color: ${exp.logoColor}`}
+                  title={`Visit ${exp.company}`}
+                >
+                  {exp.logo.startsWith('/') || exp.logo.startsWith('http') ? (
+                    <img src={exp.logo} alt={`${exp.company} logo`} class="logo-img" />
+                  ) : (
+                    <span class="logo-icon" set:html={exp.logo} />
+                  )}
+                </a>
+                <div class="company-text">
+                  <span class="company-bracket">{'{'}</span>
+                  <a
+                    href={exp.companyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="company-name-link"
+                  >
+                    {exp.company}
+                  </a>
+                  <span class="company-bracket">{'}'}</span>
+                </div>
               </div>
               {exp.current && (
                 <span class="active-indicator">Active</span>
@@ -220,6 +243,56 @@ import { experiences } from '../lib/data';
     font-weight: 700;
     display: flex;
     align-items: center;
+    gap: 12px;
+  }
+
+  .company-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: var(--color-text-muted);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    --logo-color: var(--color-neon-cyan);
+  }
+
+  .logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    transition: all 0.3s ease;
+  }
+
+  .logo-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+
+  .company-logo:hover {
+    border-color: var(--logo-color);
+    background: color-mix(in srgb, var(--logo-color) 15%, transparent);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--logo-color) 30%, transparent);
+    color: var(--logo-color);
+    transform: scale(1.05);
+  }
+
+  .company-text {
+    display: flex;
+    align-items: center;
     gap: 8px;
   }
 
@@ -228,8 +301,15 @@ import { experiences } from '../lib/data';
     font-weight: 300;
   }
 
-  .company-name {
+  .company-name-link {
     color: var(--color-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .company-name-link:hover {
+    color: var(--color-neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
   }
 
   /* Card role */

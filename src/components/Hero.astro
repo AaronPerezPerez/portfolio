@@ -45,35 +45,57 @@ import GlitchText from './ui/GlitchText.astro';
             <span class="location-icon">📍</span>
             {personalInfo.location}
           </p>
+          <!-- Interactive commands container -->
+          <div id="commands-container"></div>
         </TerminalWindow>
       </div>
 
       <!-- Social Links as Terminal Commands -->
       <div class="hero-socials reveal delay-4">
-        <a href={personalInfo.social.github} target="_blank" rel="noopener" class="social-link">
+        <button
+          type="button"
+          class="social-link"
+          data-href={personalInfo.social.github}
+          data-cmd="github --profile"
+        >
           <span class="social-prompt">&gt;</span>
           <span class="social-cmd">github</span>
           <span class="social-flag">--profile</span>
           <span class="social-arrow">→</span>
-        </a>
-        <a href={personalInfo.social.linkedin} target="_blank" rel="noopener" class="social-link">
+        </button>
+        <button
+          type="button"
+          class="social-link"
+          data-href={personalInfo.social.linkedin}
+          data-cmd="linkedin --connect"
+        >
           <span class="social-prompt">&gt;</span>
           <span class="social-cmd">linkedin</span>
           <span class="social-flag">--connect</span>
           <span class="social-arrow">→</span>
-        </a>
-        <a href={personalInfo.social.twitter} target="_blank" rel="noopener" class="social-link">
+        </button>
+        <button
+          type="button"
+          class="social-link"
+          data-href={personalInfo.social.twitter}
+          data-cmd="twitter --follow"
+        >
           <span class="social-prompt">&gt;</span>
           <span class="social-cmd">twitter</span>
           <span class="social-flag">--follow</span>
           <span class="social-arrow">→</span>
-        </a>
-        <a href={`mailto:${personalInfo.email}`} class="social-link">
+        </button>
+        <button
+          type="button"
+          class="social-link"
+          data-href={`mailto:${personalInfo.email}`}
+          data-cmd="mail --send"
+        >
           <span class="social-prompt">&gt;</span>
           <span class="social-cmd">mail</span>
           <span class="social-flag">--send</span>
           <span class="social-arrow">→</span>
-        </a>
+        </button>
       </div>
 
       <!-- Scroll indicator -->
@@ -211,6 +233,58 @@ import GlitchText from './ui/GlitchText.astro';
     font-size: 16px;
   }
 
+  /* Interactive commands container - global for dynamic elements */
+  :global(#commands-container) {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 255, 247, 0.1);
+  }
+
+  :global(#commands-container:empty) {
+    display: none;
+  }
+
+  /* Interactive terminal line */
+  :global(.interactive-line) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  :global(.interactive-line:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.interactive-line .prompt) {
+    color: var(--color-neon-green);
+    font-weight: 600;
+  }
+
+  :global(.typed-command) {
+    color: var(--color-neon-cyan);
+    font-weight: 600;
+  }
+
+  :global(.loading-dots) {
+    display: inline-block;
+    margin-left: 4px;
+    color: var(--color-neon-green);
+  }
+
+  :global(.loading-dots::after) {
+    content: '';
+    animation: loading-dots 1.5s steps(4, end) infinite;
+  }
+
+  @keyframes loading-dots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+    100% { content: ''; }
+  }
+
   /* Social links */
   .hero-socials {
     display: flex;
@@ -232,12 +306,19 @@ import GlitchText from './ui/GlitchText.astro';
     color: var(--color-text-primary);
     text-decoration: none;
     transition: all 0.3s ease;
+    cursor: pointer;
   }
 
   .social-link:hover {
     border-color: var(--color-neon-cyan);
     box-shadow: 0 0 15px rgba(0, 255, 247, 0.3);
     transform: translateY(-2px);
+  }
+
+  .social-link:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .social-prompt {
@@ -358,3 +439,63 @@ import GlitchText from './ui/GlitchText.astro';
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const socialLinks = document.querySelectorAll('.hero-socials .social-link');
+    const commandsContainer = document.getElementById('commands-container');
+
+    let isProcessing = false;
+
+    socialLinks.forEach((link) => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const href = link.dataset.href;
+        const cmd = link.dataset.cmd;
+
+        // Disable all buttons during processing
+        socialLinks.forEach((btn) => btn.setAttribute('disabled', 'true'));
+
+        // Create new command line with proper HTML structure
+        const commandLine = document.createElement('div');
+        commandLine.className = 'terminal-line interactive-line';
+        commandLine.innerHTML = `
+          <span class="prompt">$</span>
+          <span class="typed-command"></span>
+          <span class="loading-dots" style="display: none;"></span>
+        `;
+
+        commandsContainer.appendChild(commandLine);
+
+        const typedCommand = commandLine.querySelector('.typed-command');
+        const loadingDots = commandLine.querySelector('.loading-dots');
+
+        // Type the command character by character
+        for (let i = 0; i < cmd.length; i++) {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          typedCommand.textContent += cmd[i];
+        }
+
+        // Show loading dots
+        loadingDots.style.display = 'inline-block';
+
+        // Wait 1.5 seconds then open link
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        // Open the link
+        window.open(href, '_blank', 'noopener,noreferrer');
+
+        // Hide loading dots but keep the command visible
+        loadingDots.style.display = 'none';
+
+        // Re-enable buttons
+        socialLinks.forEach((btn) => btn.removeAttribute('disabled'));
+        isProcessing = false;
+      });
+    });
+  });
+</script>
