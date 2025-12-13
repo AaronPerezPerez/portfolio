@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import ThemeSelector from '../components/ui/ThemeSelector.astro';
+import AIChatWidget from '../components/ui/AIChatWidget.astro';
 
 interface Props {
   title?: string;
@@ -129,6 +130,9 @@ const {
 
     <!-- Theme Selector -->
     <ThemeSelector />
+
+    <!-- AI Chat Widget -->
+    <AIChatWidget />
 
     <!-- Grid Background -->
     <div class="fixed inset-0 grid-bg grid-bg-animated pointer-events-none"></div>
