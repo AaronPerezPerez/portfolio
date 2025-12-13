@@ -12,5 +12,19 @@
 	},
 	"observability": {
     "enabled": true
-  }
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  // Rate limiting para proteger el endpoint de chat (20 req/min por IP)
+  "ratelimits": [
+    {
+      "name": "CHAT_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 20,
+        "period": 60
+      }
+    }
+  ]
 }
