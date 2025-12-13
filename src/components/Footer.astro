@@ -273,7 +273,8 @@ const socialIcons = {
   .back-to-top {
     position: fixed;
     bottom: 30px;
-    right: 30px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 44px;
     height: 44px;
     background: var(--color-bg-terminal);
@@ -310,7 +311,7 @@ const socialIcons = {
 
     .back-to-top {
       bottom: 20px;
-      right: 20px;
+      /* Already centered with left: 50% + transform */
     }
   }
 </style>

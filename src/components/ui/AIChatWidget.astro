@@ -78,8 +78,8 @@ const presetQuestions = [
 <style>
   .chat-widget {
     position: fixed;
-    bottom: 30px;
-    right: 90px; /* Left of back-to-top button (30px + 44px + 16px gap) */
+    bottom: 20px;
+    right: 20px;
     z-index: 1000;
     font-family: var(--font-mono);
   }
@@ -493,17 +493,10 @@ const presetQuestions = [
   }
 
   /* Responsive */
-  @media (max-width: 768px) {
-    .chat-widget {
-      bottom: 20px;
-      right: 80px; /* Left of back-to-top button on mobile */
-    }
-  }
-
   @media (max-width: 480px) {
     .chat-widget {
-      bottom: 20px;
-      right: 75px;
+      bottom: 15px;
+      right: 15px;
     }
 
     .chat-toggle {
@@ -515,7 +508,7 @@ const presetQuestions = [
       width: calc(100vw - 30px);
       max-width: 380px;
       bottom: 65px;
-      right: -60px; /* Align with viewport edge */
+      right: 0;
     }
   }
 </style>
