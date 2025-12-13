@@ -483,8 +483,9 @@ const gamingThemes = [
     }
 
     .theme-dropdown {
-      right: 0;
+      right: -5px;
       min-width: 260px;
+      max-width: calc(100vw - 20px);
       max-height: 540px;
     }
 
@@ -674,7 +675,7 @@ const gamingThemes = [
       if (themeId) {
         this.setTheme(themeId);
         option.classList.add('focused');
-        option.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        option.scrollIntoView({ block: 'nearest' });
       }
     }
 
