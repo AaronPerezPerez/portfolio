@@ -1,6 +1,6 @@
 ---
 interface Props {
-  name: 'star' | 'location' | 'calendar' | 'github' | 'linkedin' | 'twitter' | 'check' | 'arrow-right' | 'arrow-up' | 'external';
+  name: 'star' | 'location' | 'calendar' | 'github' | 'linkedin' | 'twitter' | 'check' | 'arrow-right' | 'arrow-up' | 'external' | 'download' | 'email';
   size?: number;
   class?: string;
 }
@@ -26,7 +26,11 @@ const icons: Record<string, string> = {
 
   'arrow-up': `<polyline points="18 15 12 9 6 15" fill="none" stroke="currentColor" stroke-width="2"/>`,
 
-  external: `<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="15 3 21 3 21 9" fill="none" stroke="currentColor" stroke-width="2"/><line x1="10" y1="14" x2="21" y2="3" fill="none" stroke="currentColor" stroke-width="2"/>`
+  external: `<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="15 3 21 3 21 9" fill="none" stroke="currentColor" stroke-width="2"/><line x1="10" y1="14" x2="21" y2="3" fill="none" stroke="currentColor" stroke-width="2"/>`,
+
+  download: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="7 10 12 15 17 10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="15" x2="12" y2="3" fill="none" stroke="currentColor" stroke-width="2"/>`,
+
+  email: `<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="22,6 12,13 2,6" fill="none" stroke="currentColor" stroke-width="2"/>`
 };
 
 const iconPath = icons[name] || '';

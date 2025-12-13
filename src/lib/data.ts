@@ -1,10 +1,10 @@
 export const personalInfo = {
   name: "Aaron Perez Perez",
   title: "Software Craftsman",
-  subtitle: "Full-Stack Developer | 6+ Years Experience",
+  subtitle: "Senior Full-Stack Developer | 6+ Years Experience",
   location: "Tenerife, Canary Islands, Spain",
   email: "aarperper@gmail.com",
-  website: "https://aaronperez.me",
+  website: "https://aaron.perezperez.dev",
   bio: "Dedicated Software Engineer with 6+ years building robust and scalable systems through clean code, hexagonal architecture, and agile methodologies. Passionate about software craftsmanship, emphasizing that quality code results from developer dedication rather than mechanical rule-following.",
   social: {
     linkedin: "https://www.linkedin.com/in/aarperper/",
@@ -16,7 +16,7 @@ export const personalInfo = {
 export const experiences = [
   {
     id: 1,
-    company: "beonit",
+    company: "Beonit",
     role: "Senior FullStack Developer",
     location: "Madrid, Spain (Remote)",
     startDate: "November 2024",

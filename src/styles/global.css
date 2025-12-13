@@ -54,6 +54,8 @@
   --duration-slower: 800ms;
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-in-out-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -635,5 +637,90 @@ body {
   }
   50% {
     box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ACCESSIBILITY: FOCUS STATES
+   Enhanced focus indicators for keyboard navigation
+   ───────────────────────────────────────────────────────────── */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-neon-cyan);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 255, 247, 0.2);
+}
+
+/* Specific focus styles for buttons and links */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-neon-cyan);
+  outline-offset: 2px;
+  box-shadow: 0 0 15px rgba(0, 255, 247, 0.4);
+}
+
+/* Focus styles for inputs */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-neon-cyan);
+  outline-offset: 0;
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 247, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ACCESSIBILITY: REDUCED MOTION
+   Respects user preference for reduced motion
+   ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep essential state changes but remove motion */
+  .reveal,
+  .reveal-left,
+  .reveal-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* Disable decorative animations */
+  .neon-pulse,
+  .flicker,
+  .typewriter,
+  .glitch::before,
+  .glitch::after {
+    animation: none;
+  }
+
+  /* Keep CRT overlay but disable animation */
+  .crt-overlay {
+    animation: none;
+  }
+
+  /* Disable grid background animation */
+  .grid-bg-animated {
+    animation: none;
+  }
+
+  /* Disable rotating border */
+  .neon-border::before {
+    animation: none;
+  }
+
+  /* Disable scroll indicator animations */
+  .scroll-indicator * {
+    animation: none;
   }
 }

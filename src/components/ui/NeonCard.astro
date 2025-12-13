@@ -29,16 +29,20 @@ const style = delay !== undefined ? `--delay: ${delay}ms` : '';
     border: 1px solid rgba(0, 255, 247, 0.15);
     border-radius: 8px;
     padding: 20px 24px;
-    transition: all 0.3s ease;
+    transition:
+      transform var(--duration-normal) var(--ease-out-quart),
+      border-color var(--duration-normal) var(--ease-out-quart),
+      box-shadow var(--duration-slow) var(--ease-out-expo);
     transition-delay: var(--delay, 0ms);
     position: relative;
+    will-change: transform;
   }
 
   /* Hover effect */
   .neon-card.hoverable:hover {
     border-color: rgba(0, 255, 247, 0.4);
-    box-shadow: 0 0 20px rgba(0, 255, 247, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(0, 255, 247, 0.12);
+    transform: translateY(-3px) scale(1.005);
   }
 
   /* Featured variant - cyan glow */

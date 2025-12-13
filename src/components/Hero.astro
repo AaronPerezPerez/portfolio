@@ -67,6 +67,20 @@ import AvatarCyber from './ui/AvatarCyber.astro';
 
       <!-- Social Links as Terminal Commands -->
       <div class="hero-socials reveal delay-4">
+        <!-- CV Download - Terminal style with same behavior -->
+        <button
+          type="button"
+          class="social-link"
+          data-href="/cv-aaron-perez.pdf"
+          data-cmd="download --cv"
+          data-download="Aaron-Perez-CV.pdf"
+        >
+          <span class="social-prompt">&gt;</span>
+          <span class="social-cmd">download</span>
+          <span class="social-flag">--cv</span>
+          <span class="social-arrow">→</span>
+        </button>
+
         <button
           type="button"
           class="social-link"
@@ -363,14 +377,25 @@ import AvatarCyber from './ui/AvatarCyber.astro';
     font-size: 13px;
     color: var(--color-text-primary);
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition:
+      transform var(--duration-normal) var(--ease-out-quart),
+      border-color var(--duration-fast) ease-out,
+      box-shadow var(--duration-normal) var(--ease-out-expo),
+      background var(--duration-fast) ease-out;
     cursor: pointer;
+    will-change: transform;
   }
 
   .social-link:hover {
     border-color: var(--color-neon-cyan);
-    box-shadow: 0 0 15px rgba(0, 255, 247, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 255, 247, 0.25);
+    transform: translateY(-3px) scale(1.02);
+    background: rgba(0, 255, 247, 0.03);
+  }
+
+  .social-link:active {
+    transform: translateY(-1px) scale(0.98);
+    transition-duration: 50ms;
   }
 
   .social-link:disabled {
@@ -613,7 +638,8 @@ import AvatarCyber from './ui/AvatarCyber.astro';
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const socialLinks = document.querySelectorAll('.hero-socials .social-link');
+    // Only target buttons with data-href (interactive terminal commands)
+    const socialLinks = document.querySelectorAll('.hero-socials button.social-link[data-href]');
     const commandsContainer = document.getElementById('commands-container');
 
     let isProcessing = false;
@@ -654,11 +680,23 @@ import AvatarCyber from './ui/AvatarCyber.astro';
         // Show loading dots
         loadingDots.style.display = 'inline-block';
 
-        // Wait 1.5 seconds then open link
+        // Wait 1.5 seconds then open link or download
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        // Open the link
-        window.open(href, '_blank', 'noopener,noreferrer');
+        // Check if it's a download or external link
+        const downloadName = link.dataset.download;
+        if (downloadName) {
+          // Trigger download
+          const a = document.createElement('a');
+          a.href = href;
+          a.download = downloadName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          // Open external link
+          window.open(href, '_blank', 'noopener,noreferrer');
+        }
 
         // Hide loading dots but keep the command visible
         loadingDots.style.display = 'none';
