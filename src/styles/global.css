@@ -597,6 +597,23 @@ body {
   }
 }
 
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+  .section {
+    padding: 60px 0;
+  }
+
+  .container {
+    padding: 0 15px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+  }
+}
+
 /* ─────────────────────────────────────────────────────────────
    NOISE TEXTURE OVERLAY
    ───────────────────────────────────────────────────────────── */

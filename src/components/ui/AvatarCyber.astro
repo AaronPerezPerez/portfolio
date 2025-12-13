@@ -469,6 +469,12 @@ const lvl = calculateAge(birthday);
       display: none;
     }
   }
+
+  @media (max-width: 480px) {
+    .avatar-cyber {
+      width: 280px; /* Larger than 768px to compensate for removed scale(0.8) */
+    }
+  }
 </style>
 
 <script>
