@@ -1,5 +1,5 @@
 export const personalInfo = {
-  name: "Aarón Pérez Pérez",
+  name: "Aaron Perez Perez",
   title: "Software Craftsman",
   subtitle: "Full-Stack Developer | 6+ Years Experience",
   location: "Tenerife, Canary Islands, Spain",
@@ -17,7 +17,7 @@ export const experiences = [
   {
     id: 1,
     company: "beonit",
-    role: "FullStack Developer",
+    role: "Senior FullStack Developer",
     location: "Madrid, Spain (Remote)",
     startDate: "November 2024",
     endDate: "Present",
