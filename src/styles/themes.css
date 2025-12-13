@@ -447,6 +447,220 @@
   --theme-color: #1a1510;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAMING CONSOLE THEMES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: NES
+   Vibe: 8-bit Nintendo, hardware gray/red, retro gaming
+   ───────────────────────────────────────────────────────────── */
+[data-theme="nes"] {
+  --color-bg-primary: #1a1a1a;
+  --color-bg-secondary: #2d2d2d;
+  --color-bg-terminal: #242424;
+  --color-bg-card: #333333;
+
+  --color-neon-cyan: #00d8ff;
+  --color-neon-magenta: #cc0000;
+  --color-neon-green: #00a800;
+  --color-neon-orange: #ff6600;
+  --color-neon-yellow: #ffd700;
+  --color-neon-purple: #6644ff;
+
+  --color-text-primary: #e5e5e5;
+  --color-text-secondary: #a5a2a2;
+  --color-text-muted: #6b6b6b;
+
+  --color-scanline: rgba(204, 0, 0, 0.02);
+  --color-glow-cyan: rgba(0, 216, 255, 0.4);
+  --color-glow-magenta: rgba(204, 0, 0, 0.5);
+  --color-glow-green: rgba(0, 168, 0, 0.4);
+
+  --overlay-opacity: 0.3;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.04;
+
+  --scrollbar-thumb: #cc0000;
+  --scrollbar-thumb-hover: #00d8ff;
+  --theme-color: #1a1a1a;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: PS2
+   Vibe: PlayStation 2 boot screen, deep blue, floating particles
+   ───────────────────────────────────────────────────────────── */
+[data-theme="ps2"] {
+  --color-bg-primary: #0a0a12;
+  --color-bg-secondary: #0f1018;
+  --color-bg-terminal: #080810;
+  --color-bg-card: #14141e;
+
+  --color-neon-cyan: #5cc9fb;
+  --color-neon-magenta: #df0024;
+  --color-neon-green: #00ac9f;
+  --color-neon-orange: #f3c300;
+  --color-neon-yellow: #f3c300;
+  --color-neon-purple: #2e6db4;
+
+  --color-text-primary: #e8e8ff;
+  --color-text-secondary: #8888bb;
+  --color-text-muted: #4a4a6a;
+
+  --color-scanline: rgba(92, 201, 251, 0.02);
+  --color-glow-cyan: rgba(92, 201, 251, 0.5);
+  --color-glow-magenta: rgba(223, 0, 36, 0.5);
+  --color-glow-green: rgba(0, 172, 159, 0.4);
+
+  --overlay-opacity: 0.4;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.03;
+
+  --scrollbar-thumb: #5cc9fb;
+  --scrollbar-thumb-hover: #2e6db4;
+  --theme-color: #0a0a12;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: XBOX
+   Vibe: Xbox Original, intense green neon, monochromatic
+   ───────────────────────────────────────────────────────────── */
+[data-theme="xbox"] {
+  --color-bg-primary: #0d0d0d;
+  --color-bg-secondary: #1a1a1a;
+  --color-bg-terminal: #0a0a0a;
+  --color-bg-card: #1f1f1f;
+
+  --color-neon-cyan: #7eb900;
+  --color-neon-magenta: #107c10;
+  --color-neon-green: #9bc848;
+  --color-neon-orange: #52b043;
+  --color-neon-yellow: #c3d940;
+  --color-neon-purple: #2d7d2a;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9bc848;
+  --color-text-muted: #4a7a47;
+
+  --color-scanline: rgba(155, 200, 72, 0.03);
+  --color-glow-cyan: rgba(126, 185, 0, 0.5);
+  --color-glow-magenta: rgba(16, 124, 16, 0.5);
+  --color-glow-green: rgba(155, 200, 72, 0.6);
+
+  --overlay-opacity: 0.4;
+  --noise-opacity: 0.03;
+  --grid-opacity: 0.04;
+
+  --scrollbar-thumb: #107c10;
+  --scrollbar-thumb-hover: #9bc848;
+  --theme-color: #0d0d0d;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: SNES
+   Vibe: Super Nintendo, purple/gray console, colorful buttons
+   ───────────────────────────────────────────────────────────── */
+[data-theme="snes"] {
+  --color-bg-primary: #1a1a24;
+  --color-bg-secondary: #24243a;
+  --color-bg-terminal: #16161e;
+  --color-bg-card: #2a2a40;
+
+  --color-neon-cyan: #00b0f0;
+  --color-neon-magenta: #d03050;
+  --color-neon-green: #40b040;
+  --color-neon-orange: #f0a020;
+  --color-neon-yellow: #f0d020;
+  --color-neon-purple: #4f43ae;
+
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #b5b6e4;
+  --color-text-muted: #6868a0;
+
+  --color-scanline: rgba(79, 67, 174, 0.02);
+  --color-glow-cyan: rgba(0, 176, 240, 0.4);
+  --color-glow-magenta: rgba(208, 48, 80, 0.5);
+  --color-glow-green: rgba(64, 176, 64, 0.4);
+
+  --overlay-opacity: 0.3;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.04;
+
+  --scrollbar-thumb: #4f43ae;
+  --scrollbar-thumb-hover: #00b0f0;
+  --theme-color: #1a1a24;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: C64
+   Vibe: Commodore 64, iconic blue screen, 80s computing
+   ───────────────────────────────────────────────────────────── */
+[data-theme="c64"] {
+  --color-bg-primary: #1a1a4a;
+  --color-bg-secondary: #252560;
+  --color-bg-terminal: #352879;
+  --color-bg-card: #2a2a5a;
+
+  --color-neon-cyan: #70a4b2;
+  --color-neon-magenta: #894036;
+  --color-neon-green: #68a941;
+  --color-neon-orange: #905f25;
+  --color-neon-yellow: #d0dc71;
+  --color-neon-purple: #8a46ae;
+
+  --color-text-primary: #7abfc7;
+  --color-text-secondary: #70a4b2;
+  --color-text-muted: #555580;
+
+  --color-scanline: rgba(122, 191, 199, 0.03);
+  --color-glow-cyan: rgba(112, 164, 178, 0.4);
+  --color-glow-magenta: rgba(137, 64, 54, 0.4);
+  --color-glow-green: rgba(104, 169, 65, 0.4);
+
+  --overlay-opacity: 0.35;
+  --noise-opacity: 0.03;
+  --grid-opacity: 0.04;
+
+  --scrollbar-thumb: #70a4b2;
+  --scrollbar-thumb-hover: #7abfc7;
+  --theme-color: #1a1a4a;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: MS-DOS
+   Vibe: DOS/BIOS prompt, CGA/EGA colors, classic terminal
+   ───────────────────────────────────────────────────────────── */
+[data-theme="msdos"] {
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-terminal: #000010;
+  --color-bg-card: #101020;
+
+  --color-neon-cyan: #00aaaa;
+  --color-neon-magenta: #aa00aa;
+  --color-neon-green: #00aa00;
+  --color-neon-orange: #aa5500;
+  --color-neon-yellow: #ffff55;
+  --color-neon-purple: #5555ff;
+
+  --color-text-primary: #aaaaaa;
+  --color-text-secondary: #555555;
+  --color-text-muted: #333333;
+
+  --color-scanline: rgba(170, 170, 170, 0.03);
+  --color-glow-cyan: rgba(0, 170, 170, 0.4);
+  --color-glow-magenta: rgba(170, 0, 170, 0.4);
+  --color-glow-green: rgba(0, 170, 0, 0.4);
+
+  --overlay-opacity: 0.5;
+  --noise-opacity: 0.04;
+  --grid-opacity: 0.05;
+
+  --scrollbar-thumb: #00aaaa;
+  --scrollbar-thumb-hover: #00aa00;
+  --theme-color: #000000;
+}
+
 /* ─────────────────────────────────────────────────────────────
    GLOBAL TRANSITIONS FOR SMOOTH THEME SWITCHING
    ───────────────────────────────────────────────────────────── */

@@ -25,6 +25,7 @@ const {
         document.documentElement.dataset.theme = theme;
         // Update theme-color meta
         const themeColors = {
+          // Base themes
           cyberpunk: '#0a0a0f',
           synthwave: '#0f0e17',
           matrix: '#000000',
@@ -34,9 +35,16 @@ const {
           tokyo: '#1a1b26',
           fallout: '#0a0a00',
           crimson: '#0a0000',
-          gameboy: '#0f380f',
           catppuccin: '#1e1e2e',
-          sepia: '#1a1510'
+          sepia: '#1a1510',
+          // Gaming themes
+          gameboy: '#0f380f',
+          nes: '#1a1a1a',
+          ps2: '#0a0a12',
+          xbox: '#0d0d0d',
+          snes: '#1a1a24',
+          c64: '#1a1a4a',
+          msdos: '#000000'
         };
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.setAttribute('content', themeColors[theme] || '#0a0a0f');

@@ -1,6 +1,6 @@
 ---
-// Theme definitions for the selector UI (12 unique personalities)
-const themes = [
+// Theme definitions split by category
+const baseThemes = [
   { id: 'cyberpunk', name: 'CYBERPUNK', icon: '⚡', colors: ['#00fff7', '#ff00ff', '#0a0a0f'] },
   { id: 'synthwave', name: 'SYNTHWAVE', icon: '🌅', colors: ['#ff2a6d', '#ff7f11', '#0f0e17'] },
   { id: 'matrix', name: 'MATRIX', icon: '💊', colors: ['#00ff41', '#00cc33', '#000000'] },
@@ -10,9 +10,18 @@ const themes = [
   { id: 'tokyo', name: 'TOKYO NIGHT', icon: '🌃', colors: ['#7aa2f7', '#bb9af7', '#1a1b26'] },
   { id: 'fallout', name: 'FALLOUT', icon: '☢️', colors: ['#ffb000', '#cc8800', '#0a0a00'] },
   { id: 'crimson', name: 'CRIMSON', icon: '🩸', colors: ['#ff0033', '#cc0022', '#0a0000'] },
-  { id: 'gameboy', name: 'GAMEBOY', icon: '🎮', colors: ['#9bbc0f', '#8bac0f', '#0f380f'] },
   { id: 'catppuccin', name: 'CATPPUCCIN', icon: '🐱', colors: ['#cba6f7', '#f5c2e7', '#1e1e2e'] },
   { id: 'sepia', name: 'SEPIA', icon: '🏜️', colors: ['#d4a574', '#cd7f32', '#1a1510'] },
+];
+
+const gamingThemes = [
+  { id: 'gameboy', name: 'GAMEBOY', icon: '🎮', colors: ['#9bbc0f', '#8bac0f', '#0f380f'] },
+  { id: 'nes', name: 'NES', icon: '🕹️', colors: ['#cc0000', '#a5a2a2', '#1a1a1a'] },
+  { id: 'ps2', name: 'PS2', icon: '💿', colors: ['#006fcd', '#5cc9fb', '#0a0a12'] },
+  { id: 'xbox', name: 'XBOX', icon: '🟢', colors: ['#107c10', '#9bc848', '#0d0d0d'] },
+  { id: 'snes', name: 'SNES', icon: '🎲', colors: ['#4f43ae', '#b5b6e4', '#1a1a24'] },
+  { id: 'c64', name: 'C64', icon: '💾', colors: ['#352879', '#70a4b2', '#1a1a4a'] },
+  { id: 'msdos', name: 'MS-DOS', icon: '📟', colors: ['#00aaaa', '#aaaaaa', '#000000'] },
 ];
 ---
 
@@ -34,32 +43,91 @@ const themes = [
       <span class="header-text">SELECT_THEME</span>
     </div>
 
-    <div class="theme-list">
-      {themes.map((theme) => (
-        <button
-          class="theme-option"
-          data-theme-id={theme.id}
-          aria-label={`Switch to ${theme.name} theme`}
-        >
-          <span class="theme-icon">{theme.icon}</span>
-          <span class="theme-name">{theme.name}</span>
-          <div class="theme-preview">
-            {theme.colors.map((color) => (
-              <span class="color-swatch" style={`background-color: ${color};`}></span>
-            ))}
-          </div>
-          <span class="theme-check">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          </span>
-        </button>
-      ))}
+    <!-- Tab Navigation -->
+    <div class="tab-nav" role="tablist">
+      <button
+        class="tab-button active"
+        data-tab="general"
+        role="tab"
+        aria-selected="true"
+        aria-controls="panel-general"
+      >
+        <span class="tab-icon">🎨</span>
+        <span class="tab-label">GENERAL</span>
+        <span class="tab-count">{baseThemes.length}</span>
+      </button>
+      <button
+        class="tab-button"
+        data-tab="gaming"
+        role="tab"
+        aria-selected="false"
+        aria-controls="panel-gaming"
+      >
+        <span class="tab-icon">🕹️</span>
+        <span class="tab-label">GAMING</span>
+        <span class="tab-count">{gamingThemes.length}</span>
+      </button>
+    </div>
+
+    <!-- Tab Panels -->
+    <div class="tab-panels">
+      <div class="tab-panel active" id="panel-general" data-panel="general" role="tabpanel">
+        <div class="theme-list">
+          {baseThemes.map((theme) => (
+            <button
+              class="theme-option"
+              data-theme-id={theme.id}
+              data-category="general"
+              aria-label={`Switch to ${theme.name} theme`}
+            >
+              <span class="theme-icon">{theme.icon}</span>
+              <span class="theme-name">{theme.name}</span>
+              <div class="theme-preview">
+                {theme.colors.map((color) => (
+                  <span class="color-swatch" style={`background-color: ${color};`}></span>
+                ))}
+              </div>
+              <span class="theme-check">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-gaming" data-panel="gaming" role="tabpanel" hidden>
+        <div class="theme-list">
+          {gamingThemes.map((theme) => (
+            <button
+              class="theme-option"
+              data-theme-id={theme.id}
+              data-category="gaming"
+              aria-label={`Switch to ${theme.name} theme`}
+            >
+              <span class="theme-icon">{theme.icon}</span>
+              <span class="theme-name">{theme.name}</span>
+              <div class="theme-preview">
+                {theme.colors.map((color) => (
+                  <span class="color-swatch" style={`background-color: ${color};`}></span>
+                ))}
+              </div>
+              <span class="theme-check">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
 
     <div class="dropdown-footer">
       <div class="keyboard-hints">
-        <span class="hint"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span class="hint"><kbd>←</kbd><kbd>→</kbd> tab</span>
+        <span class="hint"><kbd>↑</kbd><kbd>↓</kbd> theme</span>
         <span class="hint"><kbd>↵</kbd> select</span>
         <span class="hint"><kbd>esc</kbd> close</span>
       </div>
@@ -147,7 +215,8 @@ const themes = [
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    min-width: 260px;
+    min-width: 280px;
+    max-height: 600px;
     background: var(--color-bg-terminal);
     border: 1px solid var(--color-neon-cyan);
     border-radius: 8px;
@@ -159,6 +228,8 @@ const themes = [
     box-shadow:
       0 0 20px rgba(0, 255, 247, 0.2),
       0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
   }
 
   .theme-selector.open .theme-dropdown {
@@ -173,6 +244,7 @@ const themes = [
     border-bottom: 1px solid rgba(0, 255, 247, 0.2);
     font-size: 11px;
     letter-spacing: 2px;
+    flex-shrink: 0;
   }
 
   .header-prompt {
@@ -182,6 +254,91 @@ const themes = [
   .header-text {
     color: var(--color-text-muted);
     margin-left: 8px;
+  }
+
+  /* Tab Navigation */
+  .tab-nav {
+    display: flex;
+    border-bottom: 1px solid rgba(0, 255, 247, 0.2);
+    flex-shrink: 0;
+  }
+
+  .tab-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab-button:hover {
+    background: rgba(0, 255, 247, 0.05);
+    color: var(--color-text-secondary);
+  }
+
+  .tab-button.active {
+    color: var(--color-neon-cyan);
+    border-bottom-color: var(--color-neon-cyan);
+    background: rgba(0, 255, 247, 0.08);
+  }
+
+  .tab-icon {
+    font-size: 12px;
+  }
+
+  .tab-label {
+    font-weight: 500;
+  }
+
+  .tab-count {
+    padding: 2px 6px;
+    background: rgba(0, 255, 247, 0.15);
+    border-radius: 10px;
+    font-size: 9px;
+    color: var(--color-neon-cyan);
+  }
+
+  .tab-button.active .tab-count {
+    background: var(--color-neon-cyan);
+    color: var(--color-bg-primary);
+  }
+
+  /* Tab Panels */
+  .tab-panels {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    transition: height 0.2s ease;
+  }
+
+  .tab-panel {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+  }
+
+  .tab-panel.active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .tab-panel[hidden] {
+    display: none;
   }
 
   /* Theme list */
@@ -194,13 +351,13 @@ const themes = [
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 12px;
+    padding: 10px 12px;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 6px;
     color: var(--color-text-primary);
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
@@ -216,9 +373,14 @@ const themes = [
     border-color: var(--color-neon-cyan);
   }
 
+  .theme-option.focused {
+    background: rgba(0, 255, 247, 0.08);
+    border-color: rgba(0, 255, 247, 0.4);
+  }
+
   .theme-icon {
-    font-size: 16px;
-    width: 24px;
+    font-size: 14px;
+    width: 22px;
     text-align: center;
   }
 
@@ -234,8 +396,8 @@ const themes = [
   }
 
   .color-swatch {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 2px;
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
@@ -260,24 +422,26 @@ const themes = [
     color: var(--color-text-muted);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
+    background: var(--color-bg-terminal);
   }
 
   .keyboard-hints {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
   }
 
   .keyboard-hints .hint {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     color: var(--color-text-muted);
   }
 
   .keyboard-hints kbd {
-    padding: 2px 5px;
+    padding: 2px 4px;
     background: var(--color-bg-card);
     border: 1px solid rgba(0, 255, 247, 0.2);
     border-radius: 3px;
@@ -308,11 +472,20 @@ const themes = [
 
     .theme-dropdown {
       right: 0;
-      min-width: 240px;
+      min-width: 260px;
+      max-height: 540px;
     }
 
     .keyboard-hints {
       display: none;
+    }
+
+    .tab-label {
+      display: none;
+    }
+
+    .tab-button {
+      padding: 8px 10px;
     }
   }
 </style>
@@ -322,29 +495,44 @@ const themes = [
     private selector: HTMLElement;
     private toggle: HTMLButtonElement;
     private dropdown: HTMLElement;
-    private options: NodeListOf<HTMLButtonElement>;
+    private tabButtons: NodeListOf<HTMLButtonElement>;
+    private tabPanels: NodeListOf<HTMLElement>;
     private isOpen: boolean = false;
     private focusedIndex: number = -1;
+    private currentTab: 'general' | 'gaming' = 'general';
+
+    // Theme categories for navigation
+    private readonly gamingThemes = ['gameboy', 'nes', 'ps2', 'xbox', 'snes', 'c64', 'msdos'];
 
     constructor(element: HTMLElement) {
       this.selector = element;
       this.toggle = element.querySelector('.theme-toggle')!;
       this.dropdown = element.querySelector('.theme-dropdown')!;
-      this.options = element.querySelectorAll('.theme-option');
+      this.tabButtons = element.querySelectorAll('.tab-button');
+      this.tabPanels = element.querySelectorAll('.tab-panel');
 
       this.init();
     }
 
     private init() {
-      // Set initial active theme
+      // Set initial active theme and correct tab
       const currentTheme = this.getCurrentTheme();
       this.setActiveOption(currentTheme);
+      this.setInitialTab(currentTheme);
 
       // Toggle dropdown
       this.toggle.addEventListener('click', () => this.toggleDropdown());
 
+      // Tab clicks
+      this.tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const tab = button.dataset.tab as 'general' | 'gaming';
+          this.switchTab(tab);
+        });
+      });
+
       // Theme option clicks
-      this.options.forEach(option => {
+      this.getAllOptions().forEach(option => {
         option.addEventListener('click', () => {
           const themeId = option.dataset.themeId;
           if (themeId) {
@@ -363,7 +551,7 @@ const themes = [
 
       // Keyboard navigation
       document.addEventListener('keydown', (e) => {
-        // Global shortcut "T" to toggle theme selector (only when not typing)
+        // Global shortcut "T" to toggle theme selector
         if (e.key.toLowerCase() === 't' && !this.isTyping(e)) {
           e.preventDefault();
           this.toggleDropdown();
@@ -385,6 +573,14 @@ const themes = [
             e.preventDefault();
             this.navigateOptions(-1);
             break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            this.switchTab('general');
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            this.switchTab('gaming');
+            break;
           case 'Enter':
             e.preventDefault();
             this.closeDropdown();
@@ -400,29 +596,79 @@ const themes = [
       return tagName === 'input' || tagName === 'textarea' || target.isContentEditable;
     }
 
-    private navigateOptions(direction: number) {
-      const totalOptions = this.options.length;
+    private getAllOptions(): NodeListOf<HTMLButtonElement> {
+      return this.selector.querySelectorAll('.theme-option');
+    }
 
-      // If no option is focused, start from current theme
+    private getCurrentTabOptions(): HTMLButtonElement[] {
+      const panel = this.selector.querySelector(`.tab-panel[data-panel="${this.currentTab}"]`);
+      return Array.from(panel?.querySelectorAll('.theme-option') || []);
+    }
+
+    private setInitialTab(themeId: string) {
+      if (this.gamingThemes.includes(themeId)) {
+        this.switchTab('gaming', false);
+      } else {
+        this.switchTab('general', false);
+      }
+    }
+
+    private switchTab(tab: 'general' | 'gaming', resetFocus = true) {
+      if (this.currentTab === tab) return;
+
+      this.currentTab = tab;
+
+      // Update tab buttons
+      this.tabButtons.forEach(button => {
+        const isActive = button.dataset.tab === tab;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', String(isActive));
+      });
+
+      // Update panels
+      this.tabPanels.forEach(panel => {
+        const isActive = panel.dataset.panel === tab;
+        panel.classList.toggle('active', isActive);
+        panel.hidden = !isActive;
+      });
+
+      // Reset focus index when switching tabs
+      if (resetFocus) {
+        this.focusedIndex = -1;
+        this.clearFocusedState();
+      }
+    }
+
+    private navigateOptions(direction: number) {
+      const options = this.getCurrentTabOptions();
+      const totalOptions = options.length;
+
+      if (totalOptions === 0) return;
+
+      // Clear previous focused state
+      this.clearFocusedState();
+
+      // If no option is focused, start at beginning (down) or end (up)
       if (this.focusedIndex === -1) {
-        const currentTheme = this.getCurrentTheme();
-        this.focusedIndex = Array.from(this.options).findIndex(
-          opt => opt.dataset.themeId === currentTheme
-        );
+        this.focusedIndex = direction === 1 ? 0 : totalOptions - 1;
+      } else {
+        // Already navigating, move in direction
+        this.focusedIndex = (this.focusedIndex + direction + totalOptions) % totalOptions;
       }
 
-      // Calculate new index with wrapping
-      this.focusedIndex = (this.focusedIndex + direction + totalOptions) % totalOptions;
-
       // Get the theme ID and apply it
-      const option = this.options[this.focusedIndex];
+      const option = options[this.focusedIndex];
       const themeId = option.dataset.themeId;
 
       if (themeId) {
         this.setTheme(themeId);
-        // Scroll option into view
+        option.classList.add('focused');
         option.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
+    }
+
+    private clearFocusedState() {
+      this.getAllOptions().forEach(opt => opt.classList.remove('focused'));
     }
 
     private getCurrentTheme(): string {
@@ -430,15 +676,12 @@ const themes = [
     }
 
     private setTheme(themeId: string) {
-      // Add transition class
       document.documentElement.classList.remove('no-transitions');
-
-      // Set theme
       document.documentElement.dataset.theme = themeId;
       localStorage.setItem('theme', themeId);
 
-      // Update meta theme-color
       const themeColors: Record<string, string> = {
+        // Base themes
         cyberpunk: '#0a0a0f',
         synthwave: '#0f0e17',
         matrix: '#000000',
@@ -448,21 +691,28 @@ const themes = [
         tokyo: '#1a1b26',
         fallout: '#0a0a00',
         crimson: '#0a0000',
-        gameboy: '#0f380f',
         catppuccin: '#1e1e2e',
-        sepia: '#1a1510'
+        sepia: '#1a1510',
+        // Gaming themes
+        gameboy: '#0f380f',
+        nes: '#1a1a1a',
+        ps2: '#0a0a12',
+        xbox: '#0d0d0d',
+        snes: '#1a1a24',
+        c64: '#1a1a4a',
+        msdos: '#000000'
       };
+
       const metaTheme = document.querySelector('meta[name="theme-color"]');
       if (metaTheme) {
         metaTheme.setAttribute('content', themeColors[themeId] || '#0a0a0f');
       }
 
-      // Update active state
       this.setActiveOption(themeId);
     }
 
     private setActiveOption(themeId: string) {
-      this.options.forEach(option => {
+      this.getAllOptions().forEach(option => {
         option.classList.toggle('active', option.dataset.themeId === themeId);
       });
     }
@@ -473,7 +723,13 @@ const themes = [
 
     private openDropdown() {
       this.isOpen = true;
-      this.focusedIndex = -1; // Reset focus index when opening
+      this.focusedIndex = -1;
+      this.clearFocusedState();
+
+      // Switch to correct tab based on current theme
+      const currentTheme = this.getCurrentTheme();
+      this.setInitialTab(currentTheme);
+
       this.selector.classList.add('open');
       this.toggle.setAttribute('aria-expanded', 'true');
       this.dropdown.setAttribute('aria-hidden', 'false');
@@ -481,6 +737,7 @@ const themes = [
 
     private closeDropdown() {
       this.isOpen = false;
+      this.clearFocusedState();
       this.selector.classList.remove('open');
       this.toggle.setAttribute('aria-expanded', 'false');
       this.dropdown.setAttribute('aria-hidden', 'true');

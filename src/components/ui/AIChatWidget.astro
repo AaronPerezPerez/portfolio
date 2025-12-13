@@ -105,6 +105,15 @@ const presetQuestions = [
     box-shadow: 0 0 30px rgba(0, 255, 247, 0.5);
   }
 
+  .chat-toggle:focus {
+    outline: none;
+  }
+
+  .chat-toggle:focus-visible {
+    outline: 2px solid var(--color-neon-cyan);
+    outline-offset: 3px;
+  }
+
   .chat-toggle .close-icon {
     display: none;
   }
@@ -131,7 +140,7 @@ const presetQuestions = [
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px) scale(0.95);
-    transition: all 0.3s ease;
+    transition: all 0.3s ease, max-height 0.3s ease;
     box-shadow:
       0 0 30px rgba(0, 255, 247, 0.2),
       0 20px 60px rgba(0, 0, 0, 0.5);
@@ -143,6 +152,16 @@ const presetQuestions = [
     opacity: 1;
     visibility: visible;
     transform: translateY(0) scale(1);
+  }
+
+  /* Expanded state - green dot */
+  .chat-window.expanded {
+    max-height: 80vh;
+    transition: max-height 0.3s ease;
+  }
+
+  .chat-window.expanded .chat-messages {
+    max-height: calc(80vh - 120px);
   }
 
   /* Header */
@@ -161,14 +180,43 @@ const presetQuestions = [
   }
 
   .dot {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .dot-red { background: #ff5f56; }
-  .dot-yellow { background: #ffbd2e; }
-  .dot-green { background: #27c93f; }
+  .dot:hover {
+    transform: scale(1.2);
+  }
+
+  .dot-red {
+    background: #ff5f56;
+    box-shadow: 0 0 5px #ff5f56;
+  }
+
+  .dot-red:hover {
+    box-shadow: 0 0 10px #ff5f56, 0 0 20px #ff5f56;
+  }
+
+  .dot-yellow {
+    background: #ffbd2e;
+    box-shadow: 0 0 5px #ffbd2e;
+  }
+
+  .dot-yellow:hover {
+    box-shadow: 0 0 10px #ffbd2e, 0 0 20px #ffbd2e;
+  }
+
+  .dot-green {
+    background: #27c93f;
+    box-shadow: 0 0 5px #27c93f;
+  }
+
+  .dot-green:hover {
+    box-shadow: 0 0 10px #27c93f, 0 0 20px #27c93f;
+  }
 
   .header-title {
     flex: 1;
@@ -199,12 +247,14 @@ const presetQuestions = [
   .chat-messages {
     flex: 1;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     min-height: 200px;
     max-height: 350px;
+    transition: max-height 0.3s ease;
   }
 
   /* Welcome message */
@@ -370,12 +420,19 @@ const presetQuestions = [
 
   .chat-input {
     flex: 1;
-    background: none;
-    border: none;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    border-radius: 6px;
+    padding: 8px 10px;
     color: var(--color-text-primary);
     font-family: var(--font-mono);
     font-size: 11px;
     outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .chat-input:focus {
+    border-color: var(--color-neon-cyan);
   }
 
   .chat-input::placeholder {
@@ -474,6 +531,9 @@ const presetQuestions = [
     private clearBtn: HTMLButtonElement;
     private typingIndicator: HTMLElement;
     private presetBtns: NodeListOf<HTMLButtonElement>;
+    private dotRed: HTMLElement;
+    private dotYellow: HTMLElement;
+    private dotGreen: HTMLElement;
 
     private messages: Message[] = [];
     private isOpen: boolean = false;
@@ -489,6 +549,9 @@ const presetQuestions = [
       this.clearBtn = element.querySelector('.clear-btn')!;
       this.typingIndicator = element.querySelector('.typing-indicator')!;
       this.presetBtns = element.querySelectorAll('.preset-btn');
+      this.dotRed = element.querySelector('.dot-red')!;
+      this.dotYellow = element.querySelector('.dot-yellow')!;
+      this.dotGreen = element.querySelector('.dot-green')!;
 
       this.init();
     }
@@ -524,6 +587,25 @@ const presetQuestions = [
       // Clear chat
       this.clearBtn.addEventListener('click', () => this.clearChat());
 
+      // Header dots functionality
+      // Red: Close chat
+      this.dotRed.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeChat();
+      });
+
+      // Yellow: Restore original size
+      this.dotYellow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.window.classList.remove('expanded');
+      });
+
+      // Green: Expand vertically
+      this.dotGreen.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.window.classList.add('expanded');
+      });
+
       // Close on escape
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && this.isOpen) {
@@ -548,7 +630,8 @@ const presetQuestions = [
       this.widget.classList.add('open');
       this.toggle.setAttribute('aria-expanded', 'true');
       this.window.setAttribute('aria-hidden', 'false');
-      this.input.focus();
+      // Focus input after transition completes (300ms matches CSS transition)
+      setTimeout(() => this.input.focus(), 100);
     }
 
     private closeChat() {

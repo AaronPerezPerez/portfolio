@@ -280,3 +280,47 @@ export const stats = {
   linkedinConnections: "500+",
   linkedinFollowers: 896,
 } as const;
+
+export const extendedInfo = {
+  // Languages
+  languages: [
+    { name: "Spanish", level: "Native" },
+    { name: "English", level: "Professional" },
+  ],
+
+  // Work philosophy
+  workPhilosophy: [
+    "Quality over speed - good code pays off in the long run",
+    "Tests are documentation that never gets outdated",
+    "Pair programming multiplies knowledge, not just divides work",
+    "Simple solutions are usually the best solutions",
+  ],
+
+  // Interests and hobbies
+  interests: [
+    "Gaming (1600+ games on Steam, home arcade setup)",
+    "Traveling (visited dream destinations: NYC & Japan)",
+    "Board games collector",
+    "Trading card games (Magic & Pokémon collector)",
+  ],
+
+  // Work preferences
+  workPreferences: {
+    remote: true,
+    timezone: "Europe/Madrid (UTC+1/+2)",
+    availability: "Open to new opportunities",
+    preferredStack: "TypeScript ecosystem",
+  },
+
+  // Education
+  education: "Self-taught developer with continuous learning focus",
+
+  // Fun facts
+  funFacts: [
+    "1600+ games on Steam library",
+    "Built a home arcade setup",
+    "18 themes on this portfolio (try them!)",
+    "Visited dream destinations: NYC & Japan",
+    "Magic & Pokémon card collector",
+  ],
+} as const;
