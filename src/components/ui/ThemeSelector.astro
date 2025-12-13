@@ -1,0 +1,494 @@
+---
+// Theme definitions for the selector UI (12 unique personalities)
+const themes = [
+  { id: 'cyberpunk', name: 'CYBERPUNK', icon: '⚡', colors: ['#00fff7', '#ff00ff', '#0a0a0f'] },
+  { id: 'synthwave', name: 'SYNTHWAVE', icon: '🌅', colors: ['#ff2a6d', '#ff7f11', '#0f0e17'] },
+  { id: 'matrix', name: 'MATRIX', icon: '💊', colors: ['#00ff41', '#00cc33', '#000000'] },
+  { id: 'dracula', name: 'DRACULA', icon: '🧛', colors: ['#bd93f9', '#ff79c6', '#282a36'] },
+  { id: 'nord', name: 'NORD', icon: '🌊', colors: ['#88c0d0', '#a3be8c', '#2e3440'] },
+  { id: 'gruvbox', name: 'GRUVBOX', icon: '🔥', colors: ['#fe8019', '#fabd2f', '#282828'] },
+  { id: 'tokyo', name: 'TOKYO NIGHT', icon: '🌃', colors: ['#7aa2f7', '#bb9af7', '#1a1b26'] },
+  { id: 'fallout', name: 'FALLOUT', icon: '☢️', colors: ['#ffb000', '#cc8800', '#0a0a00'] },
+  { id: 'crimson', name: 'CRIMSON', icon: '🩸', colors: ['#ff0033', '#cc0022', '#0a0000'] },
+  { id: 'gameboy', name: 'GAMEBOY', icon: '🎮', colors: ['#9bbc0f', '#8bac0f', '#0f380f'] },
+  { id: 'catppuccin', name: 'CATPPUCCIN', icon: '🐱', colors: ['#cba6f7', '#f5c2e7', '#1e1e2e'] },
+  { id: 'sepia', name: 'SEPIA', icon: '🏜️', colors: ['#d4a574', '#cd7f32', '#1a1510'] },
+];
+---
+
+<div class="theme-selector" data-theme-selector>
+  <div class="toggle-wrapper">
+    <button class="theme-toggle" aria-label="Select theme (T)" aria-expanded="false">
+      <span class="toggle-icon">🎨</span>
+      <span class="toggle-text">THEME</span>
+      <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <kbd class="shortcut-hint">T</kbd>
+  </div>
+
+  <div class="theme-dropdown" aria-hidden="true">
+    <div class="dropdown-header">
+      <span class="header-prompt">&gt;</span>
+      <span class="header-text">SELECT_THEME</span>
+    </div>
+
+    <div class="theme-list">
+      {themes.map((theme) => (
+        <button
+          class="theme-option"
+          data-theme-id={theme.id}
+          aria-label={`Switch to ${theme.name} theme`}
+        >
+          <span class="theme-icon">{theme.icon}</span>
+          <span class="theme-name">{theme.name}</span>
+          <div class="theme-preview">
+            {theme.colors.map((color) => (
+              <span class="color-swatch" style={`background-color: ${color};`}></span>
+            ))}
+          </div>
+          <span class="theme-check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+        </button>
+      ))}
+    </div>
+
+    <div class="dropdown-footer">
+      <div class="keyboard-hints">
+        <span class="hint"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span class="hint"><kbd>↵</kbd> select</span>
+        <span class="hint"><kbd>esc</kbd> close</span>
+      </div>
+      <span class="footer-text">// localStorage.theme</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .theme-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-family: var(--font-mono);
+  }
+
+  /* Toggle wrapper */
+  .toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Shortcut hint badge */
+  .shortcut-hint {
+    padding: 4px 8px;
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(0, 255, 247, 0.2);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+  }
+
+  .toggle-wrapper:hover .shortcut-hint {
+    opacity: 1;
+    border-color: var(--color-neon-cyan);
+    color: var(--color-neon-cyan);
+  }
+
+  /* Toggle button */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    border-radius: 6px;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
+  }
+
+  .toggle-icon {
+    font-size: 14px;
+  }
+
+  .toggle-text {
+    color: var(--color-neon-cyan);
+    letter-spacing: 1px;
+  }
+
+  .chevron {
+    color: var(--color-text-muted);
+    transition: transform 0.3s ease;
+  }
+
+  .theme-selector.open .chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown */
+  .theme-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 260px;
+    background: var(--color-bg-terminal);
+    border: 1px solid var(--color-neon-cyan);
+    border-radius: 8px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    box-shadow:
+      0 0 20px rgba(0, 255, 247, 0.2),
+      0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .theme-selector.open .theme-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* Dropdown header */
+  .dropdown-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 255, 247, 0.2);
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .header-prompt {
+    color: var(--color-neon-green);
+  }
+
+  .header-text {
+    color: var(--color-text-muted);
+    margin-left: 8px;
+  }
+
+  /* Theme list */
+  .theme-list {
+    padding: 8px;
+  }
+
+  .theme-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+
+  .theme-option:hover {
+    background: rgba(0, 255, 247, 0.05);
+    border-color: rgba(0, 255, 247, 0.2);
+  }
+
+  .theme-option.active {
+    background: rgba(0, 255, 247, 0.1);
+    border-color: var(--color-neon-cyan);
+  }
+
+  .theme-icon {
+    font-size: 16px;
+    width: 24px;
+    text-align: center;
+  }
+
+  .theme-name {
+    flex: 1;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .theme-preview {
+    display: flex;
+    gap: 3px;
+  }
+
+  .color-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .theme-check {
+    color: var(--color-neon-green);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+  }
+
+  .theme-option.active .theme-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Dropdown footer */
+  .dropdown-footer {
+    padding: 10px 16px;
+    border-top: 1px solid rgba(0, 255, 247, 0.2);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .keyboard-hints {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .keyboard-hints .hint {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-muted);
+  }
+
+  .keyboard-hints kbd {
+    padding: 2px 5px;
+    background: var(--color-bg-card);
+    border: 1px solid rgba(0, 255, 247, 0.2);
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--color-neon-cyan);
+  }
+
+  .footer-text {
+    opacity: 0.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .theme-selector {
+      top: 15px;
+      right: 15px;
+    }
+
+    .toggle-text,
+    .shortcut-hint {
+      display: none;
+    }
+
+    .theme-toggle {
+      padding: 10px 12px;
+    }
+
+    .theme-dropdown {
+      right: 0;
+      min-width: 240px;
+    }
+
+    .keyboard-hints {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  class ThemeSelector {
+    private selector: HTMLElement;
+    private toggle: HTMLButtonElement;
+    private dropdown: HTMLElement;
+    private options: NodeListOf<HTMLButtonElement>;
+    private isOpen: boolean = false;
+    private focusedIndex: number = -1;
+
+    constructor(element: HTMLElement) {
+      this.selector = element;
+      this.toggle = element.querySelector('.theme-toggle')!;
+      this.dropdown = element.querySelector('.theme-dropdown')!;
+      this.options = element.querySelectorAll('.theme-option');
+
+      this.init();
+    }
+
+    private init() {
+      // Set initial active theme
+      const currentTheme = this.getCurrentTheme();
+      this.setActiveOption(currentTheme);
+
+      // Toggle dropdown
+      this.toggle.addEventListener('click', () => this.toggleDropdown());
+
+      // Theme option clicks
+      this.options.forEach(option => {
+        option.addEventListener('click', () => {
+          const themeId = option.dataset.themeId;
+          if (themeId) {
+            this.setTheme(themeId);
+            this.closeDropdown();
+          }
+        });
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!this.selector.contains(e.target as Node)) {
+          this.closeDropdown();
+        }
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        // Global shortcut "T" to toggle theme selector (only when not typing)
+        if (e.key.toLowerCase() === 't' && !this.isTyping(e)) {
+          e.preventDefault();
+          this.toggleDropdown();
+          return;
+        }
+
+        if (!this.isOpen) return;
+
+        switch (e.key) {
+          case 'Escape':
+            this.closeDropdown();
+            this.toggle.focus();
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            this.navigateOptions(1);
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            this.navigateOptions(-1);
+            break;
+          case 'Enter':
+            e.preventDefault();
+            this.closeDropdown();
+            this.toggle.focus();
+            break;
+        }
+      });
+    }
+
+    private isTyping(e: KeyboardEvent): boolean {
+      const target = e.target as HTMLElement;
+      const tagName = target.tagName.toLowerCase();
+      return tagName === 'input' || tagName === 'textarea' || target.isContentEditable;
+    }
+
+    private navigateOptions(direction: number) {
+      const totalOptions = this.options.length;
+
+      // If no option is focused, start from current theme
+      if (this.focusedIndex === -1) {
+        const currentTheme = this.getCurrentTheme();
+        this.focusedIndex = Array.from(this.options).findIndex(
+          opt => opt.dataset.themeId === currentTheme
+        );
+      }
+
+      // Calculate new index with wrapping
+      this.focusedIndex = (this.focusedIndex + direction + totalOptions) % totalOptions;
+
+      // Get the theme ID and apply it
+      const option = this.options[this.focusedIndex];
+      const themeId = option.dataset.themeId;
+
+      if (themeId) {
+        this.setTheme(themeId);
+        // Scroll option into view
+        option.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    private getCurrentTheme(): string {
+      return document.documentElement.dataset.theme || 'cyberpunk';
+    }
+
+    private setTheme(themeId: string) {
+      // Add transition class
+      document.documentElement.classList.remove('no-transitions');
+
+      // Set theme
+      document.documentElement.dataset.theme = themeId;
+      localStorage.setItem('theme', themeId);
+
+      // Update meta theme-color
+      const themeColors: Record<string, string> = {
+        cyberpunk: '#0a0a0f',
+        synthwave: '#0f0e17',
+        matrix: '#000000',
+        dracula: '#282a36',
+        nord: '#2e3440',
+        gruvbox: '#282828',
+        tokyo: '#1a1b26',
+        fallout: '#0a0a00',
+        crimson: '#0a0000',
+        gameboy: '#0f380f',
+        catppuccin: '#1e1e2e',
+        sepia: '#1a1510'
+      };
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) {
+        metaTheme.setAttribute('content', themeColors[themeId] || '#0a0a0f');
+      }
+
+      // Update active state
+      this.setActiveOption(themeId);
+    }
+
+    private setActiveOption(themeId: string) {
+      this.options.forEach(option => {
+        option.classList.toggle('active', option.dataset.themeId === themeId);
+      });
+    }
+
+    private toggleDropdown() {
+      this.isOpen ? this.closeDropdown() : this.openDropdown();
+    }
+
+    private openDropdown() {
+      this.isOpen = true;
+      this.focusedIndex = -1; // Reset focus index when opening
+      this.selector.classList.add('open');
+      this.toggle.setAttribute('aria-expanded', 'true');
+      this.dropdown.setAttribute('aria-hidden', 'false');
+    }
+
+    private closeDropdown() {
+      this.isOpen = false;
+      this.selector.classList.remove('open');
+      this.toggle.setAttribute('aria-expanded', 'false');
+      this.dropdown.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  // Initialize
+  document.querySelectorAll('[data-theme-selector]').forEach(el => {
+    new ThemeSelector(el as HTMLElement);
+  });
+</script>

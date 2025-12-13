@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import ThemeSelector from '../components/ui/ThemeSelector.astro';
 
 interface Props {
   title?: string;
@@ -13,9 +14,39 @@ const {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-transitions">
   <head>
     <meta charset="UTF-8" />
+    <!-- Theme persistence (runs before render to prevent flash) -->
+    <script is:inline>
+      (function() {
+        const theme = localStorage.getItem('theme') || 'cyberpunk';
+        document.documentElement.dataset.theme = theme;
+        // Update theme-color meta
+        const themeColors = {
+          cyberpunk: '#0a0a0f',
+          synthwave: '#0f0e17',
+          matrix: '#000000',
+          dracula: '#282a36',
+          nord: '#2e3440',
+          gruvbox: '#282828',
+          tokyo: '#1a1b26',
+          fallout: '#0a0a00',
+          crimson: '#0a0000',
+          gameboy: '#0f380f',
+          catppuccin: '#1e1e2e',
+          sepia: '#1a1510'
+        };
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', themeColors[theme] || '#0a0a0f');
+        // Remove no-transitions after first paint
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            document.documentElement.classList.remove('no-transitions');
+          });
+        });
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
@@ -47,6 +78,9 @@ const {
 
     <!-- Noise Texture -->
     <div class="noise"></div>
+
+    <!-- Theme Selector -->
+    <ThemeSelector />
 
     <!-- Grid Background -->
     <div class="fixed inset-0 grid-bg grid-bg-animated pointer-events-none"></div>

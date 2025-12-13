@@ -1,0 +1,475 @@
+/* ═══════════════════════════════════════════════════════════
+   THEME DEFINITIONS - 12 Unique Personalities
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: CYBERPUNK (Default)
+   Vibe: Terminal hacker, Blade Runner, Tron
+   ───────────────────────────────────────────────────────────── */
+:root,
+[data-theme="cyberpunk"] {
+  /* Backgrounds */
+  --color-bg-primary: #0a0a0f;
+  --color-bg-secondary: #12121a;
+  --color-bg-terminal: #0d1117;
+  --color-bg-card: #16161e;
+
+  /* Neon accents */
+  --color-neon-cyan: #00fff7;
+  --color-neon-magenta: #ff00ff;
+  --color-neon-green: #39ff14;
+  --color-neon-orange: #ff6b35;
+  --color-neon-yellow: #ffd700;
+  --color-neon-purple: #bf00ff;
+
+  /* Text */
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #6b7280;
+
+  /* Effects */
+  --color-scanline: rgba(0, 255, 247, 0.03);
+  --color-glow-cyan: rgba(0, 255, 247, 0.5);
+  --color-glow-magenta: rgba(255, 0, 255, 0.5);
+  --color-glow-green: rgba(57, 255, 20, 0.5);
+
+  /* Overlay control */
+  --overlay-opacity: 0.4;
+  --noise-opacity: 0.03;
+  --grid-opacity: 0.05;
+
+  /* Scrollbar */
+  --scrollbar-thumb: var(--color-neon-cyan);
+  --scrollbar-thumb-hover: var(--color-neon-magenta);
+
+  /* Theme meta */
+  --theme-color: #0a0a0f;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: SYNTHWAVE
+   Vibe: 80s retro, sunset, OutRun, neon nights
+   ───────────────────────────────────────────────────────────── */
+[data-theme="synthwave"] {
+  /* Backgrounds - deep blue/purple */
+  --color-bg-primary: #0f0e17;
+  --color-bg-secondary: #1a1a2e;
+  --color-bg-terminal: #16213e;
+  --color-bg-card: #1f1f38;
+
+  /* Neon accents - hot pink & orange */
+  --color-neon-cyan: #ff2a6d;
+  --color-neon-magenta: #ff7f11;
+  --color-neon-green: #05ffa1;
+  --color-neon-orange: #ff9e00;
+  --color-neon-yellow: #ffe66d;
+  --color-neon-purple: #9d4edd;
+
+  /* Text - warm whites */
+  --color-text-primary: #fffffe;
+  --color-text-secondary: #d4b8c4;
+  --color-text-muted: #8b7e8a;
+
+  /* Effects - pink/orange glows */
+  --color-scanline: rgba(255, 42, 109, 0.02);
+  --color-glow-cyan: rgba(255, 42, 109, 0.5);
+  --color-glow-magenta: rgba(255, 127, 17, 0.5);
+  --color-glow-green: rgba(5, 255, 161, 0.5);
+
+  /* Overlay control */
+  --overlay-opacity: 0.3;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.04;
+
+  /* Scrollbar */
+  --scrollbar-thumb: var(--color-neon-cyan);
+  --scrollbar-thumb-hover: var(--color-neon-magenta);
+
+  /* Theme meta */
+  --theme-color: #0f0e17;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: MATRIX
+   Vibe: The Matrix, classic hacker, monochromatic green
+   ───────────────────────────────────────────────────────────── */
+[data-theme="matrix"] {
+  /* Backgrounds - pure black */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-terminal: #050505;
+  --color-bg-card: #0d0d0d;
+
+  /* All greens - monochromatic */
+  --color-neon-cyan: #00ff41;
+  --color-neon-magenta: #00cc33;
+  --color-neon-green: #00ff41;
+  --color-neon-orange: #33ff77;
+  --color-neon-yellow: #66ff99;
+  --color-neon-purple: #008f11;
+
+  /* Text - green variations */
+  --color-text-primary: #00ff41;
+  --color-text-secondary: #00cc33;
+  --color-text-muted: #008f11;
+
+  /* Effects - only green glows */
+  --color-scanline: rgba(0, 255, 65, 0.03);
+  --color-glow-cyan: rgba(0, 255, 65, 0.5);
+  --color-glow-magenta: rgba(0, 204, 51, 0.4);
+  --color-glow-green: rgba(0, 255, 65, 0.6);
+
+  /* Overlay control - enhanced for matrix rain effect */
+  --overlay-opacity: 0.5;
+  --noise-opacity: 0.04;
+  --grid-opacity: 0.03;
+
+  /* Scrollbar */
+  --scrollbar-thumb: #00ff41;
+  --scrollbar-thumb-hover: #00cc33;
+
+  /* Theme meta */
+  --theme-color: #000000;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: DRACULA
+   Vibe: Popular editor theme, purple/pink/cyan
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dracula"] {
+  --color-bg-primary: #282a36;
+  --color-bg-secondary: #1e1f29;
+  --color-bg-terminal: #21222c;
+  --color-bg-card: #2d2f3d;
+
+  --color-neon-cyan: #8be9fd;
+  --color-neon-magenta: #ff79c6;
+  --color-neon-green: #50fa7b;
+  --color-neon-orange: #ffb86c;
+  --color-neon-yellow: #f1fa8c;
+  --color-neon-purple: #bd93f9;
+
+  --color-text-primary: #f8f8f2;
+  --color-text-secondary: #bfbfbf;
+  --color-text-muted: #6272a4;
+
+  --color-scanline: rgba(189, 147, 249, 0.02);
+  --color-glow-cyan: rgba(139, 233, 253, 0.5);
+  --color-glow-magenta: rgba(255, 121, 198, 0.5);
+  --color-glow-green: rgba(80, 250, 123, 0.5);
+
+  --overlay-opacity: 0.3;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.04;
+
+  --scrollbar-thumb: var(--color-neon-purple);
+  --scrollbar-thumb-hover: var(--color-neon-magenta);
+  --theme-color: #282a36;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: NORD
+   Vibe: Aurora borealis, Nordic elegance, frost blues
+   ───────────────────────────────────────────────────────────── */
+[data-theme="nord"] {
+  --color-bg-primary: #2e3440;
+  --color-bg-secondary: #3b4252;
+  --color-bg-terminal: #2e3440;
+  --color-bg-card: #434c5e;
+
+  --color-neon-cyan: #88c0d0;
+  --color-neon-magenta: #b48ead;
+  --color-neon-green: #a3be8c;
+  --color-neon-orange: #d08770;
+  --color-neon-yellow: #ebcb8b;
+  --color-neon-purple: #b48ead;
+
+  --color-text-primary: #eceff4;
+  --color-text-secondary: #d8dee9;
+  --color-text-muted: #4c566a;
+
+  --color-scanline: rgba(136, 192, 208, 0.02);
+  --color-glow-cyan: rgba(136, 192, 208, 0.4);
+  --color-glow-magenta: rgba(180, 142, 173, 0.4);
+  --color-glow-green: rgba(163, 190, 140, 0.4);
+
+  --overlay-opacity: 0.25;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.03;
+
+  --scrollbar-thumb: var(--color-neon-cyan);
+  --scrollbar-thumb-hover: var(--color-neon-green);
+  --theme-color: #2e3440;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: GRUVBOX
+   Vibe: Retro warm, earthy, vintage
+   ───────────────────────────────────────────────────────────── */
+[data-theme="gruvbox"] {
+  --color-bg-primary: #282828;
+  --color-bg-secondary: #1d2021;
+  --color-bg-terminal: #1d2021;
+  --color-bg-card: #3c3836;
+
+  --color-neon-cyan: #83a598;
+  --color-neon-magenta: #d3869b;
+  --color-neon-green: #b8bb26;
+  --color-neon-orange: #fe8019;
+  --color-neon-yellow: #fabd2f;
+  --color-neon-purple: #d3869b;
+
+  --color-text-primary: #ebdbb2;
+  --color-text-secondary: #d5c4a1;
+  --color-text-muted: #665c54;
+
+  --color-scanline: rgba(254, 128, 25, 0.02);
+  --color-glow-cyan: rgba(131, 165, 152, 0.4);
+  --color-glow-magenta: rgba(211, 134, 155, 0.4);
+  --color-glow-green: rgba(184, 187, 38, 0.5);
+
+  --overlay-opacity: 0.3;
+  --noise-opacity: 0.03;
+  --grid-opacity: 0.04;
+
+  --scrollbar-thumb: var(--color-neon-orange);
+  --scrollbar-thumb-hover: var(--color-neon-yellow);
+  --theme-color: #282828;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: TOKYO NIGHT
+   Vibe: Japanese night city, blue neons
+   ───────────────────────────────────────────────────────────── */
+[data-theme="tokyo"] {
+  --color-bg-primary: #1a1b26;
+  --color-bg-secondary: #16161e;
+  --color-bg-terminal: #1a1b26;
+  --color-bg-card: #24283b;
+
+  --color-neon-cyan: #7dcfff;
+  --color-neon-magenta: #bb9af7;
+  --color-neon-green: #9ece6a;
+  --color-neon-orange: #ff9e64;
+  --color-neon-yellow: #e0af68;
+  --color-neon-purple: #bb9af7;
+
+  --color-text-primary: #c0caf5;
+  --color-text-secondary: #a9b1d6;
+  --color-text-muted: #565f89;
+
+  --color-scanline: rgba(122, 162, 247, 0.02);
+  --color-glow-cyan: rgba(125, 207, 255, 0.5);
+  --color-glow-magenta: rgba(187, 154, 247, 0.5);
+  --color-glow-green: rgba(158, 206, 106, 0.4);
+
+  --overlay-opacity: 0.35;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.04;
+
+  --scrollbar-thumb: #7aa2f7;
+  --scrollbar-thumb-hover: var(--color-neon-magenta);
+  --theme-color: #1a1b26;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: FALLOUT
+   Vibe: Post-apocalyptic, Pip-Boy, amber monochromatic
+   ───────────────────────────────────────────────────────────── */
+[data-theme="fallout"] {
+  --color-bg-primary: #0a0a00;
+  --color-bg-secondary: #0f0f00;
+  --color-bg-terminal: #050500;
+  --color-bg-card: #141400;
+
+  --color-neon-cyan: #ffb000;
+  --color-neon-magenta: #cc8800;
+  --color-neon-green: #ffb000;
+  --color-neon-orange: #ffc000;
+  --color-neon-yellow: #ffd000;
+  --color-neon-purple: #996600;
+
+  --color-text-primary: #ffb000;
+  --color-text-secondary: #cc8800;
+  --color-text-muted: #665500;
+
+  --color-scanline: rgba(255, 176, 0, 0.03);
+  --color-glow-cyan: rgba(255, 176, 0, 0.5);
+  --color-glow-magenta: rgba(204, 136, 0, 0.4);
+  --color-glow-green: rgba(255, 176, 0, 0.6);
+
+  --overlay-opacity: 0.5;
+  --noise-opacity: 0.04;
+  --grid-opacity: 0.05;
+
+  --scrollbar-thumb: #ffb000;
+  --scrollbar-thumb-hover: #ffc000;
+  --theme-color: #0a0a00;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: CRIMSON
+   Vibe: Dark, intense, blood red monochromatic
+   ───────────────────────────────────────────────────────────── */
+[data-theme="crimson"] {
+  --color-bg-primary: #0a0000;
+  --color-bg-secondary: #120000;
+  --color-bg-terminal: #050000;
+  --color-bg-card: #1a0505;
+
+  --color-neon-cyan: #ff0033;
+  --color-neon-magenta: #cc0022;
+  --color-neon-green: #ff0033;
+  --color-neon-orange: #ff3355;
+  --color-neon-yellow: #ff6677;
+  --color-neon-purple: #990022;
+
+  --color-text-primary: #ff0033;
+  --color-text-secondary: #cc0022;
+  --color-text-muted: #660011;
+
+  --color-scanline: rgba(255, 0, 51, 0.03);
+  --color-glow-cyan: rgba(255, 0, 51, 0.5);
+  --color-glow-magenta: rgba(204, 0, 34, 0.4);
+  --color-glow-green: rgba(255, 0, 51, 0.6);
+
+  --overlay-opacity: 0.5;
+  --noise-opacity: 0.04;
+  --grid-opacity: 0.05;
+
+  --scrollbar-thumb: #ff0033;
+  --scrollbar-thumb-hover: #ff3355;
+  --theme-color: #0a0000;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: GAMEBOY
+   Vibe: Retro gaming, 90s nostalgia, limited green palette
+   ───────────────────────────────────────────────────────────── */
+[data-theme="gameboy"] {
+  --color-bg-primary: #0f380f;
+  --color-bg-secondary: #306230;
+  --color-bg-terminal: #0f380f;
+  --color-bg-card: #306230;
+
+  --color-neon-cyan: #8bac0f;
+  --color-neon-magenta: #9bbc0f;
+  --color-neon-green: #8bac0f;
+  --color-neon-orange: #9bbc0f;
+  --color-neon-yellow: #9bbc0f;
+  --color-neon-purple: #306230;
+
+  --color-text-primary: #9bbc0f;
+  --color-text-secondary: #8bac0f;
+  --color-text-muted: #306230;
+
+  --color-scanline: rgba(155, 188, 15, 0.05);
+  --color-glow-cyan: rgba(139, 172, 15, 0.3);
+  --color-glow-magenta: rgba(155, 188, 15, 0.3);
+  --color-glow-green: rgba(139, 172, 15, 0.3);
+
+  --overlay-opacity: 0.1;
+  --noise-opacity: 0.01;
+  --grid-opacity: 0.02;
+
+  --scrollbar-thumb: #8bac0f;
+  --scrollbar-thumb-hover: #9bbc0f;
+  --theme-color: #0f380f;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: CATPPUCCIN (Mocha)
+   Vibe: Modern, soft pastels, cozy
+   ───────────────────────────────────────────────────────────── */
+[data-theme="catppuccin"] {
+  --color-bg-primary: #1e1e2e;
+  --color-bg-secondary: #181825;
+  --color-bg-terminal: #1e1e2e;
+  --color-bg-card: #313244;
+
+  --color-neon-cyan: #94e2d5;
+  --color-neon-magenta: #f5c2e7;
+  --color-neon-green: #a6e3a1;
+  --color-neon-orange: #fab387;
+  --color-neon-yellow: #f9e2af;
+  --color-neon-purple: #cba6f7;
+
+  --color-text-primary: #cdd6f4;
+  --color-text-secondary: #bac2de;
+  --color-text-muted: #585b70;
+
+  --color-scanline: rgba(203, 166, 247, 0.02);
+  --color-glow-cyan: rgba(148, 226, 213, 0.4);
+  --color-glow-magenta: rgba(245, 194, 231, 0.4);
+  --color-glow-green: rgba(166, 227, 161, 0.4);
+
+  --overlay-opacity: 0.25;
+  --noise-opacity: 0.02;
+  --grid-opacity: 0.03;
+
+  --scrollbar-thumb: var(--color-neon-purple);
+  --scrollbar-thumb-hover: var(--color-neon-magenta);
+  --theme-color: #1e1e2e;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THEME: SEPIA
+   Vibe: Vintage, old paper, steampunk, bronze tones
+   ───────────────────────────────────────────────────────────── */
+[data-theme="sepia"] {
+  --color-bg-primary: #1a1510;
+  --color-bg-secondary: #2a2015;
+  --color-bg-terminal: #15100a;
+  --color-bg-card: #2f251a;
+
+  --color-neon-cyan: #d4a574;
+  --color-neon-magenta: #cd7f32;
+  --color-neon-green: #b8860b;
+  --color-neon-orange: #cd7f32;
+  --color-neon-yellow: #c9a227;
+  --color-neon-purple: #8b6914;
+
+  --color-text-primary: #e8d5b7;
+  --color-text-secondary: #c4a77d;
+  --color-text-muted: #6b5344;
+
+  --color-scanline: rgba(212, 165, 116, 0.02);
+  --color-glow-cyan: rgba(212, 165, 116, 0.4);
+  --color-glow-magenta: rgba(205, 127, 50, 0.4);
+  --color-glow-green: rgba(184, 134, 11, 0.4);
+
+  --overlay-opacity: 0.3;
+  --noise-opacity: 0.04;
+  --grid-opacity: 0.03;
+
+  --scrollbar-thumb: #d4a574;
+  --scrollbar-thumb-hover: #c9a227;
+  --theme-color: #1a1510;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL TRANSITIONS FOR SMOOTH THEME SWITCHING
+   ───────────────────────────────────────────────────────────── */
+html {
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+html *,
+html *::before,
+html *::after {
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    color 0.3s ease;
+}
+
+/* Disable transitions on page load to prevent flash */
+html.no-transitions,
+html.no-transitions *,
+html.no-transitions *::before,
+html.no-transitions *::after {
+  transition: none !important;
+}
