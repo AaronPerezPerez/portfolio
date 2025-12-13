@@ -1,0 +1,19 @@
+---
+interface Props {
+  title: string;
+  class?: string;
+}
+
+const { title, class: className } = Astro.props;
+---
+
+<h2 class:list={["section-title", "reveal", className]}>
+  <span class="title-prefix">//</span> {title}
+</h2>
+
+<style>
+  .title-prefix {
+    color: var(--color-neon-magenta);
+    margin-right: 12px;
+  }
+</style>

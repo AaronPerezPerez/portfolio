@@ -2,6 +2,10 @@
 import { personalInfo } from '../lib/data';
 import TerminalWindow from './ui/TerminalWindow.astro';
 import GlitchText from './ui/GlitchText.astro';
+import TerminalLine from './ui/TerminalLine.astro';
+import TypewriterText from './ui/TypewriterText.astro';
+import NeonBorder from './ui/NeonBorder.astro';
+import Icon from './ui/Icon.astro';
 ---
 
 <section id="hero" class="hero-section">
@@ -22,32 +26,26 @@ import GlitchText from './ui/GlitchText.astro';
         <span class="title-bracket">]</span>
       </div>
 
-      <!-- Subtitle -->
+      <!-- Subtitle with typewriter effect -->
       <p class="hero-subtitle reveal delay-2">
-        {personalInfo.subtitle}
+        <TypewriterText text={personalInfo.subtitle} speed={30} delay={800} />
       </p>
 
-      <!-- Terminal Bio -->
+      <!-- Terminal Bio with neon border -->
       <div class="hero-terminal reveal delay-3">
-        <TerminalWindow title="about.sh">
-          <div class="terminal-line">
-            <span class="prompt">$</span>
-            <span class="command">cat</span>
-            <span class="arg">~/bio.txt</span>
-          </div>
-          <p class="terminal-output">{personalInfo.bio}</p>
-          <div class="terminal-line">
-            <span class="prompt">$</span>
-            <span class="command">echo</span>
-            <span class="arg">$LOCATION</span>
-          </div>
-          <p class="terminal-output location">
-            <span class="location-icon">📍</span>
-            {personalInfo.location}
-          </p>
-          <!-- Interactive commands container -->
-          <div id="commands-container"></div>
-        </TerminalWindow>
+        <NeonBorder color="cyan" animated={true}>
+          <TerminalWindow title="about.sh" class="terminal-no-border">
+            <TerminalLine command="cat" args="~/bio.txt" />
+            <p class="terminal-output">{personalInfo.bio}</p>
+            <TerminalLine command="echo" args="$LOCATION" />
+            <p class="terminal-output location">
+              <Icon name="location" size={16} />
+              {personalInfo.location}
+            </p>
+            <!-- Interactive commands container -->
+            <div id="commands-container"></div>
+          </TerminalWindow>
+        </NeonBorder>
       </div>
 
       <!-- Social Links as Terminal Commands -->
@@ -194,26 +192,6 @@ import GlitchText from './ui/GlitchText.astro';
     max-width: 600px;
   }
 
-  .terminal-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-
-  .prompt {
-    color: var(--color-neon-green);
-    font-weight: 600;
-  }
-
-  .command {
-    color: var(--color-neon-cyan);
-  }
-
-  .arg {
-    color: var(--color-neon-orange);
-  }
-
   .terminal-output {
     color: var(--color-text-secondary);
     margin: 0 0 20px 0;
@@ -227,6 +205,16 @@ import GlitchText from './ui/GlitchText.astro';
     align-items: center;
     gap: 8px;
     color: var(--color-text-primary);
+  }
+
+  /* Remove border when inside NeonBorder */
+  :global(.terminal-no-border) {
+    border: none;
+    box-shadow: none;
+  }
+
+  .location :global(.icon) {
+    color: var(--color-neon-cyan);
   }
 
   .location-icon {

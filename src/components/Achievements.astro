@@ -1,5 +1,9 @@
 ---
 import { achievements } from '../lib/data';
+import SectionTitle from './ui/SectionTitle.astro';
+import NeonCard from './ui/NeonCard.astro';
+import Icon from './ui/Icon.astro';
+import Badge from './ui/Badge.astro';
 
 const achievementIcons: Record<string, string> = {
   'Arctic Code Vault Contributor': '❄️',
@@ -11,15 +15,14 @@ const achievementIcons: Record<string, string> = {
 
 <section id="achievements" class="section achievements-section">
   <div class="container">
-    <h2 class="section-title reveal">
-      <span class="title-prefix">//</span> Achievements
-    </h2>
+    <SectionTitle title="Achievements" />
 
     <div class="achievements-grid">
       {achievements.map((achievement, index) => (
-        <div
+        <NeonCard
+          variant="yellow"
+          delay={index * 150}
           class="achievement-card reveal"
-          style={`--delay: ${index * 150}ms`}
         >
           <div class="achievement-glow"></div>
 
@@ -29,22 +32,19 @@ const achievementIcons: Record<string, string> = {
             </div>
 
             <div class="achievement-info">
-              <span class="achievement-label">ACHIEVEMENT_UNLOCKED</span>
+              <Badge label="ACHIEVEMENT_UNLOCKED" variant="green" class="achievement-label" />
               <h3 class="achievement-name">{achievement}</h3>
             </div>
 
             <div class="achievement-badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
+              <Icon name="check" size={20} />
             </div>
           </div>
 
           <div class="achievement-bar">
             <div class="bar-fill"></div>
           </div>
-        </div>
+        </NeonCard>
       ))}
     </div>
   </div>
@@ -60,32 +60,17 @@ const achievementIcons: Record<string, string> = {
     padding: 80px 0;
   }
 
-  .title-prefix {
-    color: var(--color-neon-magenta);
-    margin-right: 12px;
-  }
-
   .achievements-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
   }
 
-  /* Achievement card */
+  /* Achievement card overrides */
   .achievement-card {
     position: relative;
-    background: var(--color-bg-terminal);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 8px;
     overflow: hidden;
-    transition: all 0.3s ease;
-    transition-delay: var(--delay);
-  }
-
-  .achievement-card:hover {
-    border-color: var(--color-neon-yellow);
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-    transform: translateY(-5px);
+    padding: 0;
   }
 
   /* Glow effect */
@@ -143,13 +128,8 @@ const achievementIcons: Record<string, string> = {
     min-width: 0;
   }
 
-  .achievement-label {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    color: var(--color-neon-green);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    display: block;
+  /* Badge component styling override */
+  :global(.achievement-label) {
     margin-bottom: 4px;
   }
 

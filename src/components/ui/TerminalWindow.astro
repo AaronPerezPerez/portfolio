@@ -8,6 +8,8 @@ const { title = 'terminal', class: className = '' } = Astro.props;
 ---
 
 <div class:list={['terminal-container', className]}>
+  <!-- Scanlines overlay (uses global .scanlines utility) -->
+  <div class="scanlines"></div>
   <div class="terminal-header">
     <div class="terminal-dots">
       <span class="dot red"></span>
@@ -23,6 +25,7 @@ const { title = 'terminal', class: className = '' } = Astro.props;
 
 <style>
   .terminal-container {
+    position: relative;
     background: var(--color-bg-terminal);
     border: 1px solid var(--color-neon-cyan);
     border-radius: 8px;
@@ -34,6 +37,8 @@ const { title = 'terminal', class: className = '' } = Astro.props;
   }
 
   .terminal-header {
+    position: relative;
+    z-index: 2;
     background: linear-gradient(180deg, #1a1a2e 0%, #16161e 100%);
     padding: 10px 14px;
     display: flex;
@@ -81,25 +86,13 @@ const { title = 'terminal', class: className = '' } = Astro.props;
   }
 
   .terminal-body {
+    position: relative;
+    z-index: 2;
     padding: 20px;
     font-family: var(--font-mono);
     font-size: 14px;
     line-height: 1.8;
   }
 
-  /* Scanline effect inside terminal */
-  .terminal-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 255, 247, 0.02) 2px,
-      rgba(0, 255, 247, 0.02) 4px
-    );
-    border-radius: 8px;
-  }
+  /* Scanlines uses global .scanlines class from global.css */
 </style>

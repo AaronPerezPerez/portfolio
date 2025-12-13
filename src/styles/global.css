@@ -94,6 +94,23 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   SCANLINES UTILITY (Reusable)
+   ───────────────────────────────────────────────────────────── */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 247, 0.02) 2px,
+    rgba(0, 255, 247, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────
    CRT SCANLINE EFFECT (Global Overlay)
    ───────────────────────────────────────────────────────────── */
 .crt-overlay {

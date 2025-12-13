@@ -1,0 +1,124 @@
+---
+interface Props {
+  href: string;
+  icon: string;
+  label: string;
+  variant?: 'button' | 'icon' | 'terminal';
+  class?: string;
+}
+
+const {
+  href,
+  icon,
+  label,
+  variant = 'button',
+  class: className
+} = Astro.props;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={["social-link", variant, className]}
+>
+  <span class="social-icon" set:html={icon} />
+  <span class="social-label">{label}</span>
+  {variant === 'terminal' && <span class="social-arrow">→</span>}
+</a>
+
+<style>
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .social-icon :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Button variant */
+  .social-link.button {
+    padding: 8px 14px;
+    background: rgba(0, 255, 247, 0.05);
+    border: 1px solid rgba(0, 255, 247, 0.2);
+    border-radius: 4px;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+  }
+
+  .social-link.button:hover {
+    border-color: var(--color-neon-cyan);
+    color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
+  }
+
+  /* Icon variant (minimal) */
+  .social-link.icon {
+    padding: 8px;
+    color: var(--color-text-muted);
+  }
+
+  .social-link.icon:hover {
+    color: var(--color-neon-cyan);
+  }
+
+  .social-link.icon .social-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  /* Terminal variant */
+  .social-link.terminal {
+    padding: 10px 16px;
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    border-radius: 4px;
+    color: var(--color-text-primary);
+    font-size: 13px;
+  }
+
+  .social-link.terminal:hover {
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 247, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .social-link.terminal .social-icon {
+    color: var(--color-neon-cyan);
+  }
+
+  .social-link.terminal .social-label {
+    color: var(--color-neon-cyan);
+    font-weight: 600;
+  }
+
+  .social-arrow {
+    color: var(--color-neon-magenta);
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+  }
+
+  .social-link.terminal:hover .social-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+</style>

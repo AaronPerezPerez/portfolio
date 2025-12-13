@@ -1,0 +1,52 @@
+---
+interface Props {
+  prompt?: string;
+  command: string;
+  args?: string;
+  output?: string;
+  class?: string;
+}
+
+const {
+  prompt = '$',
+  command,
+  args,
+  output,
+  class: className
+} = Astro.props;
+---
+
+<div class:list={["terminal-line", className]}>
+  <span class="prompt">{prompt}</span>
+  <span class="command">{command}</span>
+  {args && <span class="arg">{args}</span>}
+  {output && <span class="output">{output}</span>}
+</div>
+
+<style>
+  .terminal-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  .prompt {
+    color: var(--color-neon-green);
+    font-weight: 600;
+  }
+
+  .command {
+    color: var(--color-neon-cyan);
+  }
+
+  .arg {
+    color: var(--color-neon-orange);
+  }
+
+  .output {
+    color: var(--color-text-secondary);
+    margin-left: 4px;
+  }
+</style>

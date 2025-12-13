@@ -1,13 +1,24 @@
 ---
 import { personalInfo } from '../lib/data';
+import NeonCard from './ui/NeonCard.astro';
+import SocialLink from './ui/SocialLink.astro';
+import Icon from './ui/Icon.astro';
+import TerminalLine from './ui/TerminalLine.astro';
 
 const currentYear = new Date().getFullYear();
+
+// SVG icons for social links (SocialLink expects SVG strings)
+const socialIcons = {
+  github: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`,
+  linkedin: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>`,
+  twitter: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`
+};
 ---
 
 <footer class="footer">
   <div class="container">
     <!-- Terminal-style contact section -->
-    <div class="footer-terminal reveal">
+    <NeonCard class="footer-terminal reveal">
       <div class="terminal-header">
         <span class="prompt-user">aarón</span>
         <span class="prompt-at">@</span>
@@ -20,46 +31,34 @@ const currentYear = new Date().getFullYear();
 
       <div class="terminal-commands">
         <div class="command-line">
-          <span class="cmd-prompt">&gt;</span>
-          <span class="cmd-text">contact --email</span>
+          <TerminalLine prompt=">" command="contact" args="--email" />
           <a href={`mailto:${personalInfo.email}`} class="cmd-output">{personalInfo.email}</a>
         </div>
 
-        <div class="command-line">
-          <span class="cmd-prompt">&gt;</span>
-          <span class="cmd-text">social --list</span>
-        </div>
+        <TerminalLine prompt=">" command="social" args="--list" />
 
         <div class="social-links">
-          <a href={personalInfo.social.github} target="_blank" rel="noopener" class="social-item">
-            <span class="social-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-            </span>
-            <span class="social-label">GitHub</span>
-          </a>
-
-          <a href={personalInfo.social.linkedin} target="_blank" rel="noopener" class="social-item">
-            <span class="social-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-              </svg>
-            </span>
-            <span class="social-label">LinkedIn</span>
-          </a>
-
-          <a href={personalInfo.social.twitter} target="_blank" rel="noopener" class="social-item">
-            <span class="social-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
-            </span>
-            <span class="social-label">X/Twitter</span>
-          </a>
+          <SocialLink
+            href={personalInfo.social.github}
+            icon={socialIcons.github}
+            label="GitHub"
+            variant="button"
+          />
+          <SocialLink
+            href={personalInfo.social.linkedin}
+            icon={socialIcons.linkedin}
+            label="LinkedIn"
+            variant="button"
+          />
+          <SocialLink
+            href={personalInfo.social.twitter}
+            icon={socialIcons.twitter}
+            label="X/Twitter"
+            variant="button"
+          />
         </div>
       </div>
-    </div>
+    </NeonCard>
 
     <!-- Divider -->
     <div class="footer-divider">
@@ -93,9 +92,7 @@ const currentYear = new Date().getFullYear();
 
   <!-- Back to top -->
   <a href="#hero" class="back-to-top" aria-label="Back to top">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="18 15 12 9 6 15"/>
-    </svg>
+    <Icon name="arrow-up" size={20} />
   </a>
 </footer>
 
@@ -108,10 +105,6 @@ const currentYear = new Date().getFullYear();
 
   /* Terminal contact */
   .footer-terminal {
-    background: var(--color-bg-terminal);
-    border: 1px solid rgba(0, 255, 247, 0.2);
-    border-radius: 8px;
-    padding: 24px;
     margin-bottom: 40px;
     max-width: 600px;
     margin-left: auto;
@@ -202,33 +195,6 @@ const currentYear = new Date().getFullYear();
     margin-top: 8px;
     padding-left: 20px;
     flex-wrap: wrap;
-  }
-
-  .social-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: rgba(0, 255, 247, 0.05);
-    border: 1px solid rgba(0, 255, 247, 0.2);
-    border-radius: 4px;
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    transition: all 0.2s ease;
-  }
-
-  .social-item:hover {
-    border-color: var(--color-neon-cyan);
-    color: var(--color-neon-cyan);
-    box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
-  }
-
-  .social-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   /* Divider */

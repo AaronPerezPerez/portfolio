@@ -1,0 +1,79 @@
+---
+interface Props {
+  variant?: 'default' | 'featured' | 'magenta' | 'yellow';
+  hover?: boolean;
+  delay?: number;
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  hover = true,
+  delay,
+  class: className
+} = Astro.props;
+
+const style = delay !== undefined ? `--delay: ${delay}ms` : '';
+---
+
+<div
+  class:list={["neon-card", variant, { hoverable: hover }, className]}
+  style={style}
+>
+  <slot />
+</div>
+
+<style>
+  .neon-card {
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(0, 255, 247, 0.15);
+    border-radius: 8px;
+    padding: 20px 24px;
+    transition: all 0.3s ease;
+    transition-delay: var(--delay, 0ms);
+    position: relative;
+  }
+
+  /* Hover effect */
+  .neon-card.hoverable:hover {
+    border-color: rgba(0, 255, 247, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 247, 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Featured variant - cyan glow */
+  .neon-card.featured {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 255, 247, 0.05) 0%,
+      var(--color-bg-terminal) 100%
+    );
+    border-color: rgba(0, 255, 247, 0.3);
+  }
+
+  .neon-card.featured.hoverable:hover {
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 30px rgba(0, 255, 247, 0.2);
+  }
+
+  /* Magenta variant */
+  .neon-card.magenta {
+    border-color: rgba(255, 0, 255, 0.2);
+  }
+
+  .neon-card.magenta.hoverable:hover {
+    border-color: var(--color-neon-magenta);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.15);
+  }
+
+  /* Yellow variant */
+  .neon-card.yellow {
+    border-color: rgba(255, 215, 0, 0.3);
+  }
+
+  .neon-card.yellow.hoverable:hover {
+    border-color: var(--color-neon-yellow);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    transform: translateY(-5px);
+  }
+</style>

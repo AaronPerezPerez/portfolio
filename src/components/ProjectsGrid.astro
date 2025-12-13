@@ -1,12 +1,16 @@
 ---
 import { projects } from '../lib/data';
+import SectionTitle from './ui/SectionTitle.astro';
+import TechTag from './ui/TechTag.astro';
+import Badge from './ui/Badge.astro';
+import Icon from './ui/Icon.astro';
+
+const starIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>`;
 ---
 
 <section id="projects" class="section projects-section">
   <div class="container">
-    <h2 class="section-title reveal">
-      <span class="title-prefix">//</span> Projects
-    </h2>
+    <SectionTitle title="Projects" />
 
     <div class="projects-grid">
       {projects.filter(p => p.featured).map((project, index) => (
@@ -28,12 +32,7 @@ import { projects } from '../lib/data';
                 <div class="project-header">
                   <span class="project-id">PROJECT_{String(project.id).padStart(3, '0')}</span>
                   {project.contributionType && (
-                    <span class="contributor-badge">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                      </svg>
-                      Contributor
-                    </span>
+                    <Badge label="Contributor" icon={starIcon} variant="yellow" />
                   )}
                 </div>
 
@@ -43,15 +42,13 @@ import { projects } from '../lib/data';
 
                 <div class="project-technologies">
                   {project.technologies.map((tech) => (
-                    <span class="tech-chip">{tech}</span>
+                    <TechTag name={tech} size="sm" />
                   ))}
                 </div>
 
                 {project.stars > 0 && (
                   <div class="project-stars">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                    </svg>
+                    <Icon name="star" size={16} />
                     <span class="stars-count">
                       {project.stars >= 1000
                         ? `${(project.stars / 1000).toFixed(1)}K`
@@ -64,7 +61,7 @@ import { projects } from '../lib/data';
               <!-- Hover effect -->
               <div class="hover-overlay">
                 <span class="view-text">
-                  <span class="arrow">→</span>
+                  <Icon name="arrow-right" size={14} class="arrow" />
                   VIEW_SOURCE
                 </span>
               </div>
@@ -85,7 +82,7 @@ import { projects } from '../lib/data';
       <a href="https://github.com/AaronPerezPerez?tab=repositories" target="_blank" rel="noopener" class="view-all-link">
         <span class="link-prompt">&gt;</span>
         <span class="link-text">git clone --all repositories</span>
-        <span class="link-arrow">→</span>
+        <Icon name="arrow-right" size={14} class="link-arrow" />
       </a>
     </div>
   </div>
@@ -94,11 +91,6 @@ import { projects } from '../lib/data';
 <style>
   .projects-section {
     background: var(--color-bg-primary);
-  }
-
-  .title-prefix {
-    color: var(--color-neon-magenta);
-    margin-right: 12px;
   }
 
   .projects-grid {
@@ -142,20 +134,7 @@ import { projects } from '../lib/data';
     flex-direction: column;
   }
 
-  /* Scanlines effect */
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 255, 247, 0.02) 2px,
-      rgba(0, 255, 247, 0.02) 4px
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
+  /* Scanlines effect - uses global .scanlines class from global.css */
 
   /* Screen glow effect */
   .monitor-screen::before {
@@ -193,25 +172,6 @@ import { projects } from '../lib/data';
     letter-spacing: 2px;
   }
 
-  .contributor-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 4px 10px;
-    background: rgba(255, 215, 0, 0.1);
-    border: 1px solid var(--color-neon-yellow);
-    color: var(--color-neon-yellow);
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .contributor-badge svg {
-    color: var(--color-neon-yellow);
-  }
-
   .project-name {
     font-family: var(--font-display);
     font-size: 1.4rem;
@@ -242,16 +202,6 @@ import { projects } from '../lib/data';
     margin-bottom: 16px;
   }
 
-  .tech-chip {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 4px 10px;
-    background: rgba(0, 255, 247, 0.05);
-    border: 1px solid rgba(0, 255, 247, 0.3);
-    color: var(--color-neon-cyan);
-    border-radius: 4px;
-  }
-
   .project-stars {
     display: flex;
     align-items: center;
@@ -261,7 +211,7 @@ import { projects } from '../lib/data';
     color: var(--color-neon-yellow);
   }
 
-  .project-stars svg {
+  .project-stars :global(.icon) {
     fill: var(--color-neon-yellow);
   }
 
@@ -301,7 +251,7 @@ import { projects } from '../lib/data';
     box-shadow: 0 0 20px rgba(0, 255, 247, 0.3);
   }
 
-  .arrow {
+  :global(.arrow) {
     animation: arrow-bounce 0.6s ease-in-out infinite;
   }
 
@@ -374,14 +324,14 @@ import { projects } from '../lib/data';
     color: var(--color-neon-cyan);
   }
 
-  .link-arrow {
+  :global(.link-arrow) {
     color: var(--color-neon-magenta);
     opacity: 0;
     transform: translateX(-5px);
     transition: all 0.3s ease;
   }
 
-  .view-all-link:hover .link-arrow {
+  .view-all-link:hover :global(.link-arrow) {
     opacity: 1;
     transform: translateX(0);
   }

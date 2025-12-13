@@ -1,0 +1,121 @@
+---
+interface Props {
+  name: string;
+  icon?: string;
+  color?: string;
+  size?: 'sm' | 'md' | 'lg';
+  highlight?: boolean;
+  class?: string;
+}
+
+const {
+  name,
+  icon,
+  color,
+  size = 'md',
+  highlight = false,
+  class: className
+} = Astro.props;
+
+const style = color ? `--hover-color: ${color}` : '';
+---
+
+<span
+  class:list={["tech-tag", `size-${size}`, { highlight }, className]}
+  style={style}
+>
+  {icon && (
+    <span class="tag-icon" set:html={icon} />
+  )}
+  <span class="tag-name">{name}</span>
+</span>
+
+<style>
+  .tech-tag {
+    font-family: var(--font-mono);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    border-radius: 4px;
+    color: var(--color-neon-cyan);
+    transition: all 0.25s ease;
+    --hover-color: var(--color-neon-cyan);
+  }
+
+  /* Sizes */
+  .size-sm {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+
+  .size-md {
+    font-size: 11px;
+    padding: 4px 12px;
+  }
+
+  .size-lg {
+    font-size: 14px;
+    padding: 6px 14px;
+  }
+
+  /* Icon */
+  .tag-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+    transition: all 0.25s ease;
+  }
+
+  .tag-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Hover state */
+  .tech-tag:hover {
+    border-color: var(--hover-color);
+    background: color-mix(in srgb, var(--hover-color) 10%, transparent);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--hover-color) 25%, transparent);
+  }
+
+  .tech-tag:hover .tag-icon {
+    opacity: 1;
+    color: var(--hover-color);
+  }
+
+  .tech-tag:hover .tag-name {
+    color: var(--hover-color);
+  }
+
+  /* Highlighted variant */
+  .highlight {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 24px;
+    background: color-mix(in srgb, var(--hover-color) 15%, transparent);
+    border-color: var(--hover-color);
+    color: var(--hover-color);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--hover-color) 50%, transparent);
+  }
+
+  .highlight .tag-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    color: var(--hover-color);
+  }
+
+  .highlight .tag-name {
+    color: var(--hover-color);
+  }
+
+  .highlight:hover {
+    background: color-mix(in srgb, var(--hover-color) 20%, transparent);
+    box-shadow: 0 0 25px color-mix(in srgb, var(--hover-color) 40%, transparent);
+  }
+</style>

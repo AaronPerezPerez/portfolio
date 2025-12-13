@@ -1,22 +1,24 @@
 ---
 import { skills, currentFocus, techDetails } from '../lib/data';
+import SectionTitle from './ui/SectionTitle.astro';
+import NeonCard from './ui/NeonCard.astro';
+import TechTag from './ui/TechTag.astro';
 
 const skillCategories = Object.entries(skills);
 ---
 
 <section id="skills" class="section skills-section">
   <div class="container">
-    <h2 class="section-title reveal">
-      <span class="title-prefix">//</span> Tech Stack
-    </h2>
+    <SectionTitle title="Tech Stack" />
 
     <div class="skills-container">
       <!-- Main skills grid -->
       <div class="skills-grid">
         {skillCategories.map(([key, category], index) => (
-          <div
+          <NeonCard
+            variant={key === 'core' ? 'featured' : 'default'}
+            delay={index * 80}
             class={`skill-category ${key === 'core' ? 'featured' : ''} reveal`}
-            style={`--delay: ${index * 80}ms`}
           >
             <div class="category-header">
               <span class="category-icon">{category.icon}</span>
@@ -27,34 +29,32 @@ const skillCategories = Object.entries(skills);
               {category.items.map((item) => {
                 const details = techDetails[item];
                 return (
-                  <span
-                    class={`skill-tag ${key === 'core' ? 'highlight' : ''}`}
-                    style={details ? `--hover-color: ${details.color}` : ''}
-                  >
-                    {details && (
-                      <span class="skill-icon" set:html={details.icon} />
-                    )}
-                    <span class="skill-name">{item}</span>
-                  </span>
+                  <TechTag
+                    name={item}
+                    icon={details?.icon}
+                    color={details?.color}
+                    size="lg"
+                    highlight={key === 'core'}
+                  />
                 );
               })}
             </div>
-          </div>
+          </NeonCard>
         ))}
       </div>
 
       <!-- Currently Focusing On -->
-      <div class="focus-section reveal delay-6">
+      <NeonCard variant="magenta" class="focus-section reveal delay-6">
         <div class="focus-header">
           <span class="focus-prefix">//</span>
           <span class="focus-label">CURRENTLY_FOCUSING_ON</span>
         </div>
         <div class="focus-items">
           {currentFocus.map((item) => (
-            <span class="focus-tag">{item}</span>
+            <TechTag name={item} size="md" color="#ff00ff" />
           ))}
         </div>
-      </div>
+      </NeonCard>
     </div>
   </div>
 </section>
@@ -66,11 +66,6 @@ const skillCategories = Object.entries(skills);
       var(--color-bg-primary) 0%,
       var(--color-bg-secondary) 100%
     );
-  }
-
-  .title-prefix {
-    color: var(--color-neon-magenta);
-    margin-right: 12px;
   }
 
   .skills-container {
@@ -86,30 +81,9 @@ const skillCategories = Object.entries(skills);
     margin-bottom: 40px;
   }
 
-  /* Skill category card */
-  .skill-category {
-    background: var(--color-bg-terminal);
-    border: 1px solid rgba(0, 255, 247, 0.15);
-    border-radius: 8px;
-    padding: 20px 24px;
-    transition: all 0.3s ease;
-    transition-delay: var(--delay);
-  }
-
-  .skill-category:hover {
-    border-color: rgba(0, 255, 247, 0.4);
-    box-shadow: 0 0 20px rgba(0, 255, 247, 0.1);
-  }
-
   /* Featured (Daily Driver) spans full width */
   .skill-category.featured {
     grid-column: span 2;
-    background: linear-gradient(
-      135deg,
-      rgba(0, 255, 247, 0.05) 0%,
-      var(--color-bg-terminal) 100%
-    );
-    border-color: rgba(0, 255, 247, 0.3);
   }
 
   /* Category header */
@@ -140,91 +114,15 @@ const skillCategories = Object.entries(skills);
     color: var(--color-neon-cyan);
   }
 
-  /* Skill tags */
+  /* Skill tags container */
   .category-items {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
   }
 
-  .skill-tag {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    color: var(--color-text-primary);
-    transition: all 0.25s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    --hover-color: var(--color-neon-cyan);
-  }
-
-  .skill-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    opacity: 0.7;
-    transition: all 0.25s ease;
-  }
-
-  .skill-icon :global(svg) {
-    width: 100%;
-    height: 100%;
-  }
-
-  .skill-tag:hover {
-    border-color: var(--hover-color);
-    background: color-mix(in srgb, var(--hover-color) 10%, transparent);
-    box-shadow: 0 0 15px color-mix(in srgb, var(--hover-color) 25%, transparent);
-  }
-
-  .skill-tag:hover .skill-icon {
-    opacity: 1;
-    color: var(--hover-color);
-  }
-
-  .skill-tag:hover .skill-name {
-    color: var(--hover-color);
-  }
-
-  /* Highlighted skill (TypeScript) */
-  .skill-tag.highlight {
-    font-size: 16px;
-    font-weight: 600;
-    padding: 10px 24px;
-    background: color-mix(in srgb, var(--hover-color) 15%, transparent);
-    border-color: var(--hover-color);
-    color: var(--hover-color);
-    text-shadow: 0 0 10px color-mix(in srgb, var(--hover-color) 50%, transparent);
-  }
-
-  .skill-tag.highlight .skill-icon {
-    width: 20px;
-    height: 20px;
-    opacity: 1;
-    color: var(--hover-color);
-  }
-
-  .skill-tag.highlight .skill-name {
-    color: var(--hover-color);
-  }
-
-  .skill-tag.highlight:hover {
-    background: color-mix(in srgb, var(--hover-color) 20%, transparent);
-    box-shadow: 0 0 25px color-mix(in srgb, var(--hover-color) 40%, transparent);
-  }
-
   /* Focus section */
   .focus-section {
-    background: var(--color-bg-terminal);
-    border: 1px solid rgba(255, 0, 255, 0.2);
-    border-radius: 8px;
-    padding: 24px;
     position: relative;
     overflow: hidden;
   }
@@ -270,23 +168,6 @@ const skillCategories = Object.entries(skills);
     gap: 12px;
   }
 
-  .focus-tag {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    padding: 8px 16px;
-    background: rgba(255, 0, 255, 0.05);
-    border: 1px solid rgba(255, 0, 255, 0.3);
-    border-radius: 4px;
-    color: var(--color-neon-magenta);
-    transition: all 0.2s ease;
-  }
-
-  .focus-tag:hover {
-    background: rgba(255, 0, 255, 0.1);
-    border-color: var(--color-neon-magenta);
-    box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
-  }
-
   /* Responsive */
   @media (max-width: 768px) {
     .skills-grid {
@@ -299,10 +180,6 @@ const skillCategories = Object.entries(skills);
 
     .focus-items {
       flex-direction: column;
-    }
-
-    .focus-tag {
-      text-align: center;
     }
   }
 </style>
