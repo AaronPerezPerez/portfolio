@@ -72,8 +72,12 @@ body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
   overscroll-behavior-y: none;
+}
+
+/* Prevent horizontal overflow without affecting fixed elements */
+html {
+  overflow-x: clip;
 }
 
 /* Custom scrollbar */
@@ -353,6 +357,24 @@ body {
 .delay-4 { transition-delay: 400ms; }
 .delay-5 { transition-delay: 500ms; }
 .delay-6 { transition-delay: 600ms; }
+
+/* Disable reveal animations on mobile to prevent scroll jumps */
+@media (max-width: 768px) {
+  .reveal,
+  .reveal-left,
+  .reveal-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .reveal.visible,
+  .reveal-left.visible,
+  .reveal-right.visible {
+    opacity: 1;
+    transform: none;
+  }
+}
 
 /* ─────────────────────────────────────────────────────────────
    TERMINAL WINDOW STYLES
