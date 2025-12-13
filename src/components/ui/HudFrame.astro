@@ -1,0 +1,288 @@
+---
+interface Props {
+  showScanLine?: boolean;
+  class?: string;
+}
+
+const { showScanLine = true, class: className = '' } = Astro.props;
+---
+
+<div class:list={['hud-frame', className]} data-hud-frame>
+  <!-- Corner brackets -->
+  <div class="hud-corner hud-corner-tl" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 4 L4 12 M4 4 L12 4" />
+      <circle cx="4" cy="4" r="2" fill="currentColor" />
+    </svg>
+  </div>
+  <div class="hud-corner hud-corner-tr" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20 4 L20 12 M20 4 L12 4" />
+      <circle cx="20" cy="4" r="2" fill="currentColor" />
+    </svg>
+  </div>
+  <div class="hud-corner hud-corner-bl" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 20 L4 12 M4 20 L12 20" />
+      <circle cx="4" cy="20" r="2" fill="currentColor" />
+    </svg>
+  </div>
+  <div class="hud-corner hud-corner-br" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20 20 L20 12 M20 20 L12 20" />
+      <circle cx="20" cy="20" r="2" fill="currentColor" />
+    </svg>
+  </div>
+
+  <!-- Side indicators -->
+  <div class="hud-side hud-side-left" aria-hidden="true">▸</div>
+  <div class="hud-side hud-side-right" aria-hidden="true">◂</div>
+
+  <!-- Main content area -->
+  <div class="hud-content">
+    <slot />
+    {showScanLine && <div class="hud-scan-line" aria-hidden="true"></div>}
+  </div>
+
+  <!-- Info panel -->
+  <div class="hud-panel">
+    <slot name="panel" />
+  </div>
+</div>
+
+<style>
+  .hud-frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-terminal);
+    border: 1px solid var(--color-neon-cyan);
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow:
+      0 0 20px var(--color-glow-cyan),
+      inset 0 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Corner brackets */
+  .hud-corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    color: var(--color-neon-magenta);
+    z-index: 10;
+    animation: corner-pulse 3s ease-in-out infinite;
+  }
+
+  .hud-corner svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hud-corner-tl { top: -8px; left: -8px; }
+  .hud-corner-tr { top: -8px; right: -8px; }
+  .hud-corner-bl { bottom: -8px; left: -8px; }
+  .hud-corner-br { bottom: -8px; right: -8px; }
+
+  /* Stagger corner animations */
+  .hud-corner-tr { animation-delay: 0.5s; }
+  .hud-corner-bl { animation-delay: 1s; }
+  .hud-corner-br { animation-delay: 1.5s; }
+
+  @keyframes corner-pulse {
+    0%, 100% {
+      opacity: 0.7;
+      filter: drop-shadow(0 0 2px currentColor);
+    }
+    50% {
+      opacity: 1;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+  }
+
+  /* Side indicators */
+  .hud-side {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--color-neon-cyan);
+    animation: side-pulse 2s ease-in-out infinite;
+  }
+
+  .hud-side-left { left: -20px; }
+  .hud-side-right { right: -20px; animation-delay: 1s; }
+
+  @keyframes side-pulse {
+    0%, 100% {
+      opacity: 0.5;
+      transform: translateY(-50%) translateX(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-50%) translateX(2px);
+    }
+  }
+
+  .hud-side-right {
+    animation-name: side-pulse-right;
+  }
+
+  @keyframes side-pulse-right {
+    0%, 100% {
+      opacity: 0.5;
+      transform: translateY(-50%) translateX(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-50%) translateX(-2px);
+    }
+  }
+
+  /* Content area */
+  .hud-content {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  /* Scan line effect */
+  .hud-scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-neon-cyan),
+      transparent
+    );
+    opacity: 0.6;
+    animation: scan-line 3s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scan-line {
+    0% {
+      top: 0;
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.6;
+    }
+    90% {
+      opacity: 0.6;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+
+  /* Panel area */
+  .hud-panel {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 255, 247, 0.3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .hud-panel:empty {
+    display: none;
+  }
+
+  /* Global styles for panel content */
+  :global(.hud-panel-line) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-secondary);
+  }
+
+  :global(.hud-panel-line .prompt) {
+    color: var(--color-neon-cyan);
+  }
+
+  :global(.hud-panel-line .label) {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  :global(.hud-panel-line .value) {
+    color: var(--color-text-primary);
+  }
+
+  /* Progress bar */
+  :global(.hud-progress) {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  :global(.hud-progress-bar) {
+    width: 8px;
+    height: 10px;
+    background: var(--color-neon-cyan);
+    opacity: 0.3;
+    animation: progress-fill 2s ease-in-out infinite;
+  }
+
+  :global(.hud-progress-bar:nth-child(1)) { animation-delay: 0s; }
+  :global(.hud-progress-bar:nth-child(2)) { animation-delay: 0.2s; }
+  :global(.hud-progress-bar:nth-child(3)) { animation-delay: 0.4s; }
+  :global(.hud-progress-bar:nth-child(4)) { animation-delay: 0.6s; }
+  :global(.hud-progress-bar:nth-child(5)) { animation-delay: 0.8s; }
+  :global(.hud-progress-bar:nth-child(6)) { animation-delay: 1s; }
+
+  @keyframes progress-fill {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* Status dot */
+  :global(.hud-status-dot) {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--color-neon-green);
+    border-radius: 50%;
+    animation: status-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes status-pulse {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 4px var(--color-neon-green);
+    }
+    50% {
+      opacity: 0.6;
+      box-shadow: 0 0 8px var(--color-neon-green);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hud-frame {
+      padding: 15px;
+    }
+
+    .hud-side {
+      display: none;
+    }
+
+    .hud-corner {
+      width: 18px;
+      height: 18px;
+    }
+
+    .hud-panel {
+      font-size: 10px;
+    }
+  }
+</style>
