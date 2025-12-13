@@ -1,0 +1,360 @@
+---
+import { personalInfo } from '../lib/data';
+import TerminalWindow from './ui/TerminalWindow.astro';
+import GlitchText from './ui/GlitchText.astro';
+---
+
+<section id="hero" class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <!-- Glitch name display -->
+      <div class="hero-name-wrapper reveal">
+        <span class="hero-prefix">&gt;_</span>
+        <h1 class="hero-name">
+          <GlitchText text={personalInfo.name} tag="span" />
+        </h1>
+      </div>
+
+      <!-- Title with neon glow -->
+      <div class="hero-title reveal delay-1">
+        <span class="title-bracket">[</span>
+        <span class="title-text neon-pulse">{personalInfo.title}</span>
+        <span class="title-bracket">]</span>
+      </div>
+
+      <!-- Subtitle -->
+      <p class="hero-subtitle reveal delay-2">
+        {personalInfo.subtitle}
+      </p>
+
+      <!-- Terminal Bio -->
+      <div class="hero-terminal reveal delay-3">
+        <TerminalWindow title="about.sh">
+          <div class="terminal-line">
+            <span class="prompt">$</span>
+            <span class="command">cat</span>
+            <span class="arg">~/bio.txt</span>
+          </div>
+          <p class="terminal-output">{personalInfo.bio}</p>
+          <div class="terminal-line">
+            <span class="prompt">$</span>
+            <span class="command">echo</span>
+            <span class="arg">$LOCATION</span>
+          </div>
+          <p class="terminal-output location">
+            <span class="location-icon">📍</span>
+            {personalInfo.location}
+          </p>
+        </TerminalWindow>
+      </div>
+
+      <!-- Social Links as Terminal Commands -->
+      <div class="hero-socials reveal delay-4">
+        <a href={personalInfo.social.github} target="_blank" rel="noopener" class="social-link">
+          <span class="social-prompt">&gt;</span>
+          <span class="social-cmd">github</span>
+          <span class="social-flag">--profile</span>
+          <span class="social-arrow">→</span>
+        </a>
+        <a href={personalInfo.social.linkedin} target="_blank" rel="noopener" class="social-link">
+          <span class="social-prompt">&gt;</span>
+          <span class="social-cmd">linkedin</span>
+          <span class="social-flag">--connect</span>
+          <span class="social-arrow">→</span>
+        </a>
+        <a href={personalInfo.social.twitter} target="_blank" rel="noopener" class="social-link">
+          <span class="social-prompt">&gt;</span>
+          <span class="social-cmd">twitter</span>
+          <span class="social-flag">--follow</span>
+          <span class="social-arrow">→</span>
+        </a>
+        <a href={`mailto:${personalInfo.email}`} class="social-link">
+          <span class="social-prompt">&gt;</span>
+          <span class="social-cmd">mail</span>
+          <span class="social-flag">--send</span>
+          <span class="social-arrow">→</span>
+        </a>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="scroll-indicator reveal delay-5">
+        <div class="scroll-line"></div>
+        <span class="scroll-text">scroll</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative elements -->
+  <div class="hero-decoration">
+    <div class="hex-pattern"></div>
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 120px 0 80px;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    max-width: 800px;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Name styling */
+  .hero-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .hero-prefix {
+    font-family: var(--font-mono);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--color-neon-green);
+    animation: blink-cursor 1s step-end infinite;
+  }
+
+  @keyframes blink-cursor {
+    50% { opacity: 0; }
+  }
+
+  .hero-name {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  /* Title styling */
+  .hero-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+  }
+
+  .title-bracket {
+    color: var(--color-neon-magenta);
+    font-weight: 300;
+  }
+
+  .title-text {
+    color: var(--color-neon-cyan);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  /* Subtitle */
+  .hero-subtitle {
+    font-family: var(--font-mono);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: var(--color-text-secondary);
+    margin-bottom: 40px;
+    padding-left: 4px;
+  }
+
+  /* Terminal */
+  .hero-terminal {
+    margin-bottom: 40px;
+    max-width: 600px;
+  }
+
+  .terminal-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .prompt {
+    color: var(--color-neon-green);
+    font-weight: 600;
+  }
+
+  .command {
+    color: var(--color-neon-cyan);
+  }
+
+  .arg {
+    color: var(--color-neon-orange);
+  }
+
+  .terminal-output {
+    color: var(--color-text-secondary);
+    margin: 0 0 20px 0;
+    padding-left: 20px;
+    border-left: 2px solid rgba(0, 255, 247, 0.2);
+    font-size: 14px;
+  }
+
+  .location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-primary);
+  }
+
+  .location-icon {
+    font-size: 16px;
+  }
+
+  /* Social links */
+  .hero-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 60px;
+  }
+
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .social-link:hover {
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 247, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .social-prompt {
+    color: var(--color-neon-green);
+  }
+
+  .social-cmd {
+    color: var(--color-neon-cyan);
+    font-weight: 600;
+  }
+
+  .social-flag {
+    color: var(--color-text-muted);
+  }
+
+  .social-arrow {
+    color: var(--color-neon-magenta);
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+  }
+
+  .social-link:hover .social-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(
+      to bottom,
+      var(--color-neon-cyan),
+      transparent
+    );
+    animation: scroll-bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes scroll-bounce {
+    0%, 100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(10px);
+      opacity: 0.5;
+    }
+  }
+
+  .scroll-text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--color-text-muted);
+  }
+
+  /* Decorative elements */
+  .hero-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hex-pattern {
+    position: absolute;
+    top: 10%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2300fff7' fill-opacity='0.05'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(5deg);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 100px 0 60px;
+    }
+
+    .hero-socials {
+      flex-direction: column;
+    }
+
+    .social-link {
+      justify-content: center;
+    }
+
+    .scroll-indicator {
+      display: none;
+    }
+
+    .hex-pattern {
+      display: none;
+    }
+  }
+</style>

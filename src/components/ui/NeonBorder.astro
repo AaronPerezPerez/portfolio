@@ -1,0 +1,135 @@
+---
+interface Props {
+  class?: string;
+  animated?: boolean;
+  color?: 'cyan' | 'magenta' | 'green' | 'orange';
+}
+
+const { class: className = '', animated = true, color = 'cyan' } = Astro.props;
+
+const colorMap = {
+  cyan: 'var(--color-neon-cyan)',
+  magenta: 'var(--color-neon-magenta)',
+  green: 'var(--color-neon-green)',
+  orange: 'var(--color-neon-orange)'
+};
+
+const borderColor = colorMap[color];
+---
+
+<div
+  class:list={['neon-box', { animated }, className]}
+  style={`--border-color: ${borderColor}`}
+>
+  <div class="neon-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .neon-box {
+    position: relative;
+    padding: 2px;
+    border-radius: 10px;
+    background: linear-gradient(
+      135deg,
+      var(--border-color),
+      transparent 50%,
+      var(--border-color)
+    );
+  }
+
+  .neon-box.animated {
+    background: conic-gradient(
+      from 0deg,
+      var(--border-color),
+      var(--color-neon-magenta),
+      var(--border-color)
+    );
+    animation: rotate-gradient 4s linear infinite;
+  }
+
+  .neon-content {
+    background: var(--color-bg-card);
+    border-radius: 8px;
+    padding: 24px;
+    height: 100%;
+  }
+
+  .neon-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    padding: 2px;
+    background: inherit;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .neon-box::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 15px;
+    background: var(--border-color);
+    filter: blur(15px);
+    opacity: 0.3;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+  }
+
+  .neon-box:hover::after {
+    opacity: 0.5;
+  }
+
+  @keyframes rotate-gradient {
+    from {
+      --angle: 0deg;
+    }
+    to {
+      --angle: 360deg;
+    }
+  }
+
+  .neon-box.animated {
+    animation: spin-border 4s linear infinite;
+  }
+
+  @keyframes spin-border {
+    from {
+      background: conic-gradient(
+        from 0deg,
+        var(--border-color),
+        var(--color-neon-magenta),
+        var(--border-color)
+      );
+    }
+    to {
+      background: conic-gradient(
+        from 360deg,
+        var(--border-color),
+        var(--color-neon-magenta),
+        var(--border-color)
+      );
+    }
+  }
+
+  /* Static gradient for non-animated */
+  .neon-box:not(.animated)::before {
+    background: linear-gradient(
+      135deg,
+      var(--border-color),
+      transparent 40%,
+      transparent 60%,
+      var(--border-color)
+    );
+  }
+</style>

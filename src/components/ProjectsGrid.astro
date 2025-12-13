@@ -1,0 +1,395 @@
+---
+import { projects } from '../lib/data';
+---
+
+<section id="projects" class="section projects-section">
+  <div class="container">
+    <h2 class="section-title reveal">
+      <span class="title-prefix">//</span> Projects
+    </h2>
+
+    <div class="projects-grid">
+      {projects.filter(p => p.featured).map((project, index) => (
+        <a
+          href={project.github}
+          target="_blank"
+          rel="noopener"
+          class={`project-card ${project.contributionType ? 'contribution' : ''} reveal`}
+          style={`--delay: ${index * 150}ms`}
+        >
+          <!-- CRT Monitor Frame -->
+          <div class="monitor-frame">
+            <div class="monitor-screen">
+              <!-- Scanlines overlay -->
+              <div class="scanlines"></div>
+
+              <!-- Project content -->
+              <div class="project-content">
+                <div class="project-header">
+                  <span class="project-id">PROJECT_{String(project.id).padStart(3, '0')}</span>
+                  {project.contributionType && (
+                    <span class="contributor-badge">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                      </svg>
+                      Contributor
+                    </span>
+                  )}
+                </div>
+
+                <h3 class="project-name">{project.name}</h3>
+
+                <p class="project-description">{project.description}</p>
+
+                <div class="project-technologies">
+                  {project.technologies.map((tech) => (
+                    <span class="tech-chip">{tech}</span>
+                  ))}
+                </div>
+
+                {project.stars > 0 && (
+                  <div class="project-stars">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    <span class="stars-count">
+                      {project.stars >= 1000
+                        ? `${(project.stars / 1000).toFixed(1)}K`
+                        : project.stars}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <!-- Hover effect -->
+              <div class="hover-overlay">
+                <span class="view-text">
+                  <span class="arrow">→</span>
+                  VIEW_SOURCE
+                </span>
+              </div>
+            </div>
+
+            <!-- Monitor buttons -->
+            <div class="monitor-base">
+              <div class="monitor-button"></div>
+              <div class="monitor-led"></div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- View all projects link -->
+    <div class="projects-footer reveal delay-4">
+      <a href="https://github.com/AaronPerezPerez?tab=repositories" target="_blank" rel="noopener" class="view-all-link">
+        <span class="link-prompt">&gt;</span>
+        <span class="link-text">git clone --all repositories</span>
+        <span class="link-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects-section {
+    background: var(--color-bg-primary);
+  }
+
+  .title-prefix {
+    color: var(--color-neon-magenta);
+    margin-right: 12px;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+  }
+
+  /* Project card */
+  .project-card {
+    text-decoration: none;
+    display: block;
+    transition: transform 0.3s ease;
+    transition-delay: var(--delay);
+  }
+
+  .project-card:hover {
+    transform: translateY(-10px);
+  }
+
+  /* Monitor frame (CRT style) */
+  .monitor-frame {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 12px 12px 0;
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .monitor-screen {
+    background: var(--color-bg-terminal);
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Scanlines effect */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 247, 0.02) 2px,
+      rgba(0, 255, 247, 0.02) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Screen glow effect */
+  .monitor-screen::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 255, 247, 0.05) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  /* Project content */
+  .project-content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .project-id {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    letter-spacing: 2px;
+  }
+
+  .contributor-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid var(--color-neon-yellow);
+    color: var(--color-neon-yellow);
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .contributor-badge svg {
+    color: var(--color-neon-yellow);
+  }
+
+  .project-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 12px;
+    letter-spacing: 1px;
+  }
+
+  .project-card:hover .project-name {
+    color: var(--color-neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
+  }
+
+  .project-description {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 20px;
+    flex: 1;
+  }
+
+  .project-technologies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tech-chip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    background: rgba(0, 255, 247, 0.05);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    color: var(--color-neon-cyan);
+    border-radius: 4px;
+  }
+
+  .project-stars {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-neon-yellow);
+  }
+
+  .project-stars svg {
+    fill: var(--color-neon-yellow);
+  }
+
+  .stars-count {
+    font-weight: 600;
+  }
+
+  /* Hover overlay */
+  .hover-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 255, 247, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 3;
+    backdrop-filter: blur(2px);
+  }
+
+  .project-card:hover .hover-overlay {
+    opacity: 1;
+  }
+
+  .view-text {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-neon-cyan);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--color-bg-terminal);
+    border: 1px solid var(--color-neon-cyan);
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(0, 255, 247, 0.3);
+  }
+
+  .arrow {
+    animation: arrow-bounce 0.6s ease-in-out infinite;
+  }
+
+  @keyframes arrow-bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+  }
+
+  /* Monitor base */
+  .monitor-base {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .monitor-button {
+    width: 8px;
+    height: 8px;
+    background: #333;
+    border-radius: 2px;
+  }
+
+  .monitor-led {
+    width: 6px;
+    height: 6px;
+    background: var(--color-neon-green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--color-neon-green);
+    animation: led-blink 3s ease-in-out infinite;
+  }
+
+  @keyframes led-blink {
+    0%, 90%, 100% { opacity: 1; }
+    95% { opacity: 0.3; }
+  }
+
+  /* Projects footer */
+  .projects-footer {
+    display: flex;
+    justify-content: center;
+  }
+
+  .view-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(0, 255, 247, 0.3);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .view-all-link:hover {
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 20px rgba(0, 255, 247, 0.2);
+  }
+
+  .link-prompt {
+    color: var(--color-neon-green);
+  }
+
+  .link-text {
+    color: var(--color-neon-cyan);
+  }
+
+  .link-arrow {
+    color: var(--color-neon-magenta);
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+  }
+
+  .view-all-link:hover .link-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

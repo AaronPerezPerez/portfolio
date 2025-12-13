@@ -1,0 +1,215 @@
+---
+import { achievements } from '../lib/data';
+
+const achievementIcons: Record<string, string> = {
+  'Arctic Code Vault Contributor': '❄️',
+  'GitHub Pull Shark x3': '🦈',
+  'Pair Extraordinaire': '👥',
+  'Quickdraw': '⚡',
+};
+---
+
+<section id="achievements" class="section achievements-section">
+  <div class="container">
+    <h2 class="section-title reveal">
+      <span class="title-prefix">//</span> Achievements
+    </h2>
+
+    <div class="achievements-grid">
+      {achievements.map((achievement, index) => (
+        <div
+          class="achievement-card reveal"
+          style={`--delay: ${index * 150}ms`}
+        >
+          <div class="achievement-glow"></div>
+
+          <div class="achievement-content">
+            <div class="achievement-icon">
+              {achievementIcons[achievement] || '🏆'}
+            </div>
+
+            <div class="achievement-info">
+              <span class="achievement-label">ACHIEVEMENT_UNLOCKED</span>
+              <h3 class="achievement-name">{achievement}</h3>
+            </div>
+
+            <div class="achievement-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="achievement-bar">
+            <div class="bar-fill"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .achievements-section {
+    background: linear-gradient(
+      180deg,
+      var(--color-bg-secondary) 0%,
+      var(--color-bg-primary) 100%
+    );
+    padding: 80px 0;
+  }
+
+  .title-prefix {
+    color: var(--color-neon-magenta);
+    margin-right: 12px;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  /* Achievement card */
+  .achievement-card {
+    position: relative;
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    transition-delay: var(--delay);
+  }
+
+  .achievement-card:hover {
+    border-color: var(--color-neon-yellow);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    transform: translateY(-5px);
+  }
+
+  /* Glow effect */
+  .achievement-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg,
+      transparent,
+      rgba(255, 215, 0, 0.1),
+      transparent,
+      transparent
+    );
+    animation: rotate-glow 4s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .achievement-card:hover .achievement-glow {
+    opacity: 1;
+  }
+
+  @keyframes rotate-glow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Achievement content */
+  .achievement-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    z-index: 1;
+  }
+
+  .achievement-icon {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .achievement-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .achievement-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--color-neon-green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .achievement-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .achievement-badge {
+    color: var(--color-neon-yellow);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s ease;
+  }
+
+  .achievement-card:hover .achievement-badge {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Progress bar */
+  .achievement-bar {
+    height: 3px;
+    background: rgba(255, 215, 0, 0.1);
+  }
+
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--color-neon-yellow), var(--color-neon-orange));
+    transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .achievement-card.visible .bar-fill {
+    width: 100%;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .achievements-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Animate progress bars when visible
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.achievement-card').forEach(card => {
+    observer.observe(card);
+  });
+</script>

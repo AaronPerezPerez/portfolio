@@ -1,0 +1,256 @@
+---
+import { stats } from '../lib/data';
+
+const statItems = [
+  { value: stats.yearsOfExperience, label: 'YEARS_EXP', suffix: '+' },
+  { value: stats.githubRepos, label: 'REPOSITORIES', suffix: '' },
+  { value: stats.githubFollowers, label: 'FOLLOWERS', suffix: '' },
+  { value: stats.linkedinFollowers, label: 'LINKEDIN', suffix: '' },
+];
+---
+
+<section class="stats-section">
+  <div class="stats-container">
+    <div class="stats-header">
+      <span class="stats-label">// SYSTEM_STATS</span>
+      <span class="stats-status">
+        <span class="status-dot"></span>
+        ONLINE
+      </span>
+    </div>
+
+    <div class="stats-grid">
+      {statItems.map((stat, index) => (
+        <div class="stat-item reveal" style={`--delay: ${index * 100}ms`}>
+          <div class="stat-bracket">[</div>
+          <div class="stat-content">
+            <span
+              class="stat-value"
+              data-target={stat.value}
+              data-suffix={stat.suffix}
+            >
+              0{stat.suffix}
+            </span>
+            <span class="stat-label">{stat.label}</span>
+          </div>
+          <div class="stat-bracket">]</div>
+        </div>
+      ))}
+    </div>
+
+    <div class="stats-border"></div>
+  </div>
+</section>
+
+<style>
+  .stats-section {
+    padding: 40px 0;
+    background: linear-gradient(
+      180deg,
+      var(--color-bg-primary) 0%,
+      var(--color-bg-secondary) 50%,
+      var(--color-bg-primary) 100%
+    );
+    border-top: 1px solid rgba(0, 255, 247, 0.1);
+    border-bottom: 1px solid rgba(0, 255, 247, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .stats-label {
+    color: var(--color-text-muted);
+    letter-spacing: 2px;
+  }
+
+  .stats-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-neon-green);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-neon-green);
+    border-radius: 50%;
+    animation: pulse-status 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-status {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(57, 255, 20, 0);
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    background: var(--color-bg-terminal);
+    border: 1px solid rgba(0, 255, 247, 0.2);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    transition-delay: var(--delay);
+  }
+
+  .stat-item:hover {
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 20px rgba(0, 255, 247, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .stat-bracket {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    color: var(--color-neon-magenta);
+    font-weight: 300;
+    opacity: 0.7;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--color-neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .stats-border {
+    margin-top: 30px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-neon-cyan),
+      transparent
+    );
+    opacity: 0.3;
+  }
+
+  /* Counter animation */
+  .stat-value.counting {
+    animation: count-glow 0.1s ease-out;
+  }
+
+  @keyframes count-glow {
+    0% {
+      text-shadow: 0 0 20px rgba(0, 255, 247, 0.8);
+    }
+    100% {
+      text-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-bracket {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-header {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+</style>
+
+<script>
+  // Animated counter
+  function animateCounter(element: HTMLElement) {
+    const target = parseInt(element.dataset.target || '0');
+    const suffix = element.dataset.suffix || '';
+    const duration = 2000;
+    const start = performance.now();
+
+    function update(currentTime: number) {
+      const elapsed = currentTime - start;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function (ease-out)
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(easeOut * target);
+
+      element.textContent = current + suffix;
+      element.classList.add('counting');
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        element.textContent = target + suffix;
+        element.classList.remove('counting');
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  // Intersection Observer to trigger counter
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const counters = entry.target.querySelectorAll('.stat-value');
+        counters.forEach((counter, index) => {
+          setTimeout(() => {
+            animateCounter(counter as HTMLElement);
+          }, index * 150);
+        });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  const statsSection = document.querySelector('.stats-section');
+  if (statsSection) {
+    observer.observe(statsSection);
+  }
+</script>

@@ -1,0 +1,107 @@
+---
+interface Props {
+  text: string;
+  tag?: 'span' | 'h1' | 'h2' | 'h3' | 'p';
+  class?: string;
+}
+
+const { text, tag = 'span', class: className = '' } = Astro.props;
+const Tag = tag;
+---
+
+<Tag class:list={['glitch', className]} data-text={text}>
+  {text}
+</Tag>
+
+<style>
+  .glitch {
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .glitch::before {
+    color: var(--color-neon-cyan);
+    z-index: -1;
+  }
+
+  .glitch::after {
+    color: var(--color-neon-magenta);
+    z-index: -2;
+  }
+
+  .glitch:hover::before {
+    opacity: 0.8;
+    animation: glitch-anim-1 0.3s infinite linear alternate-reverse;
+  }
+
+  .glitch:hover::after {
+    opacity: 0.8;
+    animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitch-anim-1 {
+    0% {
+      clip-path: inset(40% 0 61% 0);
+      transform: translate(-3px, 2px);
+    }
+    20% {
+      clip-path: inset(92% 0 1% 0);
+      transform: translate(3px, -2px);
+    }
+    40% {
+      clip-path: inset(43% 0 1% 0);
+      transform: translate(-3px, 2px);
+    }
+    60% {
+      clip-path: inset(25% 0 58% 0);
+      transform: translate(3px, -2px);
+    }
+    80% {
+      clip-path: inset(54% 0 7% 0);
+      transform: translate(-3px, 2px);
+    }
+    100% {
+      clip-path: inset(58% 0 43% 0);
+      transform: translate(3px, -2px);
+    }
+  }
+
+  @keyframes glitch-anim-2 {
+    0% {
+      clip-path: inset(65% 0 6% 0);
+      transform: translate(3px, -2px);
+    }
+    20% {
+      clip-path: inset(15% 0 72% 0);
+      transform: translate(-3px, 2px);
+    }
+    40% {
+      clip-path: inset(82% 0 5% 0);
+      transform: translate(3px, -2px);
+    }
+    60% {
+      clip-path: inset(31% 0 62% 0);
+      transform: translate(-3px, 2px);
+    }
+    80% {
+      clip-path: inset(94% 0 1% 0);
+      transform: translate(3px, -2px);
+    }
+    100% {
+      clip-path: inset(14% 0 72% 0);
+      transform: translate(-3px, 2px);
+    }
+  }
+</style>

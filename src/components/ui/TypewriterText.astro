@@ -1,0 +1,104 @@
+---
+interface Props {
+  text: string;
+  class?: string;
+  speed?: number; // ms per character
+  delay?: number; // initial delay in ms
+}
+
+const { text, class: className = '', speed = 100, delay = 0 } = Astro.props;
+const id = `typewriter-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<span
+  id={id}
+  class:list={['typewriter-text', className]}
+  data-text={text}
+  data-speed={speed}
+  data-delay={delay}
+>
+  <span class="typewriter-content"></span>
+  <span class="cursor">|</span>
+</span>
+
+<style>
+  .typewriter-text {
+    display: inline-flex;
+    font-family: var(--font-mono);
+  }
+
+  .typewriter-content {
+    overflow: hidden;
+  }
+
+  .cursor {
+    color: var(--color-neon-cyan);
+    animation: blink 0.7s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    from, to {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Hide cursor after typing is complete */
+  .typewriter-text.done .cursor {
+    animation: blink 0.7s step-end infinite 3s;
+    animation-fill-mode: forwards;
+  }
+</style>
+
+<script>
+  class TypewriterElement {
+    private element: HTMLElement;
+    private contentEl: HTMLElement;
+    private text: string;
+    private speed: number;
+    private delay: number;
+    private charIndex: number = 0;
+
+    constructor(element: HTMLElement) {
+      this.element = element;
+      this.contentEl = element.querySelector('.typewriter-content') as HTMLElement;
+      this.text = element.dataset.text || '';
+      this.speed = parseInt(element.dataset.speed || '100');
+      this.delay = parseInt(element.dataset.delay || '0');
+
+      this.init();
+    }
+
+    private init() {
+      // Use Intersection Observer to start typing when visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setTimeout(() => this.type(), this.delay);
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.5 });
+
+      observer.observe(this.element);
+    }
+
+    private type() {
+      if (this.charIndex < this.text.length) {
+        this.contentEl.textContent += this.text.charAt(this.charIndex);
+        this.charIndex++;
+        setTimeout(() => this.type(), this.speed);
+      } else {
+        this.element.classList.add('done');
+      }
+    }
+  }
+
+  // Initialize all typewriter elements
+  document.querySelectorAll('.typewriter-text').forEach(el => {
+    new TypewriterElement(el as HTMLElement);
+  });
+</script>
