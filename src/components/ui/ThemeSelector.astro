@@ -97,7 +97,7 @@ const gamingThemes = [
         </div>
       </div>
 
-      <div class="tab-panel" id="panel-gaming" data-panel="gaming" role="tabpanel" hidden>
+      <div class="tab-panel" id="panel-gaming" data-panel="gaming" role="tabpanel">
         <div class="theme-list">
           {gamingThemes.map((theme) => (
             <button
@@ -223,6 +223,7 @@ const gamingThemes = [
     overflow: hidden;
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
     transform: translateY(-10px);
     transition: all 0.3s ease;
     box-shadow:
@@ -235,6 +236,7 @@ const gamingThemes = [
   .theme-selector.open .theme-dropdown {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
     transform: translateY(0);
   }
 
@@ -317,28 +319,38 @@ const gamingThemes = [
   .tab-panels {
     flex: 1;
     overflow: hidden;
-    position: relative;
-    transition: height 0.2s ease;
+    max-height: 350px;
   }
 
   .tab-panel {
-    position: absolute;
-    inset: 0;
+    display: none;
+    max-height: 350px;
     overflow-y: auto;
     overscroll-behavior: contain;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neon-cyan) rgba(0, 255, 247, 0.1);
+  }
+
+  .tab-panel::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .tab-panel::-webkit-scrollbar-track {
+    background: rgba(0, 255, 247, 0.05);
+    border-radius: 4px;
+  }
+
+  .tab-panel::-webkit-scrollbar-thumb {
+    background: var(--color-neon-cyan);
+    border-radius: 4px;
+  }
+
+  .tab-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--color-neon-green);
   }
 
   .tab-panel.active {
-    position: relative;
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .tab-panel[hidden] {
-    display: none;
+    display: block;
   }
 
   /* Theme list */
@@ -629,7 +641,6 @@ const gamingThemes = [
       this.tabPanels.forEach(panel => {
         const isActive = panel.dataset.panel === tab;
         panel.classList.toggle('active', isActive);
-        panel.hidden = !isActive;
       });
 
       // Reset focus index when switching tabs
