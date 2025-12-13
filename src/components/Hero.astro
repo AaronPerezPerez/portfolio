@@ -6,46 +6,63 @@ import TerminalLine from './ui/TerminalLine.astro';
 import TypewriterText from './ui/TypewriterText.astro';
 import NeonBorder from './ui/NeonBorder.astro';
 import Icon from './ui/Icon.astro';
+import AvatarCyber from './ui/AvatarCyber.astro';
 ---
 
 <section id="hero" class="hero-section">
   <div class="container">
-    <div class="hero-content">
-      <!-- Glitch name display -->
-      <div class="hero-name-wrapper reveal">
-        <span class="hero-prefix">&gt;_</span>
-        <h1 class="hero-name">
-          <GlitchText text={personalInfo.name} tag="span" />
-        </h1>
+    <div class="hero-grid">
+      <!-- Left column: Content -->
+      <div class="hero-content">
+      <!-- Header with prefix and text content -->
+      <div class="hero-header">
+        <!-- Prefix stays on the left -->
+        <span class="hero-prefix reveal">&gt;_</span>
+
+        <!-- All text content aligned -->
+        <div class="hero-text-content">
+          <!-- Glitch name display -->
+          <h1 class="hero-name reveal">
+            <GlitchText text={personalInfo.name} tag="span" />
+          </h1>
+
+          <!-- Title with neon glow -->
+          <div class="hero-title reveal delay-1">
+            <span class="title-bracket">[</span>
+            <span class="title-text neon-pulse">{personalInfo.title}</span>
+            <span class="title-bracket">]</span>
+          </div>
+
+          <!-- Subtitle with typewriter effect -->
+          <p class="hero-subtitle reveal delay-2">
+            <TypewriterText text={personalInfo.subtitle} speed={30} delay={800} />
+          </p>
+        </div>
       </div>
 
-      <!-- Title with neon glow -->
-      <div class="hero-title reveal delay-1">
-        <span class="title-bracket">[</span>
-        <span class="title-text neon-pulse">{personalInfo.title}</span>
-        <span class="title-bracket">]</span>
-      </div>
+      <!-- Terminal + Avatar aligned row -->
+      <div class="hero-main-row reveal delay-3">
+        <!-- Terminal Bio with neon border -->
+        <div class="hero-terminal">
+          <NeonBorder color="cyan" animated={true}>
+            <TerminalWindow title="about.sh" class="terminal-no-border">
+              <TerminalLine command="cat" args="~/bio.txt" />
+              <p class="terminal-output">{personalInfo.bio}</p>
+              <TerminalLine command="echo" args="$LOCATION" />
+              <p class="terminal-output location">
+                <Icon name="location" size={16} />
+                {personalInfo.location}
+              </p>
+              <!-- Interactive commands container -->
+              <div id="commands-container"></div>
+            </TerminalWindow>
+          </NeonBorder>
+        </div>
 
-      <!-- Subtitle with typewriter effect -->
-      <p class="hero-subtitle reveal delay-2">
-        <TypewriterText text={personalInfo.subtitle} speed={30} delay={800} />
-      </p>
-
-      <!-- Terminal Bio with neon border -->
-      <div class="hero-terminal reveal delay-3">
-        <NeonBorder color="cyan" animated={true}>
-          <TerminalWindow title="about.sh" class="terminal-no-border">
-            <TerminalLine command="cat" args="~/bio.txt" />
-            <p class="terminal-output">{personalInfo.bio}</p>
-            <TerminalLine command="echo" args="$LOCATION" />
-            <p class="terminal-output location">
-              <Icon name="location" size={16} />
-              {personalInfo.location}
-            </p>
-            <!-- Interactive commands container -->
-            <div id="commands-container"></div>
-          </TerminalWindow>
-        </NeonBorder>
+        <!-- Avatar HUD -->
+        <div class="hero-avatar-wrapper">
+          <AvatarCyber realSrc="/aaron.png" showToggle={true} />
+        </div>
       </div>
 
       <!-- Social Links as Terminal Commands -->
@@ -95,13 +112,17 @@ import Icon from './ui/Icon.astro';
           <span class="social-arrow">→</span>
         </button>
       </div>
-
-      <!-- Scroll indicator -->
-      <div class="scroll-indicator reveal delay-5">
-        <div class="scroll-line"></div>
-        <span class="scroll-text">scroll</span>
-      </div>
     </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator (horizontal, bottom) -->
+  <div class="scroll-indicator reveal delay-5">
+    <span class="scroll-text">scroll</span>
+    <div class="scroll-line"></div>
+    <svg class="scroll-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
   </div>
 
   <!-- Decorative elements -->
@@ -112,26 +133,73 @@ import Icon from './ui/Icon.astro';
 
 <style>
   .hero-section {
-    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 120px 0 80px;
+    padding: 100px 0 140px;
     overflow: hidden;
   }
 
-  .hero-content {
-    max-width: 800px;
+  /* Main container */
+  .hero-grid {
+    max-width: 1200px;
+    width: 100%;
     position: relative;
     z-index: 10;
   }
 
-  /* Name styling */
-  .hero-name-wrapper {
+  .hero-content {
+    max-width: 1100px;
+    width: 100%;
+    position: relative;
+  }
+
+  /* Terminal + Avatar row - aligned and same height */
+  .hero-main-row {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    align-items: stretch; /* Both elements same height */
+    margin-bottom: 40px;
+  }
+
+  .hero-terminal {
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    max-width: 550px;
+  }
+
+  /* Make NeonBorder fill the container height */
+  .hero-terminal :global(.neon-border) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-terminal :global(.neon-border-content) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-terminal :global(.terminal-window) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-avatar-wrapper {
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* Hero header - prefix on left, content aligned on right */
+  .hero-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
     margin-bottom: 20px;
   }
 
@@ -140,20 +208,27 @@ import Icon from './ui/Icon.astro';
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     color: var(--color-neon-green);
     animation: blink-cursor 1s step-end infinite;
+    line-height: 1.1;
+    padding-top: 0.1em;
   }
 
   @keyframes blink-cursor {
     50% { opacity: 0; }
   }
 
+  .hero-text-content {
+    flex: 1;
+  }
+
   .hero-name {
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 800;
     letter-spacing: 2px;
     color: var(--color-text-primary);
     text-transform: uppercase;
     line-height: 1.1;
+    margin-bottom: 16px;
   }
 
   /* Title styling */
@@ -186,11 +261,7 @@ import Icon from './ui/Icon.astro';
     padding-left: 4px;
   }
 
-  /* Terminal */
-  .hero-terminal {
-    margin-bottom: 40px;
-    max-width: 600px;
-  }
+  /* Terminal - max-width is controlled by grid */
 
   .terminal-output {
     color: var(--color-text-secondary);
@@ -278,7 +349,6 @@ import Icon from './ui/Icon.astro';
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 60px;
   }
 
   .social-link {
@@ -334,46 +404,70 @@ import Icon from './ui/Icon.astro';
     transform: translateX(0);
   }
 
-  /* Scroll indicator */
+  /* Scroll indicator - horizontal, bottom center */
   .scroll-indicator {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 16px;
     position: absolute;
     bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 20;
+  }
+
+  .scroll-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--color-neon-cyan);
+    text-shadow: 0 0 10px var(--color-glow-cyan);
   }
 
   .scroll-line {
-    width: 1px;
-    height: 60px;
+    width: 80px;
+    height: 2px;
     background: linear-gradient(
-      to bottom,
+      to right,
       var(--color-neon-cyan),
-      transparent
+      var(--color-neon-magenta)
     );
-    animation: scroll-bounce 2s ease-in-out infinite;
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--color-glow-cyan);
+    animation: scroll-line-pulse 2s ease-in-out infinite;
   }
 
-  @keyframes scroll-bounce {
+  @keyframes scroll-line-pulse {
+    0%, 100% {
+      opacity: 0.6;
+      width: 80px;
+    }
+    50% {
+      opacity: 1;
+      width: 100px;
+    }
+  }
+
+  .scroll-chevron {
+    width: 24px;
+    height: 24px;
+    color: var(--color-neon-cyan);
+    animation: chevron-bounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px var(--color-glow-cyan));
+  }
+
+  @keyframes chevron-bounce {
     0%, 100% {
       transform: translateY(0);
       opacity: 1;
     }
     50% {
-      transform: translateY(10px);
-      opacity: 0.5;
+      transform: translateY(5px);
+      opacity: 0.6;
     }
-  }
-
-  .scroll-text {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--color-text-muted);
   }
 
   /* Decorative elements */
@@ -405,25 +499,114 @@ import Icon from './ui/Icon.astro';
   }
 
   /* Responsive */
+  @media (max-width: 1024px) {
+    .hero-main-row {
+      gap: 30px;
+    }
+  }
+
   @media (max-width: 768px) {
     .hero-section {
       padding: 100px 0 60px;
     }
 
+    .hero-content {
+      text-align: center;
+    }
+
+    .hero-main-row {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .hero-avatar-wrapper {
+      order: -1; /* Avatar first on mobile */
+      justify-content: center;
+    }
+
+    .hero-header {
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-text-content {
+      text-align: center;
+    }
+
+    .hero-title {
+      justify-content: center;
+    }
+
+    .hero-subtitle {
+      text-align: center;
+      padding-left: 0;
+    }
+
+    .hero-terminal {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     .hero-socials {
       flex-direction: column;
+      align-items: center;
     }
 
     .social-link {
       justify-content: center;
+      width: 100%;
+      max-width: 280px;
     }
 
     .scroll-indicator {
-      display: none;
+      bottom: 20px;
+      gap: 12px;
+    }
+
+    .scroll-line {
+      width: 60px;
+    }
+
+    @keyframes scroll-line-pulse {
+      0%, 100% {
+        width: 60px;
+      }
+      50% {
+        width: 80px;
+      }
+    }
+
+    .scroll-text {
+      font-size: 10px;
+      letter-spacing: 3px;
+    }
+
+    .scroll-chevron {
+      width: 20px;
+      height: 20px;
     }
 
     .hex-pattern {
       display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-avatar-wrapper {
+      transform: scale(0.8);
+    }
+
+    .scroll-indicator {
+      bottom: 15px;
+    }
+
+    .scroll-line {
+      width: 40px;
+    }
+
+    .scroll-text {
+      font-size: 9px;
     }
   }
 </style>
