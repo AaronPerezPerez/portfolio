@@ -35,7 +35,7 @@ import Badge from './ui/Badge.astro';
                   title={`Visit ${exp.company}`}
                 >
                   {exp.logo.startsWith('/') || exp.logo.startsWith('http') ? (
-                    <img src={exp.logo} alt={`${exp.company} logo`} class="logo-img" />
+                    <img src={exp.logo} alt={`${exp.company} logo`} class="logo-img" loading="lazy" decoding="async" />
                   ) : (
                     <span class="logo-icon" set:html={exp.logo} />
                   )}

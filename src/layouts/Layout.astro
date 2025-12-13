@@ -14,7 +14,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" class="no-transitions">
+<html lang="es" class="no-transitions">
   <head>
     <meta charset="UTF-8" />
     <!-- Theme persistence (runs before render to prevent flash) -->
@@ -57,20 +57,68 @@ const {
     <meta name="author" content="Aarón Pérez Pérez" />
     <meta name="keywords" content="Software Craftsman, Full Stack Developer, TypeScript, NestJS, Clean Code, Hexagonal Architecture, TDD, DDD" />
 
+    <!-- Canonical -->
+    <link rel="canonical" href="https://aaron.perezperez.dev/" />
+
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://aaronperez.me" />
+    <meta property="og:url" content="https://aaron.perezperez.dev/" />
+    <meta property="og:image" content="https://aaron.perezperez.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content="Aarón Pérez - Portfolio" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:creator" content="@molotroco94" />
+    <meta name="twitter:image" content="https://aaron.perezperez.dev/og-image.png" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload hero image for LCP optimization -->
+    <link rel="preload" as="image" href="/aaron.webp" type="image/webp" />
 
     <!-- Theme color for mobile -->
     <meta name="theme-color" content="#0a0a0f" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Aarón Pérez Pérez",
+      "jobTitle": "Software Craftsman",
+      "url": "https://aaron.perezperez.dev",
+      "image": "https://aaron.perezperez.dev/aaron.png",
+      "sameAs": [
+        "https://github.com/AaronPerezPerez",
+        "https://linkedin.com/in/aarperper",
+        "https://twitter.com/molotroco94"
+      ],
+      "knowsAbout": ["TypeScript", "React", "NestJS", "Clean Code", "DDD", "TDD", "Hexagonal Architecture"],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "beonit",
+        "url": "https://www.beonit.es"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Tenerife",
+        "addressRegion": "Canary Islands",
+        "addressCountry": "Spain"
+      }
+    }
+    </script>
   </head>
   <body class="antialiased">
     <!-- CRT Scanline Overlay -->
