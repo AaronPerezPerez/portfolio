@@ -51,26 +51,26 @@ import Badge from './ui/Badge.astro';
               )}
             </div>
 
-            <div class="card-role">
+            <div class="card-role" transition:name={`exp-role-${exp.slug}`}>
               <span class="role-prompt">&gt;</span>
               <span class="role-text">{exp.role}</span>
             </div>
 
             <div class="card-meta">
-              <span class="meta-location">
+              <span class="meta-location" transition:name={`exp-location-${exp.slug}`}>
                 <Icon name="location" size={14} />
                 {exp.location}
               </span>
-              <span class="meta-date">
+              <span class="meta-date" transition:name={`exp-date-${exp.slug}`}>
                 <Icon name="calendar" size={14} />
                 {exp.startDate} - {exp.endDate}
                 {exp.duration && <span class="duration">({exp.duration})</span>}
               </span>
             </div>
 
-            <p class="card-description">{exp.description}</p>
+            <p class="card-description" transition:name={`exp-desc-${exp.slug}`}>{exp.description}</p>
 
-            <div class="card-technologies">
+            <div class="card-technologies" transition:name={`exp-tech-${exp.slug}`}>
               {exp.technologies.map((tech) => (
                 <TechTag name={tech} size="md" />
               ))}

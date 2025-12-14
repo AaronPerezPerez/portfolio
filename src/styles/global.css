@@ -891,6 +891,146 @@ select:focus-visible {
   animation: none;
 }
 
+/* ═══ ROLE - Pure Position Morph ═══ */
+
+::view-transition-group(exp-role-beonit),
+::view-transition-group(exp-role-freelance),
+::view-transition-group(exp-role-codurance),
+::view-transition-group(exp-role-swan),
+::view-transition-group(exp-role-acid-tango) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(exp-role-beonit),
+::view-transition-old(exp-role-freelance),
+::view-transition-old(exp-role-codurance),
+::view-transition-old(exp-role-swan),
+::view-transition-old(exp-role-acid-tango) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(exp-role-beonit),
+::view-transition-new(exp-role-freelance),
+::view-transition-new(exp-role-codurance),
+::view-transition-new(exp-role-swan),
+::view-transition-new(exp-role-acid-tango) {
+  animation: none;
+}
+
+/* ═══ LOCATION - Pure Position Morph ═══ */
+
+::view-transition-group(exp-location-beonit),
+::view-transition-group(exp-location-freelance),
+::view-transition-group(exp-location-codurance),
+::view-transition-group(exp-location-swan),
+::view-transition-group(exp-location-acid-tango) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(exp-location-beonit),
+::view-transition-old(exp-location-freelance),
+::view-transition-old(exp-location-codurance),
+::view-transition-old(exp-location-swan),
+::view-transition-old(exp-location-acid-tango) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(exp-location-beonit),
+::view-transition-new(exp-location-freelance),
+::view-transition-new(exp-location-codurance),
+::view-transition-new(exp-location-swan),
+::view-transition-new(exp-location-acid-tango) {
+  animation: none;
+}
+
+/* ═══ DATE - Pure Position Morph ═══ */
+
+::view-transition-group(exp-date-beonit),
+::view-transition-group(exp-date-freelance),
+::view-transition-group(exp-date-codurance),
+::view-transition-group(exp-date-swan),
+::view-transition-group(exp-date-acid-tango) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(exp-date-beonit),
+::view-transition-old(exp-date-freelance),
+::view-transition-old(exp-date-codurance),
+::view-transition-old(exp-date-swan),
+::view-transition-old(exp-date-acid-tango) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(exp-date-beonit),
+::view-transition-new(exp-date-freelance),
+::view-transition-new(exp-date-codurance),
+::view-transition-new(exp-date-swan),
+::view-transition-new(exp-date-acid-tango) {
+  animation: none;
+}
+
+/* ═══ DESCRIPTION - Pure Position Morph ═══ */
+
+::view-transition-group(exp-desc-beonit),
+::view-transition-group(exp-desc-freelance),
+::view-transition-group(exp-desc-codurance),
+::view-transition-group(exp-desc-swan),
+::view-transition-group(exp-desc-acid-tango) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(exp-desc-beonit),
+::view-transition-old(exp-desc-freelance),
+::view-transition-old(exp-desc-codurance),
+::view-transition-old(exp-desc-swan),
+::view-transition-old(exp-desc-acid-tango) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(exp-desc-beonit),
+::view-transition-new(exp-desc-freelance),
+::view-transition-new(exp-desc-codurance),
+::view-transition-new(exp-desc-swan),
+::view-transition-new(exp-desc-acid-tango) {
+  animation: none;
+}
+
+/* ═══ TECH STACK - Pure Position Morph ═══ */
+
+::view-transition-group(exp-tech-beonit),
+::view-transition-group(exp-tech-freelance),
+::view-transition-group(exp-tech-codurance),
+::view-transition-group(exp-tech-swan),
+::view-transition-group(exp-tech-acid-tango) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(exp-tech-beonit),
+::view-transition-old(exp-tech-freelance),
+::view-transition-old(exp-tech-codurance),
+::view-transition-old(exp-tech-swan),
+::view-transition-old(exp-tech-acid-tango) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(exp-tech-beonit),
+::view-transition-new(exp-tech-freelance),
+::view-transition-new(exp-tech-codurance),
+::view-transition-new(exp-tech-swan),
+::view-transition-new(exp-tech-acid-tango) {
+  animation: none;
+}
+
 /* ═══ Default group animation ═══ */
 ::view-transition-group(*) {
   animation-duration: 0.8s;
