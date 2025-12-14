@@ -660,9 +660,18 @@ const gamingThemes = [
       // Clear previous focused state
       this.clearFocusedState();
 
-      // If no option is focused, start at beginning (down) or end (up)
+      // If no option is focused, find current active and move from there
       if (this.focusedIndex === -1) {
-        this.focusedIndex = direction === 1 ? 0 : totalOptions - 1;
+        const currentTheme = this.getCurrentTheme();
+        const activeIndex = options.findIndex(opt => opt.dataset.themeId === currentTheme);
+
+        if (activeIndex !== -1) {
+          // Start from current theme and move in direction
+          this.focusedIndex = (activeIndex + direction + totalOptions) % totalOptions;
+        } else {
+          // No active theme in this tab, start at beginning or end
+          this.focusedIndex = direction === 1 ? 0 : totalOptions - 1;
+        }
       } else {
         // Already navigating, move in direction
         this.focusedIndex = (this.focusedIndex + direction + totalOptions) % totalOptions;
