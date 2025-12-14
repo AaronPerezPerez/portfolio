@@ -109,7 +109,7 @@ export const experiences = [
     technologies: ["TypeScript", "Node.js", "Microservices", "AWS", "Docker"],
     companyUrl: "https://www.swan.io",
     logo: "/swan_logo.jpg",
-    logoColor: "#14191A",
+    logoColor: "#8166C4",
     projects: [{
       name: "Swan Platform",
       description: "BaaS (Banking as a Service) platform to manage bank accounts and cards via GraphQL API.",
