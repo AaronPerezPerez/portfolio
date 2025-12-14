@@ -450,7 +450,7 @@ import KonamiEasterEgg from './ui/KonamiEasterEgg.astro';
 
   /* Steam badge unlock animation */
   .steam-badge.badge-unlocked {
-    animation: badgeUnlock 0.6s ease-out;
+    animation: badgeUnlock 0.6s ease-out, badgePulse 1s ease-in-out 0.6s 3;
   }
 
   @keyframes badgeUnlock {
@@ -467,12 +467,13 @@ import KonamiEasterEgg from './ui/KonamiEasterEgg.astro';
     }
   }
 
-  .steam-badge .social-cmd {
-    color: #1b2838;
-    background: linear-gradient(135deg, #c7d5e0, #66c0f4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  @keyframes badgePulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(0, 255, 247, 0);
+    }
+    50% {
+      box-shadow: 0 0 20px 5px rgba(0, 255, 247, 0.5);
+    }
   }
 
   /* Scroll indicator - horizontal, bottom center */
