@@ -343,6 +343,7 @@ export const currentFocus = [
   "Performance Optimization",
   "Developer Experience (DX)",
   "Testing Strategy",
+  "AI Integration in Workflows",
 ] as const;
 
 export const achievements = [
@@ -373,6 +374,7 @@ export const extendedInfo = {
     "Tests are documentation that never gets outdated",
     "Pair programming multiplies knowledge, not just divides work",
     "Simple solutions are usually the best solutions",
+    "AI as a force multiplier, not a replacement for craftsmanship",
   ],
 
   // Interests and hobbies
@@ -381,6 +383,7 @@ export const extendedInfo = {
     "Traveling (visited dream destinations: NYC & Japan)",
     "Board games collector",
     "Trading card games (Magic & Pokémon collector)",
+    "Exploring AI tools for developer productivity",
   ],
 
   // Work preferences
