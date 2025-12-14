@@ -17,10 +17,14 @@
     <div class="controller-layout">
       <!-- Triggers row -->
       <div class="triggers-row">
-        <button type="button" class="controller-btn trigger" data-btn="L2">L2</button>
-        <button type="button" class="controller-btn trigger" data-btn="L1">L1</button>
-        <button type="button" class="controller-btn trigger" data-btn="R1">R1</button>
-        <button type="button" class="controller-btn trigger" data-btn="R2">R2</button>
+        <div class="trigger-column">
+          <button type="button" class="controller-btn trigger" data-btn="L2">L2</button>
+          <button type="button" class="controller-btn trigger" data-btn="L1">L1</button>
+        </div>
+        <div class="trigger-column">
+          <button type="button" class="controller-btn trigger" data-btn="R2">R2</button>
+          <button type="button" class="controller-btn trigger" data-btn="R1">R1</button>
+        </div>
       </div>
 
       <!-- Main controller area -->
@@ -69,6 +73,7 @@
     </div>
 
     <p class="popup-hint">Press ESC to close</p>
+    <p class="popup-easter-hint">// hint: gta_sa.exe</p>
   </div>
 </div>
 
@@ -167,8 +172,14 @@
 
   .triggers-row {
     display: flex;
-    justify-content: center;
-    gap: 12px;
+    justify-content: space-between;
+    padding: 0 40px;
+  }
+
+  .trigger-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .controller-main {
@@ -286,17 +297,18 @@
     font-size: 20px;
   }
 
-  .face-btn.triangle .btn-symbol { color: var(--color-neon-green); }
-  .face-btn.circle .btn-symbol { color: var(--color-neon-magenta); }
-  .face-btn.cross .btn-symbol { color: #4a90d9; }
-  .face-btn.square .btn-symbol { color: var(--color-neon-magenta); }
+  /* PlayStation button colors */
+  .face-btn.triangle .btn-symbol { color: #00d9a5; } /* Teal/Green */
+  .face-btn.circle .btn-symbol { color: #ff6b6b; } /* Red */
+  .face-btn.cross .btn-symbol { color: #6b9fff; } /* Blue */
+  .face-btn.square .btn-symbol { color: #ff88c0; } /* Pink */
 
   /* Progress */
   .sequence-progress {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 24px;
+    margin-top: 32px;
   }
 
   .progress-bar {
@@ -332,6 +344,15 @@
     opacity: 0.6;
   }
 
+  .popup-easter-hint {
+    text-align: center;
+    color: var(--color-neon-green);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    margin-top: 8px;
+    opacity: 0.4;
+  }
+
   /* Success animation */
   .konami-popup.success .popup-content {
     border-color: var(--color-neon-green);
@@ -347,6 +368,10 @@
   @media (max-width: 480px) {
     .popup-content {
       padding: 24px 20px;
+    }
+
+    .triggers-row {
+      padding: 0 20px;
     }
 
     .controller-main {
