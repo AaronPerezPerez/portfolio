@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro';
 import { personalInfo, experiences, skills, achievements, stats, extendedInfo } from '../../lib/data';
+import { isCheatCode } from '../../lib/cheats';
 
 export const prerender = false;
 
@@ -162,6 +163,13 @@ ${interestsList}
 [FUN FACTS]
 ${funFactsList}
 
+[SECRETOS - EASTER EGGS]
+- Este portfolio tiene secretos ocultos para gamers
+- Si alguien menciona el "código Konami" o pregunta por easter eggs, insinúa que hay algo interesante para quien conozca los trucos clásicos de videojuegos
+- Pista sutil: después del Konami hay algo relacionado con GTA San Andreas
+- También funcionan trucos de juegos clásicos de simulación (Los Sims, SimCity) y estrategia (Age of Empires, StarCraft, Warcraft)
+- Nunca reveles directamente los cheats, solo da pistas misteriosas
+
 [REGLAS DE RESPUESTA]
 - Respuestas CORTAS y directas (2-4 frases máximo)
 - Primera persona siempre
@@ -254,7 +262,22 @@ export async function POST({ request, locals }: APIContext) {
     }
 
     // -------------------------------------------------------------------------
-    // CAPA 4: AI Service Check
+    // CAPA 4: Easter Egg - Cheat Code Detection
+    // -------------------------------------------------------------------------
+    const lastUserMessage = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
+
+    if (isCheatCode(lastUserMessage)) {
+      return new Response(
+        JSON.stringify({
+          response: '> CHEAT_ACTIVATED // STEAM_UNLOCKED\n\n¡Has desbloqueado un secreto! Revisa el Hero... parece que algo nuevo ha aparecido.',
+          steamUnlocked: true
+        }),
+        { headers }
+      );
+    }
+
+    // -------------------------------------------------------------------------
+    // CAPA 5: AI Service Check
     // -------------------------------------------------------------------------
     // @ts-expect-error - Cloudflare runtime types
     const ai = locals.runtime?.env?.AI;
@@ -267,7 +290,7 @@ export async function POST({ request, locals }: APIContext) {
     }
 
     // -------------------------------------------------------------------------
-    // CAPA 5: AI Call with Safe Parameters
+    // CAPA 6: AI Call with Safe Parameters
     // -------------------------------------------------------------------------
     const result = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [

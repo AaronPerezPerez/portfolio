@@ -667,6 +667,11 @@ const presetQuestions = [
         const data = await response.json();
         const assistantMessage = data.response || '';
 
+        // Check if Steam badge was unlocked via cheat code
+        if (data.steamUnlocked) {
+          this.unlockSteamBadge();
+        }
+
         this.messages.push({ role: 'assistant', content: assistantMessage });
         this.renderMessages();
         saveChatHistory(this.messages);
@@ -750,6 +755,18 @@ const presetQuestions = [
       this.messages = [];
       clearChatHistory();
       this.renderMessages();
+    }
+
+    private unlockSteamBadge() {
+      // Save to localStorage
+      localStorage.setItem('steam_badge_unlocked', 'true');
+
+      // Show the badge with unlock animation
+      const steamBadge = document.getElementById('steam-badge');
+      if (steamBadge) {
+        steamBadge.style.display = 'inline-flex';
+        steamBadge.classList.add('badge-unlocked');
+      }
     }
   }
 
