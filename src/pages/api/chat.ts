@@ -1,6 +1,7 @@
 import type { APIContext } from 'astro';
 import { personalInfo, experiences, skills, achievements, stats, extendedInfo } from '../../lib/data';
 import { isCheatCode } from '../../lib/cheats';
+import { getOrCreateConversation, saveMessage } from '../../lib/db';
 
 export const prerender = false;
 
@@ -15,6 +16,7 @@ interface ChatMessage {
 
 interface ChatRequest {
   messages: ChatMessage[];
+  userId?: string;
 }
 
 interface SanitizationResult {
@@ -300,6 +302,27 @@ export async function POST({ request, locals }: APIContext) {
       max_tokens: 512,    // Limitar longitud de respuesta
       temperature: 0.3,   // Más determinístico, menos alucinaciones
     }) as { response: string };
+
+    // -------------------------------------------------------------------------
+    // CAPA 7: D1 Persistence (non-blocking)
+    // -------------------------------------------------------------------------
+    // @ts-expect-error - Cloudflare runtime types
+    const db = locals.runtime?.env?.DB;
+
+    if (db && body.userId) {
+      try {
+        const conversationId = await getOrCreateConversation(db, body.userId);
+        const lastUserMsg = sanitizedMessages[sanitizedMessages.length - 1];
+
+        if (lastUserMsg?.role === 'user') {
+          await saveMessage(db, conversationId, 'user', lastUserMsg.content);
+        }
+        await saveMessage(db, conversationId, 'assistant', result.response);
+      } catch (dbError) {
+        console.error('[D1 Error]:', dbError);
+        // No bloquear la respuesta si falla D1
+      }
+    }
 
     return new Response(
       JSON.stringify({ response: result.response }),

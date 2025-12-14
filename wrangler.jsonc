@@ -16,6 +16,14 @@
   "ai": {
     "binding": "AI"
   },
+  // D1 database para persistir conversaciones del chat
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "portfolio-chat",
+      "database_id": "830a1493-18e6-4c4b-8e54-19edc92993d3"
+    }
+  ],
   // Rate limiting para proteger el endpoint de chat (20 req/min por IP)
   "ratelimits": [
     {

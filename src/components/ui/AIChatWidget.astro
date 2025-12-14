@@ -514,11 +514,21 @@ const presetQuestions = [
 </style>
 
 <script>
-  import { saveChatHistory, loadChatHistory, clearChatHistory } from '../../lib/chat-storage';
 
   interface Message {
     role: 'user' | 'assistant';
     content: string;
+  }
+
+  const USER_ID_KEY = 'aaron-chat-user-id';
+
+  function getUserId(): string {
+    let userId = localStorage.getItem(USER_ID_KEY);
+    if (!userId) {
+      userId = crypto.randomUUID();
+      localStorage.setItem(USER_ID_KEY, userId);
+    }
+    return userId;
   }
 
   class AIChatWidget {
@@ -538,6 +548,7 @@ const presetQuestions = [
     private messages: Message[] = [];
     private isOpen: boolean = false;
     private isLoading: boolean = false;
+    private userId: string = '';
 
     constructor(element: HTMLElement) {
       this.widget = element;
@@ -557,9 +568,11 @@ const presetQuestions = [
     }
 
     private init() {
-      // Load saved messages
-      this.messages = loadChatHistory();
-      this.renderMessages();
+      // Get or generate user ID
+      this.userId = getUserId();
+
+      // Load saved messages from D1
+      this.loadHistoryFromServer();
 
       // Toggle chat
       this.toggle.addEventListener('click', () => this.toggleChat());
@@ -641,6 +654,21 @@ const presetQuestions = [
       this.window.setAttribute('aria-hidden', 'true');
     }
 
+    private async loadHistoryFromServer() {
+      if (!this.userId) return;
+
+      try {
+        const response = await fetch(`/api/history?userId=${this.userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          this.messages = data.messages || [];
+          this.renderMessages();
+        }
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+      }
+    }
+
     private async sendMessage() {
       const content = this.input.value.trim();
       if (!content || this.isLoading) return;
@@ -657,7 +685,7 @@ const presetQuestions = [
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: this.messages }),
+          body: JSON.stringify({ messages: this.messages, userId: this.userId }),
         });
 
         if (!response.ok) {
@@ -674,7 +702,7 @@ const presetQuestions = [
 
         this.messages.push({ role: 'assistant', content: assistantMessage });
         this.renderMessages();
-        saveChatHistory(this.messages);
+        // Messages are persisted server-side in D1
 
       } catch (error) {
         console.error('Chat error:', error);
@@ -751,10 +779,22 @@ const presetQuestions = [
       setTimeout(() => errorDiv.remove(), 5000);
     }
 
-    private clearChat() {
+    private async clearChat() {
       this.messages = [];
-      clearChatHistory();
       this.renderMessages();
+
+      // Soft delete en servidor
+      if (this.userId) {
+        try {
+          await fetch('/api/clear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: this.userId })
+          });
+        } catch (error) {
+          console.error('Failed to clear chat on server:', error);
+        }
+      }
     }
 
     private unlockSteamBadge() {
