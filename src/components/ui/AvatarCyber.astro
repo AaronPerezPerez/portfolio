@@ -279,12 +279,7 @@ const lvl = calculateAge(birthday);
       transparent 2px,
       transparent 4px
     );
-    animation: crt-flicker 0.15s infinite;
-  }
-
-  @keyframes crt-flicker {
-    0%, 100% { opacity: 0.9; }
-    50% { opacity: 1; }
+    opacity: 0.95; /* Static CRT look - no animation for performance */
   }
 
   .avatar-image {
@@ -299,22 +294,9 @@ const lvl = calculateAge(birthday);
     filter: saturate(1.1) contrast(1.05);
   }
 
-  /* Real photo gets extra CRT treatment */
+  /* Real photo - static CRT treatment (animation removed for performance) */
   .avatar-real {
-    /* Subtle RGB shift for CRT color fringing */
-    animation: crt-rgb-shift 4s ease-in-out infinite;
-  }
-
-  @keyframes crt-rgb-shift {
-    0%, 100% {
-      filter: saturate(1.1) contrast(1.05);
-    }
-    25% {
-      filter: saturate(1.15) contrast(1.08) hue-rotate(1deg);
-    }
-    75% {
-      filter: saturate(1.1) contrast(1.05) hue-rotate(-1deg);
-    }
+    filter: saturate(1.12) contrast(1.06);
   }
 
   /* CRT RGB Pixels - subtle pixel grid */

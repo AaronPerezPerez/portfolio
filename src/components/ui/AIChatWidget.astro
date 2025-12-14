@@ -685,13 +685,28 @@ const presetQuestions = [
     }
 
     private renderMessages() {
-      this.messagesContainer.innerHTML = this.messages
-        .map(msg => `
-          <div class="message ${msg.role}">
-            <div class="message-content">${this.escapeHtml(msg.content)}</div>
-          </div>
-        `)
-        .join('');
+      const currentCount = this.messagesContainer.children.length;
+      const targetCount = this.messages.length;
+
+      // If messages were cleared, remove all children
+      if (targetCount === 0 && currentCount > 0) {
+        this.messagesContainer.innerHTML = '';
+      }
+      // Only append new messages (batch DOM updates)
+      else if (targetCount > currentCount) {
+        const fragment = document.createDocumentFragment();
+        for (let i = currentCount; i < targetCount; i++) {
+          const msg = this.messages[i];
+          const div = document.createElement('div');
+          div.className = `message ${msg.role}`;
+          const content = document.createElement('div');
+          content.className = 'message-content';
+          content.textContent = msg.content;
+          div.appendChild(content);
+          fragment.appendChild(div);
+        }
+        this.messagesContainer.appendChild(fragment);
+      }
 
       // Update has-messages class
       this.widget.classList.toggle('has-messages', this.messages.length > 0);
