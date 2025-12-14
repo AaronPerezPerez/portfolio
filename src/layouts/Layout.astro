@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import '../styles/global.css';
 import ThemeSelector from '../components/ui/ThemeSelector.astro';
 import AIChatWidget from '../components/ui/AIChatWidget.astro';
@@ -100,6 +101,9 @@ const {
     <!-- Theme color for mobile -->
     <meta name="theme-color" content="#0a0a0f" />
 
+    <!-- View Transitions -->
+    <ClientRouter />
+
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
@@ -152,25 +156,35 @@ const {
 
     <!-- Scroll Reveal Script -->
     <script>
-      // Intersection Observer for scroll reveal animations
-      const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-      };
+      // Setup reveal animations - runs on initial load and after View Transitions
+      function setupRevealAnimations() {
+        const observerOptions = {
+          root: null,
+          rootMargin: '0px',
+          threshold: 0.1
+        };
 
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        }, observerOptions);
+
+        // Observe all elements with reveal classes
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+          // Remove visible class to allow re-animation
+          el.classList.remove('visible');
+          observer.observe(el);
         });
-      }, observerOptions);
+      }
 
-      // Observe all elements with reveal classes
-      document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
-        observer.observe(el);
-      });
+      // Run on initial page load
+      setupRevealAnimations();
+
+      // Re-run after View Transition navigation
+      document.addEventListener('astro:page-load', setupRevealAnimations);
     </script>
   </body>
 </html>

@@ -16,6 +16,7 @@ export const personalInfo = {
 export const experiences = [
   {
     id: 1,
+    slug: "beonit",
     company: "Beonit",
     role: "Senior FullStack Developer",
     location: "Madrid, Spain (Remote)",
@@ -38,6 +39,7 @@ export const experiences = [
   },
   {
     id: 2,
+    slug: "freelance",
     company: "Freelance",
     role: "Senior Software Craftsman",
     location: "Remote",
@@ -61,6 +63,7 @@ export const experiences = [
   },
   {
     id: 3,
+    slug: "codurance",
     company: "Codurance",
     role: "Senior Software Craftsman",
     location: "Barcelona, Spain (Remote)",
@@ -98,6 +101,7 @@ export const experiences = [
   },
   {
     id: 4,
+    slug: "swan",
     company: "Swan",
     role: "Software Engineer",
     location: "Paris, France (Remote)",
@@ -120,6 +124,7 @@ export const experiences = [
   },
   {
     id: 5,
+    slug: "acid-tango",
     company: "Acid Tango",
     role: "Full Stack Developer",
     location: "Tenerife, Canary Islands, Spain",

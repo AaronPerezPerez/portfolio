@@ -23,33 +23,26 @@ import Badge from './ui/Badge.astro';
             {exp.current && <div class="node-pulse"></div>}
           </div>
 
-          <div class="timeline-card">
+          <a href={`/experience/${exp.slug}`} class="timeline-card-link">
+          <div class="timeline-card" transition:name={`exp-card-${exp.slug}`}>
             <div class="card-header">
               <div class="card-company">
-                <a
-                  href={exp.companyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <div
                   class="company-logo"
                   style={`--logo-color: ${exp.logoColor}`}
-                  title={`Visit ${exp.company}`}
+                  transition:name={`exp-logo-${exp.slug}`}
                 >
                   {exp.logo.startsWith('/') || exp.logo.startsWith('http') ? (
                     <img src={exp.logo} alt={`${exp.company} logo`} class="logo-img" loading="lazy" decoding="async" />
                   ) : (
                     <span class="logo-icon" set:html={exp.logo} />
                   )}
-                </a>
+                </div>
                 <div class="company-text">
                   <span class="company-bracket">{'{'}</span>
-                  <a
-                    href={exp.companyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="company-name-link"
-                  >
+                  <span class="company-name" transition:name={`exp-title-${exp.slug}`}>
                     {exp.company}
-                  </a>
+                  </span>
                   <span class="company-bracket">{'}'}</span>
                 </div>
               </div>
@@ -83,6 +76,7 @@ import Badge from './ui/Badge.astro';
               ))}
             </div>
           </div>
+          </a>
         </div>
       ))}
     </div>
@@ -179,6 +173,13 @@ import Badge from './ui/Badge.astro';
   .timeline-item:hover .node-dot {
     transform: scale(1.2);
     box-shadow: 0 0 20px rgba(0, 255, 247, 0.7);
+  }
+
+  /* Timeline card link */
+  .timeline-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
   }
 
   /* Timeline card */
@@ -291,13 +292,12 @@ import Badge from './ui/Badge.astro';
     font-weight: 300;
   }
 
-  .company-name-link {
+  .company-name {
     color: var(--color-text-primary);
-    text-decoration: none;
     transition: all 0.2s ease;
   }
 
-  .company-name-link:hover {
+  .timeline-card-link:hover .company-name {
     color: var(--color-neon-cyan);
     text-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
   }

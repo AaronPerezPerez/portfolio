@@ -766,3 +766,144 @@ select:focus-visible {
     animation: none;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   VIEW TRANSITIONS - Morph Expansion Animations
+   ───────────────────────────────────────────────────────────── */
+
+/* Root transition - page background crossfade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.8s;
+  animation-timing-function: var(--ease-out-expo);
+}
+
+/* ═══ EXPERIENCE CARDS - Expansion Morph ═══ */
+
+/* Group controls the container expansion - main visual effect */
+::view-transition-group(exp-card-beonit),
+::view-transition-group(exp-card-freelance),
+::view-transition-group(exp-card-codurance),
+::view-transition-group(exp-card-swan),
+::view-transition-group(exp-card-acid-tango) {
+  animation-duration: 1.2s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Card old snapshot - fade out during expansion */
+::view-transition-old(exp-card-beonit),
+::view-transition-old(exp-card-freelance),
+::view-transition-old(exp-card-codurance),
+::view-transition-old(exp-card-swan),
+::view-transition-old(exp-card-acid-tango) {
+  animation: card-morph-out 0.5s ease-out forwards;
+}
+
+/* Card new snapshot - fade in during expansion */
+::view-transition-new(exp-card-beonit),
+::view-transition-new(exp-card-freelance),
+::view-transition-new(exp-card-codurance),
+::view-transition-new(exp-card-swan),
+::view-transition-new(exp-card-acid-tango) {
+  animation: card-morph-in 0.8s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes card-morph-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes card-morph-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ═══ LOGOS - Pure Scale/Position Morph (no crossfade) ═══ */
+
+::view-transition-group(exp-logo-beonit),
+::view-transition-group(exp-logo-freelance),
+::view-transition-group(exp-logo-codurance),
+::view-transition-group(exp-logo-swan),
+::view-transition-group(exp-logo-acid-tango) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Hide old logo immediately */
+::view-transition-old(exp-logo-beonit),
+::view-transition-old(exp-logo-freelance),
+::view-transition-old(exp-logo-codurance),
+::view-transition-old(exp-logo-swan),
+::view-transition-old(exp-logo-acid-tango) {
+  animation: none;
+  opacity: 0;
+}
+
+/* Show new logo immediately - group handles the morph */
+::view-transition-new(exp-logo-beonit),
+::view-transition-new(exp-logo-freelance),
+::view-transition-new(exp-logo-codurance),
+::view-transition-new(exp-logo-swan),
+::view-transition-new(exp-logo-acid-tango) {
+  animation: none;
+}
+
+/* ═══ TITLES - Pure Position/Size Morph (no crossfade) ═══ */
+
+::view-transition-group(exp-title-beonit),
+::view-transition-group(exp-title-freelance),
+::view-transition-group(exp-title-codurance),
+::view-transition-group(exp-title-swan),
+::view-transition-group(exp-title-acid-tango) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Hide old snapshot immediately - no crossfade */
+::view-transition-old(exp-title-beonit),
+::view-transition-old(exp-title-freelance),
+::view-transition-old(exp-title-codurance),
+::view-transition-old(exp-title-swan),
+::view-transition-old(exp-title-acid-tango) {
+  animation: none;
+  opacity: 0;
+}
+
+/* Show new snapshot immediately - morphing happens via group */
+::view-transition-new(exp-title-beonit),
+::view-transition-new(exp-title-freelance),
+::view-transition-new(exp-title-codurance),
+::view-transition-new(exp-title-swan),
+::view-transition-new(exp-title-acid-tango) {
+  animation: none;
+}
+
+/* ═══ Default group animation ═══ */
+::view-transition-group(*) {
+  animation-duration: 0.8s;
+  animation-timing-function: var(--ease-out-expo);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*) {
+    animation: none !important;
+    animation-delay: 0s !important;
+  }
+}
