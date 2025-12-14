@@ -1,0 +1,540 @@
+---
+// Easter Egg: Konami Code + PlayStation Sequence
+// Unlocks Steam profile badge in Hero
+---
+
+<div id="konami-popup" class="konami-popup" aria-hidden="true">
+  <div class="popup-backdrop"></div>
+  <div class="popup-content">
+    <div class="popup-header">
+      <span class="header-bracket">[</span>
+      <span class="header-text glitch" data-text="SECRET_UNLOCKED">SECRET_UNLOCKED</span>
+      <span class="header-bracket">]</span>
+    </div>
+
+    <p class="popup-instruction">// Enter the sequence to unlock</p>
+
+    <div class="controller-layout">
+      <!-- Triggers row -->
+      <div class="triggers-row">
+        <button type="button" class="controller-btn trigger" data-btn="L2">L2</button>
+        <button type="button" class="controller-btn trigger" data-btn="L1">L1</button>
+        <button type="button" class="controller-btn trigger" data-btn="R1">R1</button>
+        <button type="button" class="controller-btn trigger" data-btn="R2">R2</button>
+      </div>
+
+      <!-- Main controller area -->
+      <div class="controller-main">
+        <!-- D-pad -->
+        <div class="dpad">
+          <button type="button" class="controller-btn dpad-btn up" data-btn="up">
+            <span class="dpad-arrow">↑</span>
+          </button>
+          <button type="button" class="controller-btn dpad-btn left" data-btn="left">
+            <span class="dpad-arrow">←</span>
+          </button>
+          <div class="dpad-center"></div>
+          <button type="button" class="controller-btn dpad-btn right" data-btn="right">
+            <span class="dpad-arrow">→</span>
+          </button>
+          <button type="button" class="controller-btn dpad-btn down" data-btn="down">
+            <span class="dpad-arrow">↓</span>
+          </button>
+        </div>
+
+        <!-- Face buttons -->
+        <div class="face-buttons">
+          <button type="button" class="controller-btn face-btn triangle" data-btn="triangle">
+            <span class="btn-symbol">△</span>
+          </button>
+          <button type="button" class="controller-btn face-btn square" data-btn="square">
+            <span class="btn-symbol">□</span>
+          </button>
+          <button type="button" class="controller-btn face-btn circle" data-btn="circle">
+            <span class="btn-symbol">○</span>
+          </button>
+          <button type="button" class="controller-btn face-btn cross" data-btn="cross">
+            <span class="btn-symbol">✕</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress indicator -->
+    <div class="sequence-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="progress-text" id="progress-text">0/12</span>
+    </div>
+
+    <p class="popup-hint">Press ESC to close</p>
+  </div>
+</div>
+
+<style>
+  .konami-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .konami-popup.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .popup-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+  }
+
+  .popup-content {
+    position: relative;
+    background: var(--color-bg-terminal);
+    border: 2px solid var(--color-neon-cyan);
+    border-radius: 12px;
+    padding: 32px 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow:
+      0 0 40px rgba(0, 255, 247, 0.3),
+      0 0 80px rgba(0, 255, 247, 0.1),
+      inset 0 0 60px rgba(0, 255, 247, 0.05);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s ease;
+  }
+
+  .konami-popup.active .popup-content {
+    transform: scale(1) translateY(0);
+  }
+
+  /* Header */
+  .popup-header {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .header-bracket {
+    color: var(--color-neon-magenta);
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+  }
+
+  .header-text {
+    color: var(--color-neon-cyan);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0 8px;
+  }
+
+  .header-text.glitch {
+    animation: glitch 2s infinite;
+  }
+
+  @keyframes glitch {
+    0%, 90%, 100% { text-shadow: none; }
+    92% { text-shadow: -2px 0 var(--color-neon-magenta), 2px 0 var(--color-neon-green); }
+    94% { text-shadow: 2px 0 var(--color-neon-magenta), -2px 0 var(--color-neon-green); }
+    96% { text-shadow: -1px 0 var(--color-neon-cyan); }
+    98% { text-shadow: 1px 0 var(--color-neon-magenta); }
+  }
+
+  .popup-instruction {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    margin-bottom: 24px;
+  }
+
+  /* Controller layout */
+  .controller-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .triggers-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .controller-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+  }
+
+  /* Controller buttons base */
+  .controller-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .controller-btn:hover {
+    border-color: var(--color-neon-cyan);
+    color: var(--color-neon-cyan);
+    background: rgba(0, 255, 247, 0.1);
+  }
+
+  .controller-btn:active,
+  .controller-btn.pressed {
+    background: var(--color-neon-cyan);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 255, 247, 0.5);
+    transform: scale(0.95);
+  }
+
+  .controller-btn.correct {
+    border-color: var(--color-neon-green);
+    color: var(--color-neon-green);
+    background: rgba(0, 255, 136, 0.2);
+  }
+
+  .controller-btn.wrong {
+    border-color: var(--color-neon-magenta);
+    color: var(--color-neon-magenta);
+    background: rgba(255, 0, 136, 0.2);
+    animation: shake 0.3s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  /* Trigger buttons */
+  .trigger {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* D-pad */
+  .dpad {
+    display: grid;
+    grid-template-columns: 44px 44px 44px;
+    grid-template-rows: 44px 44px 44px;
+    gap: 4px;
+  }
+
+  .dpad-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+
+  .dpad-btn.up { grid-column: 2; grid-row: 1; }
+  .dpad-btn.left { grid-column: 1; grid-row: 2; }
+  .dpad-btn.right { grid-column: 3; grid-row: 2; }
+  .dpad-btn.down { grid-column: 2; grid-row: 3; }
+
+  .dpad-center {
+    grid-column: 2;
+    grid-row: 2;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+  }
+
+  .dpad-arrow {
+    font-size: 18px;
+  }
+
+  /* Face buttons */
+  .face-buttons {
+    display: grid;
+    grid-template-columns: 50px 50px;
+    grid-template-rows: 50px 50px;
+    gap: 8px;
+  }
+
+  .face-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .face-btn.triangle { grid-column: 1 / 3; grid-row: 1; justify-self: center; }
+  .face-btn.square { grid-column: 1; grid-row: 2; }
+  .face-btn.circle { grid-column: 2; grid-row: 2; }
+  .face-btn.cross { grid-column: 1 / 3; grid-row: 2; justify-self: center; margin-top: 58px; }
+
+  .btn-symbol {
+    font-size: 20px;
+  }
+
+  .face-btn.triangle .btn-symbol { color: var(--color-neon-green); }
+  .face-btn.circle .btn-symbol { color: var(--color-neon-magenta); }
+  .face-btn.cross .btn-symbol { color: #4a90d9; }
+  .face-btn.square .btn-symbol { color: var(--color-neon-magenta); }
+
+  /* Progress */
+  .sequence-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--color-neon-cyan), var(--color-neon-green));
+    border-radius: 2px;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 10px var(--color-neon-cyan);
+  }
+
+  .progress-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-muted);
+    min-width: 40px;
+  }
+
+  .popup-hint {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    margin-top: 16px;
+    opacity: 0.6;
+  }
+
+  /* Success animation */
+  .konami-popup.success .popup-content {
+    border-color: var(--color-neon-green);
+    box-shadow:
+      0 0 60px rgba(0, 255, 136, 0.4),
+      0 0 100px rgba(0, 255, 136, 0.2);
+  }
+
+  .konami-popup.success .header-text {
+    color: var(--color-neon-green);
+  }
+
+  @media (max-width: 480px) {
+    .popup-content {
+      padding: 24px 20px;
+    }
+
+    .controller-main {
+      padding: 0;
+    }
+
+    .trigger {
+      padding: 8px 14px;
+      font-size: 12px;
+    }
+
+    .dpad {
+      grid-template-columns: 38px 38px 38px;
+      grid-template-rows: 38px 38px 38px;
+    }
+
+    .face-buttons {
+      grid-template-columns: 44px 44px;
+      grid-template-rows: 44px 44px;
+    }
+
+    .face-btn {
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>
+
+<script>
+  // Konami Code: ↑↑↓↓←→←→BA
+  const KONAMI_CODE = [
+    'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+    'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+    'KeyB', 'KeyA'
+  ];
+
+  // PlayStation sequence: R1, R2, L1, X, ←, ↓, →, ↑, ←, ↓, →, ↑
+  const PS_SEQUENCE = [
+    'R1', 'R2', 'L1', 'cross', 'left', 'down', 'right', 'up', 'left', 'down', 'right', 'up'
+  ];
+
+  class KonamiEasterEgg {
+    private popup: HTMLElement;
+    private progressFill: HTMLElement;
+    private progressText: HTMLElement;
+    private konamiIndex = 0;
+    private psIndex = 0;
+    private isActive = false;
+
+    constructor() {
+      this.popup = document.getElementById('konami-popup')!;
+      this.progressFill = document.getElementById('progress-fill')!;
+      this.progressText = document.getElementById('progress-text')!;
+
+      this.init();
+    }
+
+    private init() {
+      // Check if already unlocked
+      if (localStorage.getItem('steam_badge_unlocked') === 'true') {
+        this.showSteamBadge();
+      }
+
+      // Listen for Konami code
+      document.addEventListener('keydown', (e) => this.handleKonamiKey(e));
+
+      // Listen for button clicks
+      this.popup.querySelectorAll('.controller-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.handleButtonClick(btn as HTMLButtonElement));
+      });
+
+      // ESC to close
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isActive) {
+          this.closePopup();
+        }
+      });
+
+      // Click backdrop to close
+      this.popup.querySelector('.popup-backdrop')?.addEventListener('click', () => {
+        if (this.isActive) this.closePopup();
+      });
+    }
+
+    private handleKonamiKey(e: KeyboardEvent) {
+      // Don't trigger if typing in input
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+
+      // Don't trigger if popup is already open
+      if (this.isActive) return;
+
+      if (e.code === KONAMI_CODE[this.konamiIndex]) {
+        this.konamiIndex++;
+        if (this.konamiIndex === KONAMI_CODE.length) {
+          this.openPopup();
+          this.konamiIndex = 0;
+        }
+      } else {
+        this.konamiIndex = 0;
+      }
+    }
+
+    private handleButtonClick(btn: HTMLButtonElement) {
+      const btnId = btn.dataset.btn;
+      if (!btnId) return;
+
+      // Add pressed animation
+      btn.classList.add('pressed');
+      setTimeout(() => btn.classList.remove('pressed'), 150);
+
+      // Check if correct
+      if (btnId === PS_SEQUENCE[this.psIndex]) {
+        btn.classList.add('correct');
+        setTimeout(() => btn.classList.remove('correct'), 300);
+        this.psIndex++;
+        this.updateProgress();
+
+        if (this.psIndex === PS_SEQUENCE.length) {
+          this.onSuccess();
+        }
+      } else {
+        // Wrong button - reset
+        btn.classList.add('wrong');
+        setTimeout(() => btn.classList.remove('wrong'), 300);
+        this.psIndex = 0;
+        this.updateProgress();
+      }
+    }
+
+    private updateProgress() {
+      const percent = (this.psIndex / PS_SEQUENCE.length) * 100;
+      this.progressFill.style.width = `${percent}%`;
+      this.progressText.textContent = `${this.psIndex}/${PS_SEQUENCE.length}`;
+    }
+
+    private openPopup() {
+      this.isActive = true;
+      this.psIndex = 0;
+      this.updateProgress();
+      this.popup.classList.add('active');
+      this.popup.setAttribute('aria-hidden', 'false');
+    }
+
+    private closePopup() {
+      this.isActive = false;
+      this.popup.classList.remove('active', 'success');
+      this.popup.setAttribute('aria-hidden', 'true');
+      this.psIndex = 0;
+      this.updateProgress();
+    }
+
+    private onSuccess() {
+      // Success animation
+      this.popup.classList.add('success');
+
+      // Update header text
+      const headerText = this.popup.querySelector('.header-text');
+      if (headerText) {
+        headerText.textContent = 'STEAM_UNLOCKED';
+        headerText.setAttribute('data-text', 'STEAM_UNLOCKED');
+      }
+
+      // Save to localStorage
+      localStorage.setItem('steam_badge_unlocked', 'true');
+
+      // Show Steam badge
+      this.showSteamBadge();
+
+      // Close popup after delay
+      setTimeout(() => {
+        this.closePopup();
+      }, 1500);
+    }
+
+    private showSteamBadge() {
+      const steamBadge = document.getElementById('steam-badge');
+      if (steamBadge) {
+        steamBadge.style.display = 'inline-flex';
+        steamBadge.classList.add('badge-unlocked');
+      }
+    }
+  }
+
+  // Initialize on DOM ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new KonamiEasterEgg();
+  });
+</script>

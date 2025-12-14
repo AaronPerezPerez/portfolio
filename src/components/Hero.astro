@@ -7,6 +7,7 @@ import TypewriterText from './ui/TypewriterText.astro';
 import NeonBorder from './ui/NeonBorder.astro';
 import Icon from './ui/Icon.astro';
 import AvatarCyber from './ui/AvatarCyber.astro';
+import KonamiEasterEgg from './ui/KonamiEasterEgg.astro';
 ---
 
 <section id="hero" class="hero-section">
@@ -67,6 +68,21 @@ import AvatarCyber from './ui/AvatarCyber.astro';
 
       <!-- Social Links as Terminal Commands -->
       <div class="hero-socials reveal delay-4">
+        <!-- Steam Badge - Hidden until Easter Egg unlocked -->
+        <button
+          type="button"
+          class="social-link steam-badge"
+          id="steam-badge"
+          data-href="https://steamcommunity.com/id/Molotroco/"
+          data-cmd="steam --profile"
+          style="display: none;"
+        >
+          <span class="social-prompt">&gt;</span>
+          <span class="social-cmd">steam</span>
+          <span class="social-flag">--profile</span>
+          <span class="social-arrow">→</span>
+        </button>
+
         <!-- CV Download - Terminal style with same behavior -->
         <button
           type="button"
@@ -143,6 +159,9 @@ import AvatarCyber from './ui/AvatarCyber.astro';
   <div class="hero-decoration">
     <div class="hex-pattern"></div>
   </div>
+
+  <!-- Easter Egg: Konami Code -->
+  <KonamiEasterEgg />
 </section>
 
 <style>
@@ -427,6 +446,33 @@ import AvatarCyber from './ui/AvatarCyber.astro';
   .social-link:hover .social-arrow {
     opacity: 1;
     transform: translateX(0);
+  }
+
+  /* Steam badge unlock animation */
+  .steam-badge.badge-unlocked {
+    animation: badgeUnlock 0.6s ease-out;
+  }
+
+  @keyframes badgeUnlock {
+    0% {
+      opacity: 0;
+      transform: scale(0.5) translateY(-10px);
+    }
+    50% {
+      transform: scale(1.1) translateY(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .steam-badge .social-cmd {
+    color: #1b2838;
+    background: linear-gradient(135deg, #c7d5e0, #66c0f4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   /* Scroll indicator - horizontal, bottom center */
