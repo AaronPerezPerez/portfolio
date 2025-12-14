@@ -28,6 +28,13 @@ export const experiences = [
     companyUrl: "https://www.beonit.es",
     logo: "/beonit_logo.png",
     logoColor: "#00D4AA",
+    projects: [{
+      name: "Beonit Platform",
+      description: "Talent management and training platform through channels like email and WhatsApp. Currently migrating backend to NestJS with TypeScript and DDD.",
+      technologies: ["Vue", "MySQL", "Docker", "Express.js", "NestJS", "TypeScript", "DDD"],
+      url: "https://www.beonit.es/",
+      image: "/projects/beonit.png"
+    }],
   },
   {
     id: 2,
@@ -44,6 +51,13 @@ export const experiences = [
     // Official LinkedIn icon from Bootstrap Icons
     logo: `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></svg>`,
     logoColor: "#0A66C2",
+    projects: [{
+      name: "VeVe",
+      description: "NFT marketplace with official licenses from Marvel, Star Wars, and Disney. Event-driven microservices architecture.",
+      technologies: ["Next.js", "NestJS", "Microservices", "PostgreSQL", "MongoDB", "RabbitMQ"],
+      url: "https://www.veve.me/",
+      image: "/projects/veve.png"
+    }],
   },
   {
     id: 3,
@@ -59,6 +73,28 @@ export const experiences = [
     companyUrl: "https://www.codurance.com",
     logo: "/codurance_logo.png",
     logoColor: "#D60D47",
+    projects: [
+      {
+        name: "Kodokan (Santander Bank)",
+        description: "Training program for Santander Bank developer teams on best practices, TDD, DDD, and Agile methodologies.",
+        technologies: ["TDD", "DDD", "Agile", "Clean Code"],
+        image: "/projects/kodokan.png"
+      },
+      {
+        name: "TaxSystem",
+        description: "Legacy system analysis adding observability to detect bottlenecks. Reduced frontend load times from ~1 min to ~5 seconds.",
+        technologies: [".NET", "Angular", "Grafana", "K6", "Azure"],
+        url: "https://www.taxsystems.com/",
+        image: "/projects/taxsystem.png"
+      },
+      {
+        name: "Webbeds",
+        description: "Hotel chain availability aggregator normalizing data for Booking, Airbnb, and other platforms.",
+        technologies: [".NET", "PostgreSQL", "Kafka", "Event-driven"],
+        url: "https://www.webbeds.com/",
+        image: "/projects/webbeds.png"
+      }
+    ],
   },
   {
     id: 4,
@@ -74,6 +110,13 @@ export const experiences = [
     companyUrl: "https://www.swan.io",
     logo: "/swan_logo.jpg",
     logoColor: "#14191A",
+    projects: [{
+      name: "Swan Platform",
+      description: "BaaS (Banking as a Service) platform to manage bank accounts and cards via GraphQL API.",
+      technologies: ["NestJS", "DDD", "Microservices", "GraphQL", "gRPC", "Kafka", "Next.js"],
+      url: "https://www.swan.io/",
+      image: "/projects/swan.png"
+    }],
   },
   {
     id: 5,
@@ -89,6 +132,39 @@ export const experiences = [
     companyUrl: "https://www.acidtango.com",
     logo: "/acid_tango_logo.jpeg",
     logoColor: "#FFC419",
+    projects: [
+      {
+        name: "Synergy",
+        description: "HR platform for staffing agency with employee management, documentation, and online document signing.",
+        technologies: ["Rails", "MySQL", "React", "PWA"],
+        image: "/projects/synergy.png"
+      },
+      {
+        name: "Yubick",
+        description: "Truck service station app with reservation management and license plate reader barrier integration.",
+        technologies: ["Next.js", "NestJS", "MongoDB", "React Native"],
+        image: "/projects/yubick.png"
+      },
+      {
+        name: "WeFeedRaw",
+        description: "Subscription platform for raw dog food diets. Complete migration from Shopify with zero downtime.",
+        technologies: ["Next.js", "NestJS", "PostgreSQL"],
+        image: "/projects/wefeedraw.png"
+      },
+      {
+        name: "Rabbit",
+        description: "Supply platform for stores in Mexico with dashboard, delivery app, and ETL processes from multiple providers.",
+        technologies: ["Next.js", "NestJS", "React Native", "AWS Lambda", "MongoDB", "PostgreSQL"],
+        image: "/projects/rabbit.png"
+      },
+      {
+        name: "Vizzuality",
+        description: "Platform using Marxan algorithm to calculate optimal restoration zones on interactive maps.",
+        technologies: ["Angular", "NestJS", "PostgreSQL", "PostGIS"],
+        url: "https://www.vizzuality.com/",
+        image: "/projects/vizzuality.png"
+      }
+    ],
   },
 ] as const;
 
