@@ -89,12 +89,14 @@ const workProjects = experiences.flatMap(exp =>
 
   .work-projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 24px;
   }
 
   /* Project card */
   .project-card {
+    display: flex;
+    flex-direction: column;
     background: var(--color-bg-terminal);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -197,6 +199,9 @@ const workProjects = experiences.flatMap(exp =>
 
   /* Project content */
   .project-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
   }
 
@@ -287,6 +292,8 @@ const workProjects = experiences.flatMap(exp =>
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
+    margin-top: auto;
+    padding-top: 12px;
   }
 
   .more-tech {
