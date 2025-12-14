@@ -53,7 +53,7 @@ export const experiences = [
     logoColor: "#0A66C2",
     projects: [{
       name: "VeVe",
-      description: "NFT marketplace with official licenses from Marvel, Star Wars, and Disney. Event-driven microservices architecture.",
+      description: "NFT marketplace with official licenses from Marvel, Star Wars, and Disney.",
       technologies: ["Next.js", "NestJS", "Microservices", "PostgreSQL", "MongoDB", "RabbitMQ"],
       url: "https://www.veve.me/",
       image: "/projects/veve.png"
@@ -134,10 +134,11 @@ export const experiences = [
     logoColor: "#FFC419",
     projects: [
       {
-        name: "Synergy",
-        description: "HR platform for staffing agency with employee management, documentation, and online document signing.",
+        name: "Synergie",
+        description: "HR platform for staffing agency with employee management, job offers, and candidate matching across 46 offices in Spain.",
         technologies: ["Rails", "MySQL", "React", "PWA"],
-        image: "/projects/synergy.png"
+        url: "https://www.synergie.es/",
+        image: "/projects/synergie.png"
       },
       {
         name: "Yubick",
@@ -148,13 +149,15 @@ export const experiences = [
       {
         name: "WeFeedRaw",
         description: "Subscription platform for raw dog food diets. Complete migration from Shopify with zero downtime.",
-        technologies: ["Next.js", "NestJS", "PostgreSQL"],
+        technologies: ["React", "Next.js", "Node.js", "NestJS", "AWS", "Kubernetes"],
+        url: "https://wefeedraw.com/",
         image: "/projects/wefeedraw.png"
       },
       {
         name: "Rabbit",
-        description: "Supply platform for stores in Mexico with dashboard, delivery app, and ETL processes from multiple providers.",
+        description: "Supply platform for corner stores in Mexico with dashboard, delivery app, credit services, and ETL processes from multiple providers.",
         technologies: ["Next.js", "NestJS", "React Native", "AWS Lambda", "MongoDB", "PostgreSQL"],
+        url: "https://rabbitmx.com/",
         image: "/projects/rabbit.png"
       },
       {
