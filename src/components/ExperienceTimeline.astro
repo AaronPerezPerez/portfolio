@@ -15,6 +15,7 @@ import Badge from './ui/Badge.astro';
 
       {experiences.map((exp, index) => (
         <div
+          id={`exp-${exp.slug}`}
           class={`timeline-item ${exp.current ? 'current' : ''} reveal-left`}
           style={`--delay: ${index * 150}ms`}
         >
