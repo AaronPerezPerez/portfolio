@@ -59,7 +59,13 @@ const workProjects = experiences.flatMap(exp =>
 
             <h3 class="project-name">{project.name}</h3>
 
-            <p class="project-description">{project.description}</p>
+            <div class="description-wrapper">
+              <p class="project-description">{project.description}</p>
+              <button class="read-more-btn" aria-expanded="false">
+                <span class="read-more-text">READ_MORE</span>
+                <span class="read-less-text">READ_LESS</span>
+              </button>
+            </div>
 
             <div class="project-technologies">
               {project.technologies.slice(0, 5).map((tech) => (
@@ -218,16 +224,62 @@ const workProjects = experiences.flatMap(exp =>
     color: var(--accent-color, var(--color-neon-cyan));
   }
 
+  .description-wrapper {
+    margin-bottom: 16px;
+  }
+
   .project-description {
     font-family: var(--font-mono);
     font-size: 13px;
     color: var(--color-text-secondary);
     line-height: 1.6;
-    margin: 0 0 16px;
+    margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .description-wrapper.expanded .project-description {
+    display: block;
+    -webkit-line-clamp: unset;
+  }
+
+  .read-more-btn {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent-color, var(--color-neon-cyan));
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+  }
+
+  .read-more-btn:hover {
+    opacity: 1;
+  }
+
+  .read-more-btn.visible {
+    display: inline-flex;
+  }
+
+  .read-more-btn .read-less-text {
+    display: none;
+  }
+
+  .description-wrapper.expanded .read-more-btn .read-more-text {
+    display: none;
+  }
+
+  .description-wrapper.expanded .read-more-btn .read-less-text {
+    display: inline;
   }
 
   .project-technologies {
@@ -268,3 +320,34 @@ const workProjects = experiences.flatMap(exp =>
     }
   }
 </style>
+
+<script>
+  function initReadMore() {
+    const wrappers = document.querySelectorAll('.description-wrapper');
+
+    wrappers.forEach(wrapper => {
+      const description = wrapper.querySelector('.project-description') as HTMLElement;
+      const button = wrapper.querySelector('.read-more-btn') as HTMLButtonElement;
+
+      if (!description || !button) return;
+
+      // Check if text is truncated
+      const isTruncated = description.scrollHeight > description.clientHeight;
+
+      if (isTruncated) {
+        button.classList.add('visible');
+
+        button.addEventListener('click', () => {
+          const isExpanded = wrapper.classList.toggle('expanded');
+          button.setAttribute('aria-expanded', String(isExpanded));
+        });
+      }
+    });
+  }
+
+  // Run on page load
+  initReadMore();
+
+  // Re-run after view transitions
+  document.addEventListener('astro:after-swap', initReadMore);
+</script>
