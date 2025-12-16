@@ -154,6 +154,32 @@ const {
       <slot />
     </main>
 
+    <!-- Scroll Position Restoration for View Transitions -->
+    <script>
+      // Save scroll position when leaving home page
+      document.addEventListener('astro:before-preparation', (e) => {
+        const currentPath = window.location.pathname;
+        const targetPath = new URL(e.to).pathname;
+
+        // Going from home to experience detail? Save position
+        if (currentPath === '/' && targetPath.startsWith('/experience/')) {
+          sessionStorage.setItem('homeScrollY', String(window.scrollY));
+        }
+      });
+
+      // Restore scroll position immediately after swap (before animation)
+      document.addEventListener('astro:after-swap', () => {
+        if (window.location.pathname === '/') {
+          const savedY = sessionStorage.getItem('homeScrollY');
+          if (savedY) {
+            // Instant scroll - no animation, happens before view transition renders
+            window.scrollTo({ top: parseInt(savedY, 10), behavior: 'instant' });
+            sessionStorage.removeItem('homeScrollY');
+          }
+        }
+      });
+    </script>
+
     <!-- Scroll Reveal Script -->
     <script>
       // Setup reveal animations - runs on initial load and after View Transitions
