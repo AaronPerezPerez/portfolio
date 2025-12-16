@@ -25,30 +25,38 @@ export async function getOrCreateConversation(db: D1Database, userId: string): P
   return result.meta.last_row_id as number;
 }
 
-// Guardar mensaje
-export async function saveMessage(
+// Guardar múltiples mensajes en batch (más eficiente)
+export async function saveMessagesBatch(
   db: D1Database,
   conversationId: number,
-  role: 'user' | 'assistant',
-  content: string
+  messages: Array<{ role: 'user' | 'assistant'; content: string }>
 ): Promise<void> {
-  await db.prepare(
+  if (messages.length === 0) return;
+
+  const stmt = db.prepare(
     'INSERT INTO messages (conversation_id, role, content) VALUES (?, ?, ?)'
-  ).bind(conversationId, role, content).run();
+  );
+
+  await db.batch(
+    messages.map(msg => stmt.bind(conversationId, msg.role, msg.content))
+  );
 }
 
-// Cargar historial (últimos 50 mensajes, excluyendo borrados)
+// Cargar historial (últimos 50 mensajes en orden cronológico)
 export async function loadMessages(db: D1Database, userId: string): Promise<Message[]> {
+  // Subconsulta: obtiene los últimos 50 (DESC), luego los reordena (ASC)
   const result = await db.prepare(`
-    SELECT m.role, m.content
-    FROM messages m
-    JOIN conversations c ON m.conversation_id = c.id
-    WHERE c.user_id = ? AND m.deleted_at IS NULL
-    ORDER BY m.created_at DESC
-    LIMIT 50
+    SELECT role, content FROM (
+      SELECT m.role, m.content, m.created_at
+      FROM messages m
+      JOIN conversations c ON m.conversation_id = c.id
+      WHERE c.user_id = ? AND m.deleted_at IS NULL
+      ORDER BY m.created_at DESC
+      LIMIT 50
+    ) ORDER BY created_at ASC
   `).bind(userId).all<{ role: 'user' | 'assistant'; content: string }>();
 
-  return result.results.reverse();
+  return result.results;
 }
 
 // Limpiar conversación (soft delete)

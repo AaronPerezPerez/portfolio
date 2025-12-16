@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro';
 import { personalInfo, experiences, skills, achievements, stats, extendedInfo } from '../../lib/data';
 import { isCheatCode } from '../../lib/cheats';
-import { getOrCreateConversation, saveMessage } from '../../lib/db';
+import { getOrCreateConversation, saveMessagesBatch } from '../../lib/db';
 
 export const prerender = false;
 
@@ -294,7 +294,7 @@ export async function POST({ request, locals }: APIContext) {
     // -------------------------------------------------------------------------
     // CAPA 6: AI Call with Safe Parameters
     // -------------------------------------------------------------------------
-    const result = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+    const result = await ai.run('@cf/qwen/qwen3-30b-a3b-fp8', {
       messages: [
         { role: 'system', content: systemPrompt },
         ...sanitizedMessages
@@ -304,24 +304,32 @@ export async function POST({ request, locals }: APIContext) {
     }) as { response: string };
 
     // -------------------------------------------------------------------------
-    // CAPA 7: D1 Persistence (non-blocking)
+    // CAPA 7: D1 Persistence (non-blocking via waitUntil)
     // -------------------------------------------------------------------------
     // @ts-expect-error - Cloudflare runtime types
     const db = locals.runtime?.env?.DB;
+    // @ts-expect-error - Cloudflare runtime types
+    const ctx = locals.runtime?.ctx;
 
-    if (db && body.userId) {
-      try {
-        const conversationId = await getOrCreateConversation(db, body.userId);
-        const lastUserMsg = sanitizedMessages[sanitizedMessages.length - 1];
+    if (db && body.userId && ctx?.waitUntil) {
+      const lastUserMsg = sanitizedMessages[sanitizedMessages.length - 1];
 
-        if (lastUserMsg?.role === 'user') {
-          await saveMessage(db, conversationId, 'user', lastUserMsg.content);
+      // Persistir en background - no bloquea la respuesta
+      ctx.waitUntil((async () => {
+        try {
+          const conversationId = await getOrCreateConversation(db, body.userId);
+          const messagesToSave: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+
+          if (lastUserMsg?.role === 'user') {
+            messagesToSave.push({ role: 'user', content: lastUserMsg.content });
+          }
+          messagesToSave.push({ role: 'assistant', content: result.response });
+
+          await saveMessagesBatch(db, conversationId, messagesToSave);
+        } catch (dbError) {
+          console.error('[D1 Error]:', dbError);
         }
-        await saveMessage(db, conversationId, 'assistant', result.response);
-      } catch (dbError) {
-        console.error('[D1 Error]:', dbError);
-        // No bloquear la respuesta si falla D1
-      }
+      })());
     }
 
     return new Response(
