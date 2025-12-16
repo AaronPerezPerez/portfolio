@@ -24,6 +24,9 @@
       "database_id": "830a1493-18e6-4c4b-8e54-19edc92993d3"
     }
   ],
+  // Admin panel secret (set via: wrangler secret put ADMIN_SECRET)
+  // For local dev, set in .dev.vars file
+
   // Rate limiting para proteger el endpoint de chat (20 req/min por IP)
   "ratelimits": [
     {
