@@ -294,14 +294,28 @@ export async function POST({ request, locals }: APIContext) {
     // -------------------------------------------------------------------------
     // CAPA 6: AI Call with Safe Parameters
     // -------------------------------------------------------------------------
-    const result = await ai.run('@cf/qwen/qwen3-30b-a3b-fp8', {
+    const aiResult = await ai.run('@cf/qwen/qwen3-30b-a3b-fp8', {
       messages: [
         { role: 'system', content: systemPrompt },
         ...sanitizedMessages
       ],
       max_tokens: 512,    // Limitar longitud de respuesta
       temperature: 0.3,   // Más determinístico, menos alucinaciones
-    }) as { response: string };
+    });
+
+    // Qwen3 puede devolver formato OpenAI (choices) o formato simple (response)
+    const aiResponse = (aiResult as { choices?: Array<{ message?: { content?: string } }>; response?: string })
+      .choices?.[0]?.message?.content
+      || (aiResult as { response?: string }).response
+      || '';
+
+    if (!aiResponse) {
+      console.error('[AI Error]: Empty response from model', aiResult);
+      return new Response(
+        JSON.stringify({ error: 'AI returned empty response' }),
+        { status: 500, headers }
+      );
+    }
 
     // -------------------------------------------------------------------------
     // CAPA 7: D1 Persistence (non-blocking via waitUntil)
@@ -323,7 +337,7 @@ export async function POST({ request, locals }: APIContext) {
           if (lastUserMsg?.role === 'user') {
             messagesToSave.push({ role: 'user', content: lastUserMsg.content });
           }
-          messagesToSave.push({ role: 'assistant', content: result.response });
+          messagesToSave.push({ role: 'assistant', content: aiResponse });
 
           await saveMessagesBatch(db, conversationId, messagesToSave);
         } catch (dbError) {
@@ -333,7 +347,7 @@ export async function POST({ request, locals }: APIContext) {
     }
 
     return new Response(
-      JSON.stringify({ response: result.response }),
+      JSON.stringify({ response: aiResponse }),
       { headers }
     );
 
