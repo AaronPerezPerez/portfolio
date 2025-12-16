@@ -336,30 +336,37 @@ export async function POST({ request, locals }: APIContext) {
     // -------------------------------------------------------------------------
     // CAPA 6: AI Call with Safe Parameters
     // -------------------------------------------------------------------------
-    const aiResult = await ai.run('@cf/qwen/qwen3-30b-a3b-fp8', {
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...sanitizedMessages
-      ],
-      max_tokens: 512,    // Limitar longitud de respuesta
-      temperature: 0.5,   // Balance entre variedad y coherencia
-    });
+    const lastMsg = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
+    const isEnglish = /\b(what|how|your|the|is|are|do|can|hi|hello|hey|nice|good|great)\b/i.test(lastMsg);
 
-    // Qwen3 puede devolver formato OpenAI (choices) o formato simple (response)
-    let aiResponse = (aiResult as { choices?: Array<{ message?: { content?: string } }>; response?: string })
-      .choices?.[0]?.message?.content
-      || (aiResult as { response?: string }).response
-      || '';
+    let aiResponse = '';
 
-    // Limpiar respuesta: quitar saltos de línea al inicio y espacios extra
-    aiResponse = aiResponse.trim().replace(/^[\n\r]+/, '');
+    try {
+      const aiResult = await ai.run('@cf/qwen/qwen3-30b-a3b-fp8', {
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...sanitizedMessages
+        ],
+        max_tokens: 512,
+        temperature: 0.5,
+      });
 
-    // Si la respuesta está vacía, usar fallback amigable
+      // Qwen3 puede devolver formato OpenAI (choices) o formato simple (response)
+      aiResponse = (aiResult as { choices?: Array<{ message?: { content?: string } }>; response?: string })
+        .choices?.[0]?.message?.content
+        || (aiResult as { response?: string }).response
+        || '';
+
+      // Limpiar respuesta: quitar saltos de línea al inicio y espacios extra
+      aiResponse = aiResponse.trim().replace(/^[\n\r]+/, '');
+    } catch (aiError) {
+      console.error('[AI Error]: Model threw exception', aiError);
+      // Usar fallback en caso de error del modelo
+    }
+
+    // Si la respuesta está vacía o hubo error, usar fallback amigable
     if (!aiResponse) {
-      console.warn('[AI Warning]: Empty response from model, using fallback', aiResult);
-      // Detectar idioma del último mensaje para responder en el mismo
-      const lastMsg = sanitizedMessages[sanitizedMessages.length - 1]?.content || '';
-      const isEnglish = /\b(what|how|your|the|is|are|do|can|hi|hello|hey)\b/i.test(lastMsg);
+      console.warn('[AI Fallback]: Using default response');
       aiResponse = isEnglish
         ? "Hi! I'm Aaron, a Software Craftsman. How can I help you?"
         : "Hola! Soy Aaron, Software Craftsman. En qué puedo ayudarte?";
