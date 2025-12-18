@@ -728,74 +728,8 @@ import KonamiEasterEgg from './ui/KonamiEasterEgg.astro';
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Only target buttons with data-href (interactive terminal commands)
-    const socialLinks = document.querySelectorAll('.hero-socials button.social-link[data-href]');
-    const commandsContainer = document.getElementById('commands-container');
+  import { initSocialLinkHandler } from '../scripts/modules/hero';
 
-    let isProcessing = false;
-
-    socialLinks.forEach((link) => {
-      link.addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        if (isProcessing) return;
-        isProcessing = true;
-
-        const href = link.dataset.href;
-        const cmd = link.dataset.cmd;
-
-        // Disable all buttons during processing
-        socialLinks.forEach((btn) => btn.setAttribute('disabled', 'true'));
-
-        // Create new command line with proper HTML structure
-        const commandLine = document.createElement('div');
-        commandLine.className = 'terminal-line interactive-line';
-        commandLine.innerHTML = `
-          <span class="prompt">$</span>
-          <span class="typed-command"></span>
-          <span class="loading-dots" style="display: none;"></span>
-        `;
-
-        commandsContainer.appendChild(commandLine);
-
-        const typedCommand = commandLine.querySelector('.typed-command');
-        const loadingDots = commandLine.querySelector('.loading-dots');
-
-        // Type the command character by character
-        for (let i = 0; i < cmd.length; i++) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          typedCommand.textContent += cmd[i];
-        }
-
-        // Show loading dots
-        loadingDots.style.display = 'inline-block';
-
-        // Wait 1.5 seconds then open link or download
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // Check if it's a download or external link
-        const downloadName = link.dataset.download;
-        if (downloadName) {
-          // Trigger download
-          const a = document.createElement('a');
-          a.href = href;
-          a.download = downloadName;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } else {
-          // Open external link
-          window.open(href, '_blank', 'noopener,noreferrer');
-        }
-
-        // Hide loading dots but keep the command visible
-        loadingDots.style.display = 'none';
-
-        // Re-enable buttons
-        socialLinks.forEach((btn) => btn.removeAttribute('disabled'));
-        isProcessing = false;
-      });
-    });
-  });
+  // Initialize social link handler
+  initSocialLinkHandler();
 </script>

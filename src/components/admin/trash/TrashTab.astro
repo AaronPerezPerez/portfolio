@@ -1,0 +1,208 @@
+---
+/**
+ * TrashTab - Deleted conversations management
+ *
+ * Similar to conversations tab but for soft-deleted items.
+ * Allows restoring or permanently deleting conversations.
+ */
+---
+
+<div class="trash-container">
+  <!-- Sidebar: Deleted conversations list -->
+  <aside class="trash-sidebar">
+    <div class="sidebar-header">
+      <svg class="trash-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+      </svg>
+      <span>DELETED CONVERSATIONS</span>
+    </div>
+    <div id="trash-list" class="trash-list">
+      <div class="loading-state">Loading...</div>
+    </div>
+  </aside>
+
+  <!-- Main: Trash detail -->
+  <main class="trash-main">
+    <div id="trash-detail" class="trash-detail">
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </div>
+        <div class="empty-text">Select a deleted conversation</div>
+        <div class="empty-hint">Items in trash can be restored or permanently deleted</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<style>
+  .trash-container {
+    display: flex;
+    height: calc(100vh - 120px);
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  /* Sidebar */
+  .trash-sidebar {
+    width: 20rem;
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+
+  .trash-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .trash-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .loading-state {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  /* Main */
+  .trash-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .trash-detail {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  .empty-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.2;
+  }
+
+  .empty-icon svg {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .empty-text {
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-hint {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  /* Trash item styles (populated by JS) */
+  :global(.trash-item) {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease;
+  }
+
+  :global(.trash-item:hover) {
+    background: var(--bg-secondary);
+  }
+
+  :global(.trash-item.active) {
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.1);
+    border-left: 2px solid var(--primary);
+  }
+
+  :global(.trash-item-header) {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.trash-item-user) {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--primary);
+  }
+
+  :global(.trash-item-date) {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  :global(.trash-item-preview) {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Trash detail actions */
+  :global(.trash-actions) {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  :global(.trash-action-btn) {
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global(.trash-action-btn.restore) {
+    background: var(--color-neon-green);
+    color: var(--bg-primary);
+    border: none;
+  }
+
+  :global(.trash-action-btn.restore:hover) {
+    opacity: 0.9;
+  }
+
+  :global(.trash-action-btn.delete) {
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+  }
+
+  :global(.trash-action-btn.delete:hover) {
+    background: #ef4444;
+    color: white;
+  }
+</style>

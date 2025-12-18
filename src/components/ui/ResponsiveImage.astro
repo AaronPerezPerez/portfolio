@@ -1,0 +1,115 @@
+---
+/**
+ * ResponsiveImage - Optimized image component with modern formats
+ *
+ * Uses Astro's Picture component for automatic format conversion
+ * and responsive srcset generation.
+ *
+ * @example
+ * // With imported image (fully optimized)
+ * import heroImage from '../../assets/hero.jpg';
+ * <ResponsiveImage src={heroImage} alt="Hero" />
+ *
+ * @example
+ * // With public folder image (basic optimization)
+ * <ResponsiveImage src="/projects/beonit.png" alt="Project" width={800} height={450} />
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  /** Image source - imported asset or public path string */
+  src: ImageMetadata | string;
+  /** Alt text for accessibility */
+  alt: string;
+  /** Optional width (required for public folder images) */
+  width?: number;
+  /** Optional height (required for public folder images) */
+  height?: number;
+  /** CSS class for the img element */
+  class?: string;
+  /** Responsive sizes attribute */
+  sizes?: string;
+  /** Loading strategy */
+  loading?: 'lazy' | 'eager';
+  /** Decoding hint */
+  decoding?: 'async' | 'sync' | 'auto';
+  /** Output formats to generate */
+  formats?: ('avif' | 'webp' | 'png' | 'jpg')[];
+  /** Widths to generate for srcset */
+  widths?: number[];
+  /** Quality (1-100) */
+  quality?: number;
+  /** Additional picture element class */
+  pictureClass?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  class: className = '',
+  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+  loading = 'lazy',
+  decoding = 'async',
+  formats = ['avif', 'webp'],
+  widths = [400, 800, 1200],
+  quality = 80,
+  pictureClass = '',
+} = Astro.props;
+
+// Check if src is an imported image (has metadata) or a string path
+const isImportedImage = typeof src !== 'string';
+
+// For public folder images, we need width/height
+const needsDimensions = !isImportedImage && (!width || !height);
+---
+
+{isImportedImage ? (
+  <!-- Fully optimized with Astro's Picture component -->
+  <Picture
+    src={src}
+    alt={alt}
+    formats={formats}
+    widths={widths}
+    sizes={sizes}
+    quality={quality}
+    loading={loading}
+    decoding={decoding}
+    class={className}
+    pictureAttributes={{ class: pictureClass }}
+  />
+) : needsDimensions ? (
+  <!-- Fallback for public images without dimensions -->
+  <img
+    src={src}
+    alt={alt}
+    class={className}
+    loading={loading}
+    decoding={decoding}
+  />
+) : (
+  <!-- Public folder image with dimensions - use Picture with inferSize -->
+  <Picture
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    formats={formats}
+    sizes={sizes}
+    quality={quality}
+    loading={loading}
+    decoding={decoding}
+    class={className}
+    pictureAttributes={{ class: pictureClass }}
+  />
+)}
+
+<style>
+  /* Ensure images are responsive by default */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>

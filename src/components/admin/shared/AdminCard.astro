@@ -1,0 +1,100 @@
+---
+/**
+ * AdminCard - Reusable card component for admin panels
+ *
+ * Props:
+ * - title: Card header title (optional)
+ * - padding: Body padding style ("normal" | "none" | "compact")
+ * - minHeight: Minimum height for card body
+ * - class: Additional CSS classes
+ */
+
+interface Props {
+  title?: string;
+  padding?: 'normal' | 'none' | 'compact';
+  minHeight?: string;
+  class?: string;
+}
+
+const {
+  title,
+  padding = 'normal',
+  minHeight,
+  class: className = '',
+} = Astro.props;
+
+const paddingClasses = {
+  normal: 'padding-normal',
+  compact: 'padding-compact',
+  none: 'padding-none',
+};
+---
+
+<div class:list={['admin-card', className]}>
+  {title && (
+    <div class="card-header">
+      <slot name="header-left">
+        <span class="card-title">{title}</span>
+      </slot>
+      <slot name="header-right" />
+    </div>
+  )}
+  <div
+    class:list={['card-body', paddingClasses[padding]]}
+    style={minHeight ? `min-height: ${minHeight}` : undefined}
+  >
+    <slot />
+  </div>
+</div>
+
+<style>
+  .admin-card {
+    background: rgba(var(--bg-secondary-rgb, 20, 20, 30), 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .card-body {
+    min-height: 180px;
+  }
+
+  .padding-normal {
+    padding: 1.25rem;
+  }
+
+  .padding-compact {
+    padding: 0.75rem;
+  }
+
+  .padding-none {
+    padding: 0;
+  }
+
+  /* Hover effect (optional via class) */
+  .admin-card.hoverable {
+    transition: all 0.2s ease;
+  }
+
+  .admin-card.hoverable:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb, 0, 255, 255), 0.1);
+  }
+</style>

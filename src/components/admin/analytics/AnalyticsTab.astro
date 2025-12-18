@@ -1,0 +1,320 @@
+---
+/**
+ * AnalyticsTab - Analytics dashboard with charts and stats
+ *
+ * Contains:
+ * - Period comparison stats
+ * - Activity chart (30 days)
+ * - Hourly heatmap
+ * - Language distribution
+ * - Top topics
+ * - Word cloud
+ * - Potential leads
+ * - Top engaging conversations
+ * - Cost analytics
+ */
+import AdminCard from '../shared/AdminCard.astro';
+---
+
+<div class="analytics-container" id="analytics-container">
+  <!-- Period Comparison -->
+  <div class="analytics-row full">
+    <AdminCard title="PERIOD COMPARISON" padding="normal">
+      <div slot="header-right" class="header-controls">
+        <select id="comparison-period" class="period-select">
+          <option value="7">Last 7 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="30">Last 30 days</option>
+        </select>
+      </div>
+      <div id="comparison-stats" class="comparison-grid">
+        <!-- Loading placeholders -->
+        <div class="stat-loading"><div class="skeleton-text"></div><div class="skeleton-number"></div></div>
+        <div class="stat-loading"><div class="skeleton-text"></div><div class="skeleton-number"></div></div>
+        <div class="stat-loading"><div class="skeleton-text"></div><div class="skeleton-number"></div></div>
+        <div class="stat-loading"><div class="skeleton-text"></div><div class="skeleton-number"></div></div>
+      </div>
+    </AdminCard>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="analytics-grid">
+    <!-- Activity Chart -->
+    <AdminCard title="ACTIVITY (30 DAYS)">
+      <canvas id="activity-chart" height="200"></canvas>
+    </AdminCard>
+
+    <!-- Hourly Heatmap -->
+    <AdminCard title="HOURLY HEATMAP">
+      <div id="hourly-heatmap" class="heatmap-container"></div>
+      <div class="heatmap-labels">
+        <span>0h</span>
+        <span>6h</span>
+        <span>12h</span>
+        <span>18h</span>
+        <span>24h</span>
+      </div>
+    </AdminCard>
+
+    <!-- Language Distribution -->
+    <AdminCard title="LANGUAGES">
+      <div class="language-container">
+        <div id="language-chart" class="language-chart"></div>
+        <div id="language-legend" class="language-legend"></div>
+      </div>
+    </AdminCard>
+
+    <!-- Top Topics -->
+    <AdminCard title="TOP TOPICS">
+      <div id="topics-chart" class="topics-container"></div>
+    </AdminCard>
+
+    <!-- Word Cloud (spans 2 columns) -->
+    <AdminCard title="WORD CLOUD" class="span-2">
+      <div id="wordcloud-chart" class="wordcloud-container"></div>
+    </AdminCard>
+
+    <!-- Potential Leads -->
+    <AdminCard title="POTENTIAL LEADS">
+      <span slot="header-right" id="leads-count" class="leads-badge">0</span>
+      <div id="leads-list" class="leads-container"></div>
+    </AdminCard>
+
+    <!-- Top Engaging Conversations -->
+    <AdminCard title="TOP ENGAGING">
+      <div id="engaging-list" class="engaging-container"></div>
+    </AdminCard>
+
+    <!-- Cost Analytics (spans 2 columns) -->
+    <AdminCard title="COST ANALYTICS" class="span-2">
+      <div class="cost-grid">
+        <div class="cost-stat">
+          <span class="cost-label">Total Tokens</span>
+          <span id="cost-tokens" class="cost-value">--</span>
+        </div>
+        <div class="cost-stat">
+          <span class="cost-label">Input Tokens</span>
+          <span id="cost-input" class="cost-value">--</span>
+        </div>
+        <div class="cost-stat">
+          <span class="cost-label">Output Tokens</span>
+          <span id="cost-output" class="cost-value">--</span>
+        </div>
+        <div class="cost-stat">
+          <span class="cost-label">Estimated Cost</span>
+          <span id="cost-total" class="cost-value highlight">--</span>
+        </div>
+      </div>
+      <div class="cost-chart-container">
+        <canvas id="cost-chart" height="150"></canvas>
+      </div>
+    </AdminCard>
+  </div>
+</div>
+
+<style>
+  .analytics-container {
+    padding: 1.5rem;
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  .analytics-row.full {
+    margin-bottom: 1.5rem;
+  }
+
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .analytics-grid :global(.span-2) {
+    grid-column: span 2;
+  }
+
+  /* Header Controls */
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .period-select {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+  }
+
+  .period-select:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  /* Comparison Stats */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  .stat-loading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .skeleton-text {
+    height: 1rem;
+    width: 5rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-number {
+    height: 2rem;
+    width: 4rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Heatmap */
+  .heatmap-container {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    align-items: flex-end;
+    height: 8rem;
+  }
+
+  .heatmap-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-top: 0.5rem;
+  }
+
+  /* Language Chart */
+  .language-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .language-chart {
+    width: 10rem;
+    height: 10rem;
+    position: relative;
+  }
+
+  .language-legend {
+    margin-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  /* Topics */
+  .topics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* Word Cloud */
+  .wordcloud-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 200px;
+  }
+
+  /* Leads */
+  .leads-badge {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    background: rgba(57, 255, 20, 0.2);
+    color: var(--color-neon-green);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+  }
+
+  .leads-container,
+  .engaging-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Cost Analytics */
+  .cost-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .cost-stat {
+    text-align: center;
+  }
+
+  .cost-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: 0.25rem;
+  }
+
+  .cost-value {
+    font-size: 1.25rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .cost-value.highlight {
+    color: var(--color-neon-green);
+  }
+
+  .cost-chart-container {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .analytics-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .analytics-grid :global(.span-2) {
+      grid-column: span 1;
+    }
+
+    .comparison-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cost-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

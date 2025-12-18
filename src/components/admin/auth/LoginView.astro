@@ -1,0 +1,231 @@
+---
+/**
+ * LoginView - Admin authentication screen
+ *
+ * Terminal-styled login form with glassmorphism design.
+ * Works with AuthManager from /lib/admin/
+ */
+---
+
+<div class="login-container" id="login-view">
+  <div class="login-backdrop"></div>
+  <div class="login-wrapper">
+    <div class="login-window">
+      <div class="terminal-header">
+        <span class="terminal-dot dot-red"></span>
+        <span class="terminal-dot dot-yellow"></span>
+        <span class="terminal-dot dot-green"></span>
+        <span class="terminal-title">admin.login</span>
+      </div>
+
+      <div class="login-content">
+        <div class="login-title">
+          <span class="prompt">&gt;</span>
+          <span class="title-text">AARON.ADMIN</span>
+        </div>
+
+        <form id="login-form" class="login-form">
+          <div class="form-group">
+            <label for="password-input" class="form-label">
+              PASSWORD_
+            </label>
+            <input
+              type="password"
+              id="password-input"
+              class="form-input"
+              placeholder="Enter admin password"
+              autocomplete="current-password"
+            />
+          </div>
+
+          <div id="login-error" class="error-message hidden">
+            <span class="error-prefix">[ERROR]</span> Invalid password
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <span>&gt;</span>
+            <span>AUTHENTICATE</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .login-backdrop {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, transparent 70%);
+    opacity: 0.8;
+  }
+
+  .login-wrapper {
+    width: 100%;
+    max-width: 28rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  .login-window {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--bg-secondary-rgb, 20, 20, 30), 0.95) 0%,
+      rgba(var(--bg-tertiary-rgb, 30, 30, 45), 0.9) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(var(--primary-rgb, 0, 255, 255), 0.1),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 0 60px rgba(var(--primary-rgb, 0, 255, 255), 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    position: relative;
+  }
+
+  .login-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(var(--primary-rgb, 0, 255, 255), 0.3) 0%,
+      transparent 50%,
+      rgba(var(--secondary-rgb, 255, 0, 255), 0.2) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .terminal-header {
+    background: rgba(var(--bg-tertiary-rgb, 30, 30, 45), 0.8);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #eab308; }
+  .dot-green { background: #22c55e; }
+
+  .terminal-title {
+    margin-left: 1rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+    font-family: var(--font-mono);
+  }
+
+  .login-content {
+    padding: 1.5rem;
+  }
+
+  .login-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .login-title .prompt {
+    color: var(--primary);
+  }
+
+  .login-title .title-text {
+    font-size: 1.25rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono);
+  }
+
+  .form-input {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    transition: border-color 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .form-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .error-message {
+    color: #f87171;
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+  }
+
+  .error-message.hidden {
+    display: none;
+  }
+
+  .error-prefix {
+    color: #ef4444;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--primary);
+    color: var(--bg-primary);
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: opacity 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .submit-btn:hover {
+    opacity: 0.9;
+  }
+</style>

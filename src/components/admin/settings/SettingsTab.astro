@@ -1,0 +1,289 @@
+---
+/**
+ * SettingsTab - AI configuration management
+ *
+ * Contains:
+ * - System prompt editor
+ * - Temperature control
+ * - Change history
+ */
+import AdminCard from '../shared/AdminCard.astro';
+---
+
+<div class="settings-container" id="settings-container">
+  <!-- System Prompt Section -->
+  <AdminCard title="SYSTEM PROMPT" class="settings-card">
+    <span slot="header-right" id="prompt-status" class="status-text">Loading...</span>
+
+    <div class="settings-hint">
+      Customize the AI persona and behavior. Changes take effect immediately.
+    </div>
+
+    <textarea
+      id="system-prompt-editor"
+      class="prompt-editor"
+      placeholder="Loading system prompt..."
+    ></textarea>
+
+    <div class="prompt-footer">
+      <span id="prompt-char-count" class="char-count">0 characters</span>
+      <div class="prompt-actions">
+        <button id="reset-prompt-btn" class="btn btn-secondary">
+          Reset to Default
+        </button>
+        <button id="save-prompt-btn" class="btn btn-primary">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </AdminCard>
+
+  <!-- Temperature Section -->
+  <AdminCard title="AI TEMPERATURE" class="settings-card">
+    <div class="settings-hint">
+      Controls response creativity. Lower = more focused, Higher = more creative.
+    </div>
+
+    <div class="temperature-control">
+      <span class="temp-label">Focused</span>
+      <input
+        type="range"
+        id="temperature-slider"
+        min="0"
+        max="1"
+        step="0.1"
+        value="0.5"
+        class="temperature-slider"
+      />
+      <span class="temp-label right">Creative</span>
+    </div>
+
+    <div class="temperature-footer">
+      <span id="temperature-value" class="temp-value">0.5</span>
+      <div class="temp-actions">
+        <button id="reset-temperature-btn" class="btn btn-secondary">
+          Reset to 0.5
+        </button>
+        <button id="save-temperature-btn" class="btn btn-primary">
+          Save
+        </button>
+      </div>
+    </div>
+  </AdminCard>
+
+  <!-- Config History Section -->
+  <AdminCard title="CHANGE HISTORY" class="settings-card">
+    <div id="config-history" class="history-list">
+      <div class="history-loading">Loading history...</div>
+    </div>
+  </AdminCard>
+</div>
+
+<style>
+  .settings-container {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .settings-container :global(.settings-card) {
+    min-height: auto;
+  }
+
+  /* Status Text */
+  .status-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  /* Hint Text */
+  .settings-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  /* Prompt Editor */
+  .prompt-editor {
+    width: 100%;
+    height: 20rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    resize: vertical;
+    transition: border-color 0.2s ease;
+  }
+
+  .prompt-editor:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .prompt-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+
+  .char-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .prompt-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 0.375rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .btn-secondary:hover {
+    background: var(--bg-secondary);
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    border: none;
+    color: var(--bg-primary);
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  /* Temperature Control */
+  .temperature-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .temp-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    width: 4rem;
+  }
+
+  .temp-label.right {
+    text-align: right;
+  }
+
+  .temperature-slider {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-secondary);
+    border-radius: 2px;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .temperature-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .temperature-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .temperature-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
+
+  .temperature-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.75rem;
+  }
+
+  .temp-value {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    color: var(--primary);
+  }
+
+  .temp-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  /* History List */
+  .history-list {
+    max-height: 15rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .history-loading {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* History item styles (populated by JS) */
+  :global(.history-item) {
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+
+  :global(.history-item-header) {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.history-item-type) {
+    font-family: var(--font-mono);
+    color: var(--primary);
+  }
+
+  :global(.history-item-date) {
+    color: var(--text-muted);
+  }
+
+  :global(.history-item-value) {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+</style>

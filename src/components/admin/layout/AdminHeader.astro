@@ -1,0 +1,172 @@
+---
+/**
+ * AdminHeader - Top navigation bar with stats
+ *
+ * Displays:
+ * - Live user count (via LiveManager)
+ * - Global stats (conversations, messages, today)
+ * - Logout button
+ */
+---
+
+<header class="admin-header">
+  <div class="header-content">
+    <div class="header-brand">
+      <span class="prompt">&gt;</span>
+      <span class="brand-text">AARON.ADMIN</span>
+    </div>
+
+    <div class="header-stats">
+      <!-- Live users indicator -->
+      <div id="live-indicator" class="stat-item live-indicator hidden">
+        <span class="live-dot"></span>
+        <span id="live-count" class="live-count">0</span>
+        <span class="stat-label">LIVE</span>
+      </div>
+
+      <!-- Conversations count -->
+      <div class="stat-item">
+        <span class="stat-label">CONVERSATIONS:</span>
+        <span id="stat-conversations" class="stat-value primary">--</span>
+      </div>
+
+      <!-- Messages count -->
+      <div class="stat-item">
+        <span class="stat-label">MESSAGES:</span>
+        <span id="stat-messages" class="stat-value primary">--</span>
+      </div>
+
+      <!-- Today's count -->
+      <div class="stat-item">
+        <span class="stat-label">TODAY:</span>
+        <span id="stat-today" class="stat-value secondary">--</span>
+      </div>
+
+      <!-- Logout button -->
+      <button id="logout-btn" class="logout-btn">
+        LOGOUT
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(var(--bg-primary-rgb, 10, 10, 15), 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .header-content {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .header-brand .prompt {
+    color: var(--primary);
+  }
+
+  .brand-text {
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .header-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stat-label {
+    color: var(--text-muted);
+  }
+
+  .stat-value {
+    font-weight: 500;
+  }
+
+  .stat-value.primary {
+    color: var(--primary);
+  }
+
+  .stat-value.secondary {
+    color: var(--secondary);
+  }
+
+  /* Live indicator */
+  .live-indicator {
+    display: flex;
+  }
+
+  .live-indicator.hidden {
+    display: none;
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-neon-green);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .live-count {
+    color: var(--color-neon-green);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Logout button */
+  .logout-btn {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .logout-btn:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header-stats {
+      gap: 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .stat-item:not(.live-indicator):not(:last-child) {
+      display: none;
+    }
+  }
+</style>

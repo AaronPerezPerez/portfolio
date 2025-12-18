@@ -16,6 +16,13 @@
   "ai": {
     "binding": "AI"
   },
+  // KV namespace para sesiones de admin
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "81cac270b16d4f66a48ae81daed14eb3"
+    }
+  ],
   // D1 database para persistir conversaciones del chat
   "d1_databases": [
     {

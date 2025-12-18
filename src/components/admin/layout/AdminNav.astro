@@ -1,0 +1,100 @@
+---
+/**
+ * AdminNav - Tab navigation for admin panel
+ *
+ * Props:
+ * - currentTab: The currently active tab
+ */
+import type { AdminTab } from '../../../lib/admin/state';
+
+interface Props {
+  currentTab: AdminTab;
+}
+
+const { currentTab } = Astro.props;
+
+const tabs = [
+  { id: 'conversations', label: 'CONVERSATIONS', color: 'primary' },
+  { id: 'analytics', label: 'ANALYTICS', color: 'primary' },
+  { id: 'trash', label: 'TRASH', color: 'muted' },
+  { id: 'settings', label: 'SETTINGS', color: 'primary' },
+  { id: 'moderation', label: 'MODERATION', color: 'secondary' },
+] as const;
+---
+
+<nav class="admin-nav">
+  <div class="nav-content">
+    {tabs.map(tab => (
+      <a
+        href={`/admin/${tab.id}`}
+        class:list={['tab-link', { active: currentTab === tab.id }]}
+        data-tab={tab.id}
+      >
+        <span class={`tab-prefix ${tab.color}`}>//</span>
+        {tab.label}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .admin-nav {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .nav-content {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .tab-link {
+    padding: 0.75rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .tab-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  .tab-prefix {
+    margin-right: 0.25rem;
+  }
+
+  .tab-prefix.primary {
+    color: var(--primary);
+  }
+
+  .tab-prefix.secondary {
+    color: var(--secondary);
+  }
+
+  .tab-prefix.muted {
+    color: var(--text-muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .tab-link {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .tab-prefix {
+      display: none;
+    }
+  }
+</style>

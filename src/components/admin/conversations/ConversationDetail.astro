@@ -1,0 +1,171 @@
+---
+/**
+ * ConversationDetail - Right panel showing selected conversation
+ *
+ * Initial state shows placeholder. Content populated by JS when
+ * a conversation is selected.
+ */
+---
+
+<main class="conversation-detail">
+  <div id="conversation-detail" class="detail-content">
+    <div class="empty-state">
+      <div class="empty-icon">&gt;_</div>
+      <div class="empty-text">Select a conversation</div>
+    </div>
+  </div>
+</main>
+
+<style>
+  .conversation-detail {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .detail-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  .empty-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.2;
+  }
+
+  /* Detail Header - injected by JS */
+  :global(.detail-header) {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  :global(.detail-header-row) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  :global(.detail-user) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  :global(.detail-user .prompt) {
+    color: var(--primary);
+    font-family: var(--font-mono);
+  }
+
+  :global(.detail-user .user-id) {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  :global(.detail-date) {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  :global(.delete-btn) {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global(.delete-btn:hover) {
+    color: #ef4444;
+    border-color: #ef4444;
+  }
+
+  :global(.delete-btn svg) {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  /* Message Bubbles - injected by JS */
+  :global(.admin-message) {
+    margin-bottom: 1rem;
+    max-width: 85%;
+  }
+
+  :global(.admin-message.user) {
+    margin-left: auto;
+  }
+
+  :global(.admin-message.assistant) {
+    margin-right: auto;
+  }
+
+  :global(.admin-message-meta) {
+    font-size: 0.625rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  :global(.admin-message.user .admin-message-meta) {
+    text-align: right;
+  }
+
+  :global(.admin-message-content) {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  :global(.admin-message.user .admin-message-content) {
+    background: var(--primary);
+    color: var(--bg-primary);
+    border-bottom-right-radius: 2px;
+  }
+
+  :global(.admin-message.assistant .admin-message-content) {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-bottom-left-radius: 2px;
+  }
+
+  /* Loading & Error states */
+  :global(.loading-state),
+  :global(.error-state) {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+  }
+
+  :global(.error-state) {
+    color: #ef4444;
+  }
+</style>

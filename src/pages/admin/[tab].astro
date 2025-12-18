@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import '../../styles/admin.css';
 
 export const prerender = false;
 
@@ -1193,12 +1194,103 @@ const currentTab = tab as 'conversations' | 'analytics' | 'trash' | 'settings' |
     color: #ff6464;
   }
 
-  /* Bulk selection styles */
-  .bulk-checkbox {
+  /* Minimalist terminal checkbox */
+  .terminal-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     width: 14px;
     height: 14px;
-    accent-color: var(--primary);
+    background: transparent;
+    border: 1px solid var(--color-text-muted);
     cursor: pointer;
+    position: relative;
+    transition: border-color 0.15s ease, opacity 0.15s ease;
+    flex-shrink: 0;
+    margin: 0;
+    opacity: 0.6;
+  }
+
+  .terminal-checkbox:hover {
+    border-color: var(--color-neon-cyan);
+    opacity: 1;
+  }
+
+  .terminal-checkbox:checked {
+    border-color: var(--color-neon-cyan);
+    opacity: 1;
+  }
+
+  .terminal-checkbox:checked::after {
+    content: '×';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    line-height: 1;
+    color: var(--color-neon-cyan);
+    font-family: var(--font-mono);
+    font-weight: bold;
+  }
+
+  .terminal-checkbox:focus {
+    outline: none;
+    border-color: var(--color-neon-cyan);
+    opacity: 1;
+  }
+
+  /* Conversation item row layout */
+  .conversation-item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  .conversation-item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Bulk action bar checkbox */
+  .bulk-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .bulk-checkbox:hover {
+    border-color: var(--primary);
+  }
+
+  .bulk-checkbox:checked {
+    border-color: var(--primary);
+  }
+
+  .bulk-checkbox:checked::after {
+    content: '×';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    line-height: 1;
+    color: var(--primary);
+    font-family: var(--font-mono);
+  }
+
+  .bulk-checkbox:focus {
+    outline: none;
+    border-color: var(--primary);
   }
 
   .bulk-btn {
@@ -1238,28 +1330,9 @@ const currentTab = tab as 'conversations' | 'analytics' | 'trash' | 'settings' |
     color: var(--color-neon-green);
   }
 
-  /* Conversation item with checkbox */
-  .conversation-item-checkbox {
-    position: absolute;
-    left: 4px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  .conversation-item:hover .conversation-item-checkbox,
-  .conversation-item.selected .conversation-item-checkbox,
-  .bulk-mode .conversation-item-checkbox {
-    opacity: 1;
-  }
-
+  /* Selected conversation item */
   .conversation-item.selected {
-    background: rgba(var(--primary-rgb, 0, 255, 255), 0.08);
-  }
-
-  .bulk-mode .conversation-item {
-    padding-left: 32px;
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.05);
   }
 
   /* Bulk tag dropdown */
@@ -2207,28 +2280,32 @@ const currentTab = tab as 'conversations' | 'analytics' | 'trash' | 'settings' |
         const shortId = conv.userId ? conv.userId.substring(0, 8) : 'unknown';
 
         return `
-          <div class="conversation-item ${isActive ? 'active' : ''} ${isSelected ? 'selected' : ''}" data-id="${conv.id}" style="position: relative;">
-            <input
-              type="checkbox"
-              class="conversation-item-checkbox bulk-checkbox"
-              data-id="${conv.id}"
-              ${isSelected ? 'checked' : ''}
-            />
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-mono text-sm text-[var(--primary)]">${shortId}...</span>
-              <span class="text-xs text-[var(--text-muted)]">${lastMessageAt}</span>
-            </div>
-            <div class="text-sm text-[var(--text-muted)] truncate">${this.escapeHtml(preview)}</div>
-            <div class="text-xs text-[var(--text-muted)] mt-1 flex items-center gap-1">
-              <span class="text-[var(--secondary)]">${conv.messageCount || 0}</span>
-              <span>messages</span>
+          <div class="conversation-item ${isActive ? 'active' : ''} ${isSelected ? 'selected' : ''}" data-id="${conv.id}">
+            <div class="conversation-item-row">
+              <input
+                type="checkbox"
+                class="terminal-checkbox"
+                data-id="${conv.id}"
+                ${isSelected ? 'checked' : ''}
+              />
+              <div class="conversation-item-content">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-mono text-sm text-[var(--primary)]">${shortId}...</span>
+                  <span class="text-xs text-[var(--text-muted)]">${lastMessageAt}</span>
+                </div>
+                <div class="text-sm text-[var(--text-muted)] truncate">${this.escapeHtml(preview)}</div>
+                <div class="text-xs text-[var(--text-muted)] mt-1 flex items-center gap-1">
+                  <span class="text-[var(--secondary)]">${conv.messageCount || 0}</span>
+                  <span>messages</span>
+                </div>
+              </div>
             </div>
           </div>
         `;
       }).join('');
 
       // Add checkbox handlers
-      container.querySelectorAll('.conversation-item-checkbox').forEach(checkbox => {
+      container.querySelectorAll('.terminal-checkbox').forEach(checkbox => {
         checkbox.addEventListener('click', (e) => {
           e.stopPropagation(); // Don't trigger conversation selection
           const id = parseInt(checkbox.getAttribute('data-id'), 10);
@@ -2248,7 +2325,7 @@ const currentTab = tab as 'conversations' | 'analytics' | 'trash' | 'settings' |
       container.querySelectorAll('.conversation-item').forEach(item => {
         item.addEventListener('click', (e) => {
           // If clicking on checkbox, don't select conversation
-          if (e.target.classList.contains('conversation-item-checkbox')) return;
+          if (e.target.classList.contains('terminal-checkbox')) return;
           const id = parseInt(item.getAttribute('data-id'));
           this.selectConversation(id);
         });

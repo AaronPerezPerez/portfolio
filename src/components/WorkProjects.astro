@@ -3,6 +3,7 @@ import { experiences } from '../lib/data';
 import SectionTitle from './ui/SectionTitle.astro';
 import TechTag from './ui/TechTag.astro';
 import Icon from './ui/Icon.astro';
+import ResponsiveImage from './ui/ResponsiveImage.astro';
 
 // Flatten all projects from experiences with company info
 const workProjects = experiences.flatMap(exp =>
@@ -25,12 +26,13 @@ const workProjects = experiences.flatMap(exp =>
           style={`--delay: ${index * 100}ms; --accent-color: ${project.companyColor}`}
         >
           <div class="project-image-container">
-            <img
+            <ResponsiveImage
               src={project.image}
               alt={project.name}
               class="project-image"
-              loading="lazy"
-              decoding="async"
+              width={800}
+              height={450}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
             />
             <div class="scanlines"></div>
             <div class="image-overlay">

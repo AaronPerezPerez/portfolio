@@ -30,7 +30,7 @@ export interface LiveUser {
   lastActivity: string;
 }
 
-export type AdminTab = 'conversations' | 'analytics';
+export type AdminTab = 'conversations' | 'analytics' | 'trash' | 'settings' | 'moderation';
 
 export interface AdminState {
   authenticated: boolean;

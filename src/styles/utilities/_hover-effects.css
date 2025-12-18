@@ -1,0 +1,208 @@
+/* ═══════════════════════════════════════════════════════════
+   HOVER EFFECTS - Reusable Hover Animations
+   Import this file where hover effects are needed
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────
+   LIFT EFFECTS - Cards, buttons, links
+   ───────────────────────────────────────────────────────────── */
+
+/* Small lift (2px) - Subtle hover */
+.hover-lift-sm {
+  transition:
+    transform var(--duration-normal) var(--ease-out-quart),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-lift-sm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 255, 247, 0.2);
+}
+
+/* Medium lift (3px) - Standard hover */
+.hover-lift {
+  transition:
+    transform var(--duration-normal) var(--ease-out-quart),
+    box-shadow var(--duration-normal) var(--ease-out-expo),
+    border-color var(--duration-fast) ease-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 25px rgba(0, 255, 247, 0.25);
+}
+
+/* Large lift (5px) - Prominent hover */
+.hover-lift-lg {
+  transition:
+    transform var(--duration-normal) var(--ease-out-quart),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-lift-lg:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 30px rgba(0, 255, 247, 0.3);
+}
+
+/* Lift with scale - Cards */
+.hover-lift-scale {
+  transition:
+    transform var(--duration-normal) var(--ease-out-quart),
+    box-shadow var(--duration-normal) var(--ease-out-expo),
+    border-color var(--duration-fast) ease-out,
+    background var(--duration-fast) ease-out;
+  will-change: transform;
+}
+
+.hover-lift-scale:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 25px rgba(0, 255, 247, 0.25);
+}
+
+.hover-lift-scale:active {
+  transform: translateY(-1px) scale(0.98);
+  transition-duration: 50ms;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GLOW EFFECTS - Border and shadow glow on hover
+   ───────────────────────────────────────────────────────────── */
+
+/* Cyan glow on hover */
+.hover-glow-cyan {
+  transition:
+    border-color var(--duration-fast) ease-out,
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-glow-cyan:hover {
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 255, 247, 0.3);
+}
+
+/* Magenta glow on hover */
+.hover-glow-magenta {
+  transition:
+    border-color var(--duration-fast) ease-out,
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-glow-magenta:hover {
+  border-color: var(--color-neon-magenta);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+}
+
+/* Green glow on hover */
+.hover-glow-green {
+  transition:
+    border-color var(--duration-fast) ease-out,
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-glow-green:hover {
+  border-color: var(--color-neon-green);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SCALE EFFECTS - Buttons, icons
+   ───────────────────────────────────────────────────────────── */
+
+/* Subtle scale */
+.hover-scale-sm {
+  transition: transform var(--duration-fast) var(--ease-out-quart);
+}
+
+.hover-scale-sm:hover {
+  transform: scale(1.05);
+}
+
+/* Standard scale */
+.hover-scale {
+  transition: transform var(--duration-normal) var(--ease-out-quart);
+}
+
+.hover-scale:hover {
+  transform: scale(1.1);
+}
+
+/* Pop scale (with shadow) */
+.hover-pop {
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-pop:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(0, 255, 247, 0.4);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COMBINED EFFECTS - Card patterns
+   ───────────────────────────────────────────────────────────── */
+
+/* Neon card hover - lift + glow + border */
+.neon-card-hover {
+  transition:
+    transform var(--duration-normal) var(--ease-out-quart),
+    border-color var(--duration-fast) ease-out,
+    box-shadow var(--duration-normal) var(--ease-out-expo),
+    background var(--duration-fast) ease-out;
+  will-change: transform;
+}
+
+.neon-card-hover:hover {
+  transform: translateY(-3px) scale(1.005);
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 25px rgba(0, 255, 247, 0.15);
+  background: rgba(0, 255, 247, 0.02);
+}
+
+/* Terminal button hover - lift + glow + bg */
+.terminal-btn-hover {
+  transition:
+    transform var(--duration-normal) var(--ease-out-quart),
+    border-color var(--duration-fast) ease-out,
+    box-shadow var(--duration-normal) var(--ease-out-expo),
+    background var(--duration-fast) ease-out;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.terminal-btn-hover:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 255, 247, 0.25);
+  background: rgba(0, 255, 247, 0.03);
+}
+
+.terminal-btn-hover:active {
+  transform: translateY(-1px) scale(0.98);
+  transition-duration: 50ms;
+}
+
+.terminal-btn-hover:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ACCESSIBILITY - Reduced motion
+   ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift-sm:hover,
+  .hover-lift:hover,
+  .hover-lift-lg:hover,
+  .hover-lift-scale:hover,
+  .hover-lift-scale:active,
+  .hover-scale-sm:hover,
+  .hover-scale:hover,
+  .hover-pop:hover,
+  .neon-card-hover:hover,
+  .terminal-btn-hover:hover,
+  .terminal-btn-hover:active {
+    transform: none;
+  }
+}

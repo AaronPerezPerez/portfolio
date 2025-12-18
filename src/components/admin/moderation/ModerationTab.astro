@@ -1,0 +1,313 @@
+---
+/**
+ * ModerationTab - Rate limiting and spam detection
+ *
+ * Contains:
+ * - Stats overview (rate limit events, blocked, flags)
+ * - Rate limiting section
+ * - Flagged conversations section
+ */
+import AdminCard from '../shared/AdminCard.astro';
+---
+
+<div class="moderation-container" id="moderation-container">
+  <!-- Stats Overview -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Rate Limit Events (24h)</div>
+      <div class="stat-value" data-stat="total-events">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Blocked Requests</div>
+      <div class="stat-value" data-stat="blocked-count">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending Flags</div>
+      <div class="stat-value" data-stat="pending-flags">--</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-label">High Priority</div>
+      <div class="stat-value" data-stat="high-priority">--</div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="moderation-grid">
+    <!-- Rate Limiting Section -->
+    <AdminCard class="moderation-card">
+      <div slot="header-left" class="card-title">
+        <span class="prefix">//</span> RATE LIMITING
+      </div>
+
+      <div class="section-controls">
+        <span class="control-label">Recent rate limit events</span>
+        <label class="checkbox-label">
+          <input type="checkbox" id="blocked-only" class="checkbox" />
+          <span>Blocked only</span>
+        </label>
+      </div>
+
+      <div id="rate-limit-list" class="list-container">
+        <div class="loading-state">Loading...</div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Top Blocked IPs (7 days)</div>
+        <div id="top-blocked-list" class="list-container small">
+          <div class="loading-state">Loading...</div>
+        </div>
+      </div>
+    </AdminCard>
+
+    <!-- Flagged Conversations Section -->
+    <AdminCard class="moderation-card">
+      <div slot="header-left" class="card-title">
+        <span class="prefix">//</span> FLAGGED CONVERSATIONS
+        <span id="scan-result" class="scan-result hidden"></span>
+      </div>
+      <button slot="header-right" id="scan-spam-btn" class="scan-btn">
+        Scan for Spam
+      </button>
+
+      <div class="section-controls">
+        <span class="control-label">Conversations requiring review</span>
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-reviewed" class="checkbox" />
+          <span>Show reviewed</span>
+        </label>
+      </div>
+
+      <div id="flagged-list" class="list-container tall">
+        <div class="loading-state">Loading...</div>
+      </div>
+    </AdminCard>
+  </div>
+</div>
+
+<style>
+  .moderation-container {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: rgba(var(--bg-secondary-rgb, 20, 20, 30), 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .stat-card.warning {
+    border-color: var(--secondary);
+    background: rgba(255, 0, 255, 0.05);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .stat-card.warning .stat-value {
+    color: var(--secondary);
+  }
+
+  /* Main Grid */
+  .moderation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .moderation-container :global(.moderation-card) {
+    min-height: auto;
+  }
+
+  /* Card Title */
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-title .prefix {
+    color: var(--secondary);
+  }
+
+  .scan-result {
+    font-size: 0.75rem;
+    color: var(--secondary);
+    font-weight: 400;
+  }
+
+  .scan-result.hidden {
+    display: none;
+  }
+
+  /* Scan Button */
+  .scan-btn {
+    padding: 0.25rem 0.75rem;
+    background: var(--secondary);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .scan-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* Section Controls */
+  .section-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .control-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .checkbox {
+    accent-color: var(--secondary);
+  }
+
+  /* List Container */
+  .list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 20rem;
+    overflow-y: auto;
+  }
+
+  .list-container.small {
+    max-height: 8rem;
+  }
+
+  .list-container.tall {
+    max-height: 24rem;
+  }
+
+  .loading-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Subsection */
+  .subsection {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .subsection-title {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  /* List item styles (populated by JS) */
+  :global(.rate-limit-item),
+  :global(.flagged-item) {
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+
+  :global(.rate-limit-item.blocked) {
+    border-left: 2px solid #ef4444;
+  }
+
+  :global(.flagged-item.high-priority) {
+    border-left: 2px solid var(--secondary);
+  }
+
+  :global(.item-header) {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.item-ip),
+  :global(.item-user) {
+    font-family: var(--font-mono);
+    color: var(--primary);
+  }
+
+  :global(.item-time) {
+    color: var(--text-muted);
+  }
+
+  :global(.item-reason) {
+    color: var(--text-muted);
+  }
+
+  :global(.blocked-ip-item) {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+
+  :global(.blocked-ip) {
+    font-family: var(--font-mono);
+    color: #ef4444;
+  }
+
+  :global(.blocked-count) {
+    color: var(--text-muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .moderation-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

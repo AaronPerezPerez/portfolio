@@ -4,6 +4,7 @@ import { experiences } from '../../lib/data';
 import TechTag from '../../components/ui/TechTag.astro';
 import Icon from '../../components/ui/Icon.astro';
 import Badge from '../../components/ui/Badge.astro';
+import ResponsiveImage from '../../components/ui/ResponsiveImage.astro';
 
 export function getStaticPaths() {
   return experiences.map((exp) => ({
@@ -120,7 +121,13 @@ const nextExp = currentIndex < experiences.length - 1 ? experiences[currentIndex
           >
             {project.image && (
               <div class="project-image">
-                <img src={project.image} alt={project.name} loading="lazy" />
+                <ResponsiveImage
+                  src={project.image}
+                  alt={project.name}
+                  width={800}
+                  height={450}
+                  sizes="(max-width: 768px) 100vw, 600px"
+                />
                 <div class="image-overlay"></div>
               </div>
             )}

@@ -1,0 +1,51 @@
+---
+/**
+ * AdminLayout - Main layout wrapper for admin panel
+ *
+ * Combines LoginView, AdminHeader, AdminNav and provides
+ * the main content slot for tab-specific content.
+ *
+ * Props:
+ * - currentTab: The currently active tab
+ */
+import type { AdminTab } from '../../../lib/admin/state';
+import LoginView from '../auth/LoginView.astro';
+import AdminHeader from './AdminHeader.astro';
+import AdminNav from './AdminNav.astro';
+
+interface Props {
+  currentTab: AdminTab;
+}
+
+const { currentTab } = Astro.props;
+---
+
+<!-- Login View (shown when not authenticated) -->
+<LoginView />
+
+<!-- Admin View (shown when authenticated) -->
+<div class="admin-view hidden" id="admin-view">
+  <AdminHeader />
+  <AdminNav currentTab={currentTab} />
+
+  <!-- Tab Content -->
+  <main class="admin-main">
+    <slot />
+  </main>
+</div>
+
+<style>
+  .admin-view {
+    min-height: 100vh;
+    padding-top: 4rem;
+  }
+
+  .admin-view.hidden {
+    display: none;
+  }
+
+  .admin-main {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+</style>
