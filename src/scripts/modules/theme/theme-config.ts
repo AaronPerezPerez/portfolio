@@ -3,12 +3,16 @@
  * All theme definitions are centralized here
  */
 
+import { loadCustomTheme } from './custom-theme';
+
+export type ThemeCategory = 'general' | 'gaming' | 'custom';
+
 export interface ThemeDefinition {
   id: string;
   name: string;
   icon: string;
   colors: [string, string, string]; // [primary, secondary, background]
-  category: 'general' | 'gaming';
+  category: ThemeCategory;
 }
 
 /**
@@ -52,9 +56,24 @@ export const allThemes: ThemeDefinition[] = [...baseThemes, ...gamingThemes];
 export const gamingThemeIds = gamingThemes.map((t) => t.id);
 
 /**
+ * Custom theme placeholder (colors loaded dynamically from localStorage)
+ */
+export const customTheme: ThemeDefinition = {
+  id: 'custom',
+  name: 'CUSTOM',
+  icon: '✨',
+  colors: ['#00fff7', '#ff00ff', '#0a0a0f'], // Default, overridden by localStorage
+  category: 'custom',
+};
+
+/**
  * Get background color for meta theme-color
  */
 export function getThemeBackgroundColor(themeId: string): string {
+  if (themeId === 'custom') {
+    const customColors = loadCustomTheme();
+    return customColors?.background || '#0a0a0f';
+  }
   const theme = allThemes.find((t) => t.id === themeId);
   return theme?.colors[2] || '#0a0a0f';
 }
@@ -63,6 +82,17 @@ export function getThemeBackgroundColor(themeId: string): string {
  * Get theme by ID
  */
 export function getThemeById(themeId: string): ThemeDefinition | undefined {
+  if (themeId === 'custom') {
+    // Return custom theme with current colors from localStorage
+    const customColors = loadCustomTheme();
+    if (customColors) {
+      return {
+        ...customTheme,
+        colors: [customColors.primary, customColors.secondary, customColors.background],
+      };
+    }
+    return customTheme;
+  }
   return allThemes.find((t) => t.id === themeId);
 }
 
@@ -71,6 +101,13 @@ export function getThemeById(themeId: string): ThemeDefinition | undefined {
  */
 export function isGamingTheme(themeId: string): boolean {
   return gamingThemeIds.includes(themeId);
+}
+
+/**
+ * Check if theme is custom
+ */
+export function isCustomTheme(themeId: string): boolean {
+  return themeId === 'custom';
 }
 
 /**

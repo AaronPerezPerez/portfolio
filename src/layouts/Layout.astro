@@ -24,31 +24,139 @@ const {
       (function() {
         const theme = localStorage.getItem('theme') || 'cyberpunk';
         document.documentElement.dataset.theme = theme;
-        // Update theme-color meta
-        const themeColors = {
-          // Base themes
-          cyberpunk: '#0a0a0f',
-          synthwave: '#0f0e17',
-          matrix: '#000000',
-          dracula: '#282a36',
-          nord: '#2e3440',
-          gruvbox: '#282828',
-          tokyo: '#1a1b26',
-          fallout: '#0a0a00',
-          crimson: '#0a0000',
-          catppuccin: '#1e1e2e',
-          sepia: '#1a1510',
-          // Gaming themes
-          gameboy: '#0f380f',
-          nes: '#1a1a1a',
-          ps2: '#0a0a12',
-          xbox: '#0d0d0d',
-          snes: '#1a1a24',
-          c64: '#1a1a4a',
-          msdos: '#000000'
-        };
-        const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', themeColors[theme] || '#0a0a0f');
+
+        // Handle custom theme
+        if (theme === 'custom') {
+          try {
+            const stored = localStorage.getItem('custom-theme-colors');
+            if (stored) {
+              const colors = JSON.parse(stored);
+              if (colors.primary && colors.secondary && colors.background) {
+                // Apply custom theme CSS variables inline
+                const root = document.documentElement;
+                const bg = colors.background;
+                const primary = colors.primary;
+                const secondary = colors.secondary;
+
+                // Helper to parse hex to RGB
+                const hexToRgb = (hex) => {
+                  const h = hex.replace('#', '');
+                  return {
+                    r: parseInt(h.substring(0, 2), 16),
+                    g: parseInt(h.substring(2, 4), 16),
+                    b: parseInt(h.substring(4, 6), 16)
+                  };
+                };
+
+                // Helper to lighten/darken
+                const adjustLightness = (hex, amount) => {
+                  const rgb = hexToRgb(hex);
+                  const r = Math.max(0, Math.min(255, rgb.r + amount));
+                  const g = Math.max(0, Math.min(255, rgb.g + amount));
+                  const b = Math.max(0, Math.min(255, rgb.b + amount));
+                  return '#' + [r, g, b].map(x => Math.round(x).toString(16).padStart(2, '0')).join('');
+                };
+
+                // Helper for rgba
+                const withAlpha = (hex, alpha) => {
+                  const rgb = hexToRgb(hex);
+                  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+                };
+
+                // Helper to blend two colors
+                const blend = (hex1, hex2, ratio) => {
+                  const rgb1 = hexToRgb(hex1);
+                  const rgb2 = hexToRgb(hex2);
+                  const r = Math.round(rgb1.r * (1 - ratio) + rgb2.r * ratio);
+                  const g = Math.round(rgb1.g * (1 - ratio) + rgb2.g * ratio);
+                  const b = Math.round(rgb1.b * (1 - ratio) + rgb2.b * ratio);
+                  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+                };
+
+                // Calculate luminance for text color
+                const getLuminance = (hex) => {
+                  const rgb = hexToRgb(hex);
+                  const [rs, gs, bs] = [rgb.r, rgb.g, rgb.b].map(c => {
+                    c /= 255;
+                    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+                  });
+                  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+                };
+
+                const isDark = getLuminance(bg) <= 0.5;
+                const textPrimary = isDark ? '#e0e0e0' : '#1a1a1a';
+                const textSecondary = isDark ? '#a0a0a0' : '#4a4a4a';
+                const textMuted = isDark ? '#6b7280' : '#888888';
+
+                // Apply CSS variables
+                root.style.setProperty('--color-bg-primary', bg);
+                root.style.setProperty('--color-bg-secondary', adjustLightness(bg, 20));
+                root.style.setProperty('--color-bg-terminal', adjustLightness(bg, -8));
+                root.style.setProperty('--color-bg-card', adjustLightness(bg, 30));
+                // Derived neon colors (synced with custom-theme.ts)
+                const neonGreen = blend(primary, '#39ff14', 0.6);
+                const neonOrange = blend(secondary, '#ff6b35', 0.5);
+                const neonYellow = adjustLightness(primary, 30);
+                const neonPurple = blend(primary, secondary, 0.5);
+
+                root.style.setProperty('--color-neon-cyan', primary);
+                root.style.setProperty('--color-neon-magenta', secondary);
+                root.style.setProperty('--color-neon-green', neonGreen);
+                root.style.setProperty('--color-neon-orange', neonOrange);
+                root.style.setProperty('--color-neon-yellow', neonYellow);
+                root.style.setProperty('--color-neon-purple', neonPurple);
+                root.style.setProperty('--color-text-primary', textPrimary);
+                root.style.setProperty('--color-text-secondary', textSecondary);
+                root.style.setProperty('--color-text-muted', textMuted);
+                root.style.setProperty('--color-scanline', withAlpha(primary, 0.03));
+                root.style.setProperty('--color-glow-cyan', withAlpha(primary, 0.5));
+                root.style.setProperty('--color-glow-magenta', withAlpha(secondary, 0.5));
+                root.style.setProperty('--color-glow-green', withAlpha(neonGreen, 0.5));
+                // Overlay control (synced with custom-theme.ts)
+                root.style.setProperty('--overlay-opacity', '0.4');
+                root.style.setProperty('--noise-opacity', '0.03');
+                root.style.setProperty('--grid-opacity', '0.05');
+                root.style.setProperty('--scrollbar-thumb', primary);
+                root.style.setProperty('--scrollbar-thumb-hover', secondary);
+                root.style.setProperty('--theme-color', bg);
+
+                // Update meta theme-color
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', bg);
+              }
+            }
+          } catch (e) {
+            // Fallback on error - use default theme
+            document.documentElement.dataset.theme = 'cyberpunk';
+          }
+        } else {
+          // Preset themes - update theme-color meta
+          const themeColors = {
+            // Base themes
+            cyberpunk: '#0a0a0f',
+            synthwave: '#0f0e17',
+            matrix: '#000000',
+            dracula: '#282a36',
+            nord: '#2e3440',
+            gruvbox: '#282828',
+            tokyo: '#1a1b26',
+            fallout: '#0a0a00',
+            crimson: '#0a0000',
+            catppuccin: '#1e1e2e',
+            sepia: '#1a1510',
+            // Gaming themes
+            gameboy: '#0f380f',
+            nes: '#1a1a1a',
+            ps2: '#0a0a12',
+            xbox: '#0d0d0d',
+            snes: '#1a1a24',
+            c64: '#1a1a4a',
+            msdos: '#000000'
+          };
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', themeColors[theme] || '#0a0a0f');
+        }
+
         // Remove no-transitions after first paint
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {

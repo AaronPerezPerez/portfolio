@@ -1,6 +1,13 @@
 ---
 // Import theme data from centralized config (SINGLE SOURCE OF TRUTH)
-import { baseThemes, gamingThemes } from '../../scripts/modules/theme/theme-config';
+import { baseThemes, gamingThemes, customTheme } from '../../scripts/modules/theme/theme-config';
+
+// Default custom colors for initial display
+const defaultCustomColors = {
+  primary: '#00fff7',
+  secondary: '#ff00ff',
+  background: '#0a0a0f',
+};
 ---
 
 <div class="theme-selector" data-theme-selector>
@@ -44,6 +51,16 @@ import { baseThemes, gamingThemes } from '../../scripts/modules/theme/theme-conf
         <span class="tab-icon">🕹️</span>
         <span class="tab-label">GAMING</span>
         <span class="tab-count">{gamingThemes.length}</span>
+      </button>
+      <button
+        class="tab-button"
+        data-tab="custom"
+        role="tab"
+        aria-selected="false"
+        aria-controls="panel-custom"
+      >
+        <span class="tab-icon">{customTheme.icon}</span>
+        <span class="tab-label">CUSTOM</span>
       </button>
     </div>
 
@@ -98,6 +115,113 @@ import { baseThemes, gamingThemes } from '../../scripts/modules/theme/theme-conf
               </span>
             </button>
           ))}
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-custom" data-panel="custom" role="tabpanel">
+        <div class="custom-theme-editor">
+          <!-- PRIMARY color row -->
+          <div class="color-row">
+            <div class="color-label">
+              <span class="label-name">PRIMARY</span>
+              <span class="label-hint">// neon accent</span>
+            </div>
+            <div class="color-inputs">
+              <div
+                class="pickr-container"
+                data-pickr="primary"
+                data-default={defaultCustomColors.primary}
+                aria-label="Primary color picker"
+              ></div>
+              <input
+                type="text"
+                class="hex-input"
+                data-hex="primary"
+                value={defaultCustomColors.primary}
+                placeholder="#00fff7"
+                maxlength="7"
+                aria-label="Primary color hex code"
+              />
+            </div>
+          </div>
+
+          <!-- SECONDARY color row -->
+          <div class="color-row">
+            <div class="color-label">
+              <span class="label-name">SECONDARY</span>
+              <span class="label-hint">// accent 2</span>
+            </div>
+            <div class="color-inputs">
+              <div
+                class="pickr-container"
+                data-pickr="secondary"
+                data-default={defaultCustomColors.secondary}
+                aria-label="Secondary color picker"
+              ></div>
+              <input
+                type="text"
+                class="hex-input"
+                data-hex="secondary"
+                value={defaultCustomColors.secondary}
+                placeholder="#ff00ff"
+                maxlength="7"
+                aria-label="Secondary color hex code"
+              />
+            </div>
+          </div>
+
+          <!-- BACKGROUND color row -->
+          <div class="color-row">
+            <div class="color-label">
+              <span class="label-name">BACKGROUND</span>
+              <span class="label-hint">// base bg</span>
+            </div>
+            <div class="color-inputs">
+              <div
+                class="pickr-container"
+                data-pickr="background"
+                data-default={defaultCustomColors.background}
+                aria-label="Background color picker"
+              ></div>
+              <input
+                type="text"
+                class="hex-input"
+                data-hex="background"
+                value={defaultCustomColors.background}
+                placeholder="#0a0a0f"
+                maxlength="7"
+                aria-label="Background color hex code"
+              />
+            </div>
+          </div>
+
+          <!-- Preview swatches -->
+          <div class="preview-section">
+            <span class="preview-label">// preview</span>
+            <div class="preview-swatches">
+              <span
+                class="preview-swatch"
+                data-preview="primary"
+                style={`background-color: ${defaultCustomColors.primary};`}
+              ></span>
+              <span
+                class="preview-swatch"
+                data-preview="secondary"
+                style={`background-color: ${defaultCustomColors.secondary};`}
+              ></span>
+              <span
+                class="preview-swatch"
+                data-preview="background"
+                style={`background-color: ${defaultCustomColors.background};`}
+              ></span>
+            </div>
+          </div>
+
+          <!-- Apply button -->
+          <button class="apply-custom-theme" data-apply-custom>
+            <span class="apply-icon">✓</span>
+            <span class="apply-text">APPLY THEME</span>
+          </button>
         </div>
       </div>
     </div>
@@ -297,12 +421,12 @@ import { baseThemes, gamingThemes } from '../../scripts/modules/theme/theme-conf
   .tab-panels {
     flex: 1;
     overflow: hidden;
-    max-height: 350px;
+    max-height: 450px;
   }
 
   .tab-panel {
     display: none;
-    max-height: 350px;
+    max-height: 450px;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
@@ -444,6 +568,147 @@ import { baseThemes, gamingThemes } from '../../scripts/modules/theme/theme-conf
     opacity: 0.5;
   }
 
+  /* Custom Theme Editor */
+  .custom-theme-editor {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .color-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .color-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .label-name {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--color-neon-cyan);
+    font-weight: 600;
+  }
+
+  .label-hint {
+    font-size: 10px;
+    color: var(--color-text-muted);
+  }
+
+  .color-inputs {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .pickr-container {
+    flex-shrink: 0;
+  }
+
+  .hex-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: var(--color-bg-secondary);
+    border: 1px solid rgba(0, 255, 247, 0.2);
+    border-radius: 4px;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .hex-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.5;
+  }
+
+  .hex-input:focus {
+    outline: none;
+    border-color: var(--color-neon-cyan);
+    box-shadow: 0 0 8px rgba(0, 255, 247, 0.2);
+  }
+
+  .hex-input.invalid {
+    border-color: var(--color-neon-magenta);
+    box-shadow: 0 0 8px rgba(255, 0, 255, 0.2);
+  }
+
+  /* Preview Section */
+  .preview-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-top: 1px solid rgba(0, 255, 247, 0.1);
+  }
+
+  .preview-label {
+    font-size: 10px;
+    color: var(--color-text-muted);
+  }
+
+  .preview-swatches {
+    display: flex;
+    gap: 6px;
+  }
+
+  .preview-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .preview-swatch:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 255, 247, 0.3);
+  }
+
+  /* Apply Button */
+  .apply-custom-theme {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(0, 255, 247, 0.1);
+    border: 1px solid var(--color-neon-cyan);
+    border-radius: 6px;
+    color: var(--color-neon-cyan);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .apply-custom-theme:hover {
+    background: rgba(0, 255, 247, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 247, 0.3);
+  }
+
+  .apply-custom-theme:active {
+    transform: scale(0.98);
+  }
+
+  .apply-custom-theme.applied {
+    background: var(--color-neon-green);
+    border-color: var(--color-neon-green);
+    color: var(--color-bg-primary);
+  }
+
+  .apply-icon {
+    font-size: 14px;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .theme-selector {
@@ -477,6 +742,31 @@ import { baseThemes, gamingThemes } from '../../scripts/modules/theme/theme-conf
 
     .tab-button {
       padding: 8px 10px;
+    }
+
+    /* Custom theme editor on mobile */
+    .custom-theme-editor {
+      padding: 12px;
+      gap: 12px;
+    }
+
+    .label-hint {
+      display: none;
+    }
+
+    .hex-input {
+      padding: 6px 10px;
+      font-size: 11px;
+    }
+
+    .preview-swatch {
+      width: 20px;
+      height: 20px;
+    }
+
+    .apply-custom-theme {
+      padding: 10px 12px;
+      font-size: 10px;
     }
   }
 </style>

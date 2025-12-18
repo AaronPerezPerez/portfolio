@@ -1,0 +1,327 @@
+/**
+ * Pickr Terminal/Cyberpunk Theme
+ * Custom theme matching the portfolio's neon terminal aesthetic
+ */
+
+/* Base container */
+.pickr {
+  position: relative;
+}
+
+/* Color preview button (the clickable swatch) */
+.pickr .pcr-button {
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 247, 0.3);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: visible;
+  position: relative;
+}
+
+.pickr .pcr-button::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 2px;
+  /* Pickr sets --pcr-color on the button with the selected color */
+  background: var(--pcr-color, currentColor);
+  z-index: 1;
+}
+
+.pickr .pcr-button::after {
+  /* Checkerboard pattern for transparency */
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 2px;
+  background:
+    linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+    linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+    linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+  z-index: 0;
+}
+
+.pickr .pcr-button:hover {
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 247, 0.3);
+}
+
+.pickr .pcr-button:focus {
+  outline: none;
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 0 2px rgba(0, 255, 247, 0.2);
+}
+
+/* Picker app container */
+.pcr-app {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  z-index: 10000;
+  font-family: var(--font-mono), 'Fira Code', 'SF Mono', monospace;
+  background: var(--color-bg-terminal, #07070a);
+  border: 1px solid var(--color-neon-cyan, #00fff7);
+  border-radius: 8px;
+  box-shadow:
+    0 0 20px rgba(0, 255, 247, 0.2),
+    0 10px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.pcr-app.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Selection area (palette + sliders) */
+.pcr-app .pcr-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+/* Color palette (saturation/brightness picker) */
+.pcr-app .pcr-color-palette {
+  position: relative; /* Required for absolute positioned picker handle */
+  width: 200px;
+  height: 120px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 247, 0.2);
+  overflow: visible; /* Allow picker to be visible at edges */
+  cursor: crosshair;
+}
+
+.pcr-app .pcr-color-palette .pcr-palette {
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* Picker handle - Pickr positions via inline 'left' and 'top' */
+.pcr-app .pcr-color-palette .pcr-picker {
+  position: absolute !important;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow:
+    0 0 4px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(0, 255, 247, 0.3);
+  transform: translate(-50%, -50%);
+}
+
+/* Color preview */
+.pcr-app .pcr-color-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pcr-app .pcr-color-preview .pcr-last-color,
+.pcr-app .pcr-color-preview .pcr-current-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 247, 0.3);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  /* Pickr sets --pcr-color CSS variable, we need to use it for background */
+  background-color: var(--pcr-color) !important;
+}
+
+.pcr-app .pcr-color-preview .pcr-last-color:hover,
+.pcr-app .pcr-color-preview .pcr-current-color:hover {
+  border-color: var(--color-neon-cyan);
+}
+
+/* Sliders container - horizontal slider below palette */
+.pcr-app .pcr-color-chooser,
+.pcr-app .pcr-color-opacity {
+  width: 200px;
+  height: 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 255, 247, 0.2);
+  overflow: visible; /* Allow picker handle to overflow */
+  cursor: pointer;
+  position: relative;
+}
+
+.pcr-app .pcr-color-opacity {
+  display: none; /* Hide opacity slider for this use case */
+}
+
+/* Slider track - horizontal rainbow gradient */
+.pcr-app .pcr-color-chooser .pcr-slider {
+  width: 100%;
+  height: 100%;
+  border-radius: 7px;
+  /* Rainbow gradient for hue selection */
+  background: linear-gradient(to right,
+    #ff0000 0%,
+    #ffff00 17%,
+    #00ff00 33%,
+    #00ffff 50%,
+    #0000ff 67%,
+    #ff00ff 83%,
+    #ff0000 100%
+  ) !important;
+}
+
+.pcr-app .pcr-color-opacity .pcr-slider {
+  width: 100%;
+  height: 100%;
+  border-radius: 7px;
+}
+
+/* Slider picker handle - Pickr positions via 'left' */
+.pcr-app .pcr-color-chooser .pcr-picker,
+.pcr-app .pcr-color-opacity .pcr-picker {
+  position: absolute !important;
+  width: 8px !important;
+  height: 20px !important;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow:
+    0 0 4px rgba(0, 0, 0, 0.5),
+    0 0 6px rgba(0, 255, 247, 0.3);
+  /* Center vertically on the slider track */
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Interaction area (input + buttons) */
+.pcr-app .pcr-interaction {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0, 255, 247, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Input field */
+.pcr-app .pcr-interaction input.pcr-result {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  background: var(--color-bg-secondary, #12121a);
+  border: 1px solid rgba(0, 255, 247, 0.2);
+  border-radius: 4px;
+  color: var(--color-text-primary, #e0e0e0);
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.pcr-app .pcr-interaction input.pcr-result:focus {
+  outline: none;
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 8px rgba(0, 255, 247, 0.2);
+}
+
+/* Type buttons (HEX, RGB, etc) */
+.pcr-app .pcr-interaction .pcr-type {
+  display: none; /* Hide format toggle for simplicity */
+}
+
+/* Action buttons */
+.pcr-app .pcr-interaction .pcr-save,
+.pcr-app .pcr-interaction .pcr-cancel,
+.pcr-app .pcr-interaction .pcr-clear {
+  padding: 6px 12px;
+  background: rgba(0, 255, 247, 0.1);
+  border: 1px solid var(--color-neon-cyan, #00fff7);
+  border-radius: 4px;
+  color: var(--color-neon-cyan, #00fff7);
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pcr-app .pcr-interaction .pcr-save:hover,
+.pcr-app .pcr-interaction .pcr-cancel:hover,
+.pcr-app .pcr-interaction .pcr-clear:hover {
+  background: rgba(0, 255, 247, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 247, 0.3);
+}
+
+.pcr-app .pcr-interaction .pcr-save {
+  background: var(--color-neon-cyan, #00fff7);
+  color: var(--color-bg-primary, #0a0a0f);
+}
+
+.pcr-app .pcr-interaction .pcr-save:hover {
+  background: var(--color-neon-green, #39ff14);
+  border-color: var(--color-neon-green, #39ff14);
+}
+
+.pcr-app .pcr-interaction .pcr-cancel {
+  border-color: rgba(0, 255, 247, 0.3);
+  color: var(--color-text-muted, #6b7280);
+  background: transparent;
+}
+
+.pcr-app .pcr-interaction .pcr-cancel:hover {
+  border-color: var(--color-neon-magenta);
+  color: var(--color-neon-magenta);
+}
+
+/* Swatches (if used) */
+.pcr-app .pcr-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0, 255, 247, 0.15);
+}
+
+.pcr-app .pcr-swatches > button {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 247, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pcr-app .pcr-swatches > button:hover {
+  border-color: var(--color-neon-cyan);
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(0, 255, 247, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pcr-app .pcr-color-palette {
+    width: 160px;
+    height: 100px;
+  }
+
+  .pcr-app .pcr-selection {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .pcr-app .pcr-interaction {
+    padding: 8px 10px;
+  }
+}
