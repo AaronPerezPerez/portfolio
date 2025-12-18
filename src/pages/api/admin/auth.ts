@@ -8,7 +8,7 @@ export async function POST({ request, locals }: APIContext) {
   const headers = { 'Content-Type': 'application/json' };
 
   try {
-    const { password } = await request.json();
+    const { password } = await request.json() as { password?: string };
     const secret = getAdminSecret(locals);
 
     if (!secret) {

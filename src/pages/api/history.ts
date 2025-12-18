@@ -1,5 +1,5 @@
 import type { APIContext } from 'astro';
-import { loadMessages } from '../../lib/db';
+import { loadMessages, createDb } from '../../lib/db';
 
 export const prerender = false;
 
@@ -14,10 +14,9 @@ export async function GET({ request, locals }: APIContext) {
     );
   }
 
-  // @ts-expect-error - Cloudflare runtime types
-  const db = locals.runtime?.env?.DB;
+  const d1 = locals.runtime?.env?.DB;
 
-  if (!db) {
+  if (!d1) {
     return new Response(
       JSON.stringify({ messages: [] }),
       { headers }
@@ -25,6 +24,7 @@ export async function GET({ request, locals }: APIContext) {
   }
 
   try {
+    const db = createDb(d1);
     const messages = await loadMessages(db, userId);
     return new Response(
       JSON.stringify({ messages }),

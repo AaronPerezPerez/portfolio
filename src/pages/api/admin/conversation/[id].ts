@@ -1,87 +1,53 @@
+/**
+ * Admin Conversation Detail API
+ * Gets a single conversation with its messages
+ */
+
 import type { APIContext } from 'astro';
-import { isAuthenticated } from '../../../../lib/admin-auth';
+import {
+  withAdminAuthAndDatabase,
+  createSuccessResponse,
+  createErrorResponse,
+  parseIdParam,
+} from '../../../../infrastructure/http';
+import { D1ConversationRepository } from '../../../../infrastructure/persistence';
 
 export const prerender = false;
 
-interface MessageRow {
-  id: number;
-  role: 'user' | 'assistant';
-  content: string;
-  created_at: string;
-}
+export const GET = withAdminAuthAndDatabase(
+  async (context: APIContext, db: D1Database) => {
+    // Parse and validate ID parameter
+    const idResult = parseIdParam(context);
 
-interface ConversationInfo {
-  id: number;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export async function GET(context: APIContext) {
-  const headers = { 'Content-Type': 'application/json' };
-
-  // Check authentication
-  const authenticated = await isAuthenticated(context);
-  if (!authenticated) {
-    return new Response(
-      JSON.stringify({ error: 'Unauthorized' }),
-      { status: 401, headers }
-    );
-  }
-
-  const conversationId = context.params.id;
-  if (!conversationId) {
-    return new Response(
-      JSON.stringify({ error: 'Conversation ID required' }),
-      { status: 400, headers }
-    );
-  }
-
-  // @ts-expect-error - Cloudflare runtime types
-  const db = context.locals.runtime?.env?.DB;
-
-  if (!db) {
-    return new Response(
-      JSON.stringify({ error: 'Database not available' }),
-      { status: 500, headers }
-    );
-  }
-
-  try {
-    // Get conversation info
-    const conversation = await db.prepare(`
-      SELECT id, user_id, created_at, updated_at
-      FROM conversations
-      WHERE id = ?
-    `).bind(conversationId).first<ConversationInfo>();
-
-    if (!conversation) {
-      return new Response(
-        JSON.stringify({ error: 'Conversation not found' }),
-        { status: 404, headers }
-      );
+    if ('error' in idResult) {
+      return createErrorResponse(idResult.error, 400);
     }
 
-    // Get messages
-    const messagesResult = await db.prepare(`
-      SELECT id, role, content, created_at
-      FROM messages
-      WHERE conversation_id = ? AND deleted_at IS NULL
-      ORDER BY created_at ASC
-    `).bind(conversationId).all<MessageRow>();
+    try {
+      const repository = new D1ConversationRepository(db);
+      const detail = await repository.getDetail(idResult.id);
 
-    return new Response(
-      JSON.stringify({
-        conversation,
-        messages: messagesResult.results
-      }),
-      { headers }
-    );
-  } catch (error) {
-    console.error('[Admin Conversation Detail Error]:', error);
-    return new Response(
-      JSON.stringify({ error: 'Failed to fetch conversation' }),
-      { status: 500, headers }
-    );
+      if (!detail) {
+        return createErrorResponse('Conversation not found', 404);
+      }
+
+      return createSuccessResponse({
+        conversation: {
+          id: detail.conversation.id,
+          user_id: detail.conversation.userId,
+          created_at: detail.conversation.createdAt,
+          updated_at: detail.conversation.updatedAt,
+        },
+        messages: detail.messages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          created_at: m.createdAt,
+        })),
+      });
+    } catch (error) {
+      console.error('[Admin Conversation Detail Error]:', error);
+      return createErrorResponse('Failed to fetch conversation', 500);
+    }
   }
-}
+);

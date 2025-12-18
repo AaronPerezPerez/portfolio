@@ -78,7 +78,6 @@ export async function verifySession(request: Request, secret: string): Promise<b
 
 // Get admin secret from environment
 export function getAdminSecret(locals: APIContext['locals']): string | null {
-  // @ts-expect-error - Cloudflare runtime types
   return locals.runtime?.env?.ADMIN_SECRET || null;
 }
 

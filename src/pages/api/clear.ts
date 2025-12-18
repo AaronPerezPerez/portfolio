@@ -1,5 +1,5 @@
 import type { APIContext } from 'astro';
-import { clearConversation } from '../../lib/db';
+import { clearConversation, createDb } from '../../lib/db';
 
 export const prerender = false;
 
@@ -16,10 +16,10 @@ export async function POST({ request, locals }: APIContext) {
       );
     }
 
-    // @ts-expect-error - Cloudflare runtime types
-    const db = locals.runtime?.env?.DB;
+    const d1 = locals.runtime?.env?.DB;
 
-    if (db) {
+    if (d1) {
+      const db = createDb(d1);
       await clearConversation(db, userId);
     }
 

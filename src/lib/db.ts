@@ -1,70 +1,101 @@
-import type { D1Database } from '@cloudflare/workers-types';
+import { createDb, conversations, messages, eq, isNull, desc, asc, sql } from '../db';
+import type { DrizzleDb } from '../db';
 
-interface Message {
+export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
-// Obtener o crear conversación
-export async function getOrCreateConversation(db: D1Database, userId: string): Promise<number> {
-  const existing = await db.prepare(
-    'SELECT id FROM conversations WHERE user_id = ?'
-  ).bind(userId).first<{ id: number }>();
+// Get or create conversation for a user
+export async function getOrCreateConversation(db: DrizzleDb, userId: string): Promise<number> {
+  const existing = await db
+    .select({ id: conversations.id })
+    .from(conversations)
+    .where(eq(conversations.userId, userId))
+    .get();
 
   if (existing) {
-    await db.prepare(
-      'UPDATE conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind(existing.id).run();
+    await db
+      .update(conversations)
+      .set({ updatedAt: sql`CURRENT_TIMESTAMP` })
+      .where(eq(conversations.id, existing.id));
     return existing.id;
   }
 
-  const result = await db.prepare(
-    'INSERT INTO conversations (user_id) VALUES (?)'
-  ).bind(userId).run();
+  const result = await db
+    .insert(conversations)
+    .values({ userId })
+    .returning({ id: conversations.id });
 
-  return result.meta.last_row_id as number;
+  return result[0].id;
 }
 
-// Guardar múltiples mensajes en batch (más eficiente)
+// Save multiple messages in batch
 export async function saveMessagesBatch(
-  db: D1Database,
+  db: DrizzleDb,
   conversationId: number,
-  messages: Array<{ role: 'user' | 'assistant'; content: string }>
+  messageList: ChatMessage[]
 ): Promise<void> {
-  if (messages.length === 0) return;
+  if (messageList.length === 0) return;
 
-  const stmt = db.prepare(
-    'INSERT INTO messages (conversation_id, role, content) VALUES (?, ?, ?)'
+  await db.insert(messages).values(
+    messageList.map(msg => ({
+      conversationId,
+      role: msg.role,
+      content: msg.content,
+    }))
   );
-
-  await db.batch(
-    messages.map(msg => stmt.bind(conversationId, msg.role, msg.content))
-  );
 }
 
-// Cargar historial (últimos 50 mensajes en orden cronológico)
-export async function loadMessages(db: D1Database, userId: string): Promise<Message[]> {
-  // Subconsulta: obtiene los últimos 50 (DESC), luego los reordena (ASC)
-  const result = await db.prepare(`
-    SELECT role, content FROM (
-      SELECT m.role, m.content, m.created_at
-      FROM messages m
-      JOIN conversations c ON m.conversation_id = c.id
-      WHERE c.user_id = ? AND m.deleted_at IS NULL
-      ORDER BY m.created_at DESC
-      LIMIT 50
-    ) ORDER BY created_at ASC
-  `).bind(userId).all<{ role: 'user' | 'assistant'; content: string }>();
+// Load message history (last 50 messages in chronological order)
+export async function loadMessages(db: DrizzleDb, userId: string): Promise<ChatMessage[]> {
+  // Get conversation ID first
+  const conv = await db
+    .select({ id: conversations.id })
+    .from(conversations)
+    .where(eq(conversations.userId, userId))
+    .get();
 
-  return result.results;
+  if (!conv) return [];
+
+  // Get last 50 messages ordered by created_at DESC, then reverse
+  const result = await db
+    .select({
+      role: messages.role,
+      content: messages.content,
+      createdAt: messages.createdAt,
+    })
+    .from(messages)
+    .where(
+      sql`${messages.conversationId} = ${conv.id} AND ${messages.deletedAt} IS NULL`
+    )
+    .orderBy(desc(messages.createdAt))
+    .limit(50);
+
+  // Reverse to get chronological order (oldest first)
+  return result.reverse().map(m => ({
+    role: m.role as 'user' | 'assistant',
+    content: m.content,
+  }));
 }
 
-// Limpiar conversación (soft delete)
-export async function clearConversation(db: D1Database, userId: string): Promise<void> {
-  await db.prepare(`
-    UPDATE messages SET deleted_at = CURRENT_TIMESTAMP
-    WHERE conversation_id IN (
-      SELECT id FROM conversations WHERE user_id = ?
-    ) AND deleted_at IS NULL
-  `).bind(userId).run();
+// Clear conversation (soft delete)
+export async function clearConversation(db: DrizzleDb, userId: string): Promise<void> {
+  const conv = await db
+    .select({ id: conversations.id })
+    .from(conversations)
+    .where(eq(conversations.userId, userId))
+    .get();
+
+  if (!conv) return;
+
+  await db
+    .update(messages)
+    .set({ deletedAt: sql`CURRENT_TIMESTAMP` })
+    .where(
+      sql`${messages.conversationId} = ${conv.id} AND ${messages.deletedAt} IS NULL`
+    );
 }
+
+// Helper to create DB instance from D1
+export { createDb };

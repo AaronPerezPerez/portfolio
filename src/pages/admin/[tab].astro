@@ -1,0 +1,4407 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = false;
+
+const { tab } = Astro.params;
+const validTabs = ['conversations', 'analytics', 'trash', 'settings', 'moderation'];
+
+// Redirect invalid tabs
+if (!validTabs.includes(tab || '')) {
+  return Astro.redirect('/admin/conversations');
+}
+
+const currentTab = tab as 'conversations' | 'analytics' | 'trash' | 'settings' | 'moderation';
+---
+
+<Layout title="Admin Panel | Aaron.chat" description="Admin panel for chat conversations">
+  <!-- Login View with enhanced background -->
+  <div class="min-h-screen flex items-center justify-center p-4" id="login-view">
+    <div class="login-backdrop"></div>
+    <div class="w-full max-w-md relative z-10">
+      <div class="login-window">
+        <div class="terminal-header">
+          <span class="terminal-dot bg-red-500"></span>
+          <span class="terminal-dot bg-yellow-500"></span>
+          <span class="terminal-dot bg-green-500"></span>
+          <span class="ml-4 text-xs opacity-70">admin.login</span>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center gap-2 mb-6">
+            <span class="text-[var(--primary)]">&gt;</span>
+            <span class="text-xl font-mono">AARON.ADMIN</span>
+          </div>
+
+          <form id="login-form" class="space-y-4">
+            <div>
+              <label class="block text-xs text-[var(--text-muted)] mb-2 font-mono">
+                PASSWORD_
+              </label>
+              <input
+                type="password"
+                id="password-input"
+                class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-4 py-3 font-mono text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+                placeholder="Enter admin password"
+                autocomplete="current-password"
+              />
+            </div>
+
+            <div id="login-error" class="hidden text-red-400 text-sm font-mono">
+              <span class="text-red-500">[ERROR]</span> Invalid password
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-[var(--primary)] text-[var(--bg-primary)] py-3 rounded font-mono font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <span>&gt;</span>
+              <span>AUTHENTICATE</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden min-h-screen pt-16" id="admin-view">
+    <!-- Header with stats -->
+    <header class="sticky top-0 z-40 bg-[var(--bg-primary)]/95 backdrop-blur border-b border-[var(--border-color)]">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <span class="text-[var(--primary)]">&gt;</span>
+          <span class="font-mono font-bold">AARON.ADMIN</span>
+        </div>
+
+        <div class="flex items-center gap-6 text-sm font-mono">
+          <div id="live-indicator" class="hidden items-center gap-2">
+            <span class="live-dot"></span>
+            <span id="live-count" class="text-[var(--color-neon-green)]">0</span>
+            <span class="text-[var(--text-muted)]">LIVE</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[var(--text-muted)]">CONVERSATIONS:</span>
+            <span id="stat-conversations" class="text-[var(--primary)]">--</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[var(--text-muted)]">MESSAGES:</span>
+            <span id="stat-messages" class="text-[var(--primary)]">--</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[var(--text-muted)]">TODAY:</span>
+            <span id="stat-today" class="text-[var(--secondary)]">--</span>
+          </div>
+          <button
+            id="logout-btn"
+            class="px-3 py-1 border border-[var(--border-color)] rounded hover:border-red-500 hover:text-red-500 transition-colors"
+          >
+            LOGOUT
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <nav class="max-w-7xl mx-auto px-4 border-b border-[var(--border-color)]">
+      <div class="flex gap-1">
+        <a
+          href="/admin/conversations"
+          class:list={[
+            "tab-link",
+            { "active": currentTab === 'conversations' }
+          ]}
+        >
+          <span class="text-[var(--primary)]">//</span> CONVERSATIONS
+        </a>
+        <a
+          href="/admin/analytics"
+          class:list={[
+            "tab-link",
+            { "active": currentTab === 'analytics' }
+          ]}
+        >
+          <span class="text-[var(--primary)]">//</span> ANALYTICS
+        </a>
+        <a
+          href="/admin/trash"
+          class:list={[
+            "tab-link",
+            { "active": currentTab === 'trash' }
+          ]}
+        >
+          <span class="text-[var(--text-muted)]">//</span> TRASH
+        </a>
+        <a
+          href="/admin/settings"
+          class:list={[
+            "tab-link",
+            { "active": currentTab === 'settings' }
+          ]}
+        >
+          <span class="text-[var(--primary)]">//</span> SETTINGS
+        </a>
+        <a
+          href="/admin/moderation"
+          class:list={[
+            "tab-link",
+            { "active": currentTab === 'moderation' }
+          ]}
+        >
+          <span class="text-[var(--secondary)]">//</span> MODERATION
+        </a>
+      </div>
+    </nav>
+
+    <!-- Tab Content -->
+    {currentTab === 'conversations' && (
+      <div class="max-w-7xl mx-auto flex" style="height: calc(100vh - 120px);">
+        <!-- Sidebar: Conversation list -->
+        <aside class="w-80 border-r border-[var(--border-color)] overflow-y-auto">
+          <!-- Search bar -->
+          <div class="p-3 border-b border-[var(--border-color)] relative">
+            <div class="relative">
+              <input
+                type="text"
+                id="search-input"
+                class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-3 py-2 pl-8 font-mono text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+                placeholder="Search... (press /)"
+              />
+              <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <!-- Search results dropdown -->
+            <div id="search-results" class="hidden absolute left-3 right-3 top-full mt-1 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
+              <!-- Results populated by JS -->
+            </div>
+          </div>
+
+          <!-- Filters panel -->
+          <div class="border-b border-[var(--border-color)]">
+            <button
+              id="filters-toggle"
+              class="w-full px-3 py-2 flex items-center justify-between text-xs font-mono text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] transition-colors"
+            >
+              <span class="flex items-center gap-2">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                </svg>
+                <span>FILTERS</span>
+                <span id="active-filters-count" class="hidden px-1.5 py-0.5 bg-[var(--primary)] text-[var(--bg-primary)] rounded text-[10px]">0</span>
+              </span>
+              <svg id="filters-chevron" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            <div id="filters-panel" class="hidden px-3 pb-3 space-y-3">
+              <!-- Date filters -->
+              <div class="space-y-1">
+                <label class="text-[10px] font-mono text-[var(--text-muted)]">DATE RANGE</label>
+                <div class="flex gap-2">
+                  <input
+                    type="date"
+                    id="filter-date-from"
+                    class="flex-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 font-mono text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+                  />
+                  <span class="text-[var(--text-muted)] self-center text-xs">→</span>
+                  <input
+                    type="date"
+                    id="filter-date-to"
+                    class="flex-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 font-mono text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+                  />
+                </div>
+              </div>
+
+              <!-- Language filter -->
+              <div class="space-y-1">
+                <label class="text-[10px] font-mono text-[var(--text-muted)]">LANGUAGE</label>
+                <select
+                  id="filter-language"
+                  class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 font-mono text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+                >
+                  <option value="">All languages</option>
+                  <option value="es">Spanish</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+
+              <!-- Message count filter -->
+              <div class="space-y-1">
+                <label class="text-[10px] font-mono text-[var(--text-muted)]">MESSAGE COUNT</label>
+                <div class="flex gap-2">
+                  <input
+                    type="number"
+                    id="filter-min-messages"
+                    placeholder="Min"
+                    min="0"
+                    class="flex-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 font-mono text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+                  />
+                  <span class="text-[var(--text-muted)] self-center text-xs">-</span>
+                  <input
+                    type="number"
+                    id="filter-max-messages"
+                    placeholder="Max"
+                    min="0"
+                    class="flex-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 font-mono text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+                  />
+                </div>
+              </div>
+
+              <!-- Tag filter -->
+              <div class="space-y-1">
+                <label class="text-[10px] font-mono text-[var(--text-muted)]">TAG</label>
+                <select
+                  id="filter-tag"
+                  class="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 font-mono text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
+                >
+                  <option value="">All tags</option>
+                  <!-- Options populated by JS -->
+                </select>
+              </div>
+
+              <!-- Filter actions -->
+              <div class="flex gap-2 pt-1">
+                <button
+                  id="apply-filters-btn"
+                  class="flex-1 bg-[var(--primary)] text-[var(--bg-primary)] py-1.5 rounded font-mono text-xs font-semibold hover:opacity-90 transition-opacity"
+                >
+                  APPLY
+                </button>
+                <button
+                  id="clear-filters-btn"
+                  class="px-3 py-1.5 border border-[var(--border-color)] rounded font-mono text-xs text-[var(--text-muted)] hover:border-[var(--text-muted)] transition-colors"
+                >
+                  CLEAR
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active filters chips -->
+          <div id="active-filters-chips" class="hidden px-3 py-2 flex-wrap gap-1 border-b border-[var(--border-color)]">
+            <!-- Chips populated by JS -->
+          </div>
+
+          <!-- Bulk action bar -->
+          <div id="bulk-action-bar" class="hidden px-3 py-2 bg-[var(--bg-secondary)] border-b border-[var(--border-color)]">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="select-all-checkbox"
+                  class="bulk-checkbox"
+                />
+                <span class="text-xs font-mono text-[var(--text-muted)]">
+                  <span id="selected-count">0</span> selected
+                </span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="bulk-delete-btn" class="bulk-btn delete" title="Delete selected">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+                <button id="bulk-tag-btn" class="bulk-btn tag" title="Add tag to selected">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                </button>
+                <button id="bulk-export-btn" class="bulk-btn export" title="Export selected">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tag selector dropdown for bulk tagging -->
+          <div id="bulk-tag-dropdown" class="hidden absolute left-0 right-0 mx-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg shadow-lg z-50 p-2">
+            <div class="text-xs font-mono text-[var(--text-muted)] mb-2">Select tag to add:</div>
+            <div id="bulk-tag-options" class="space-y-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div id="conversations-list" class="divide-y divide-[var(--border-color)]">
+            <div class="p-4 text-center text-[var(--text-muted)] font-mono text-sm">
+              Loading...
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main: Conversation detail -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+          <div id="conversation-detail" class="flex-1 overflow-y-auto p-6">
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 opacity-20">&gt;_</div>
+                <div>Select a conversation</div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    )}
+
+    {currentTab === 'analytics' && (
+      <div class="max-w-7xl mx-auto p-6" id="analytics-container">
+        <!-- Period Comparison Section -->
+        <div class="mb-6">
+          <div class="analytics-card">
+            <div class="analytics-card-header flex items-center justify-between">
+              <span><span class="text-[var(--primary)]">//</span> PERIOD COMPARISON</span>
+              <div class="flex items-center gap-3">
+                <select id="comparison-period" class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]">
+                  <option value="7">Last 7 days</option>
+                  <option value="14">Last 14 days</option>
+                  <option value="30">Last 30 days</option>
+                </select>
+              </div>
+            </div>
+            <div class="analytics-card-body">
+              <div id="comparison-stats" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Will be populated by JS -->
+                <div class="comparison-stat-loading">
+                  <div class="h-4 w-20 bg-[var(--bg-secondary)] rounded animate-pulse"></div>
+                  <div class="h-8 w-16 bg-[var(--bg-secondary)] rounded animate-pulse mt-2"></div>
+                </div>
+                <div class="comparison-stat-loading">
+                  <div class="h-4 w-20 bg-[var(--bg-secondary)] rounded animate-pulse"></div>
+                  <div class="h-8 w-16 bg-[var(--bg-secondary)] rounded animate-pulse mt-2"></div>
+                </div>
+                <div class="comparison-stat-loading">
+                  <div class="h-4 w-20 bg-[var(--bg-secondary)] rounded animate-pulse"></div>
+                  <div class="h-8 w-16 bg-[var(--bg-secondary)] rounded animate-pulse mt-2"></div>
+                </div>
+                <div class="comparison-stat-loading">
+                  <div class="h-4 w-20 bg-[var(--bg-secondary)] rounded animate-pulse"></div>
+                  <div class="h-8 w-16 bg-[var(--bg-secondary)] rounded animate-pulse mt-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Activity Chart -->
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <span class="text-[var(--primary)]">//</span> ACTIVITY (30 DAYS)
+            </div>
+            <div class="analytics-card-body">
+              <canvas id="activity-chart" height="200"></canvas>
+            </div>
+          </div>
+
+          <!-- Hourly Heatmap -->
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <span class="text-[var(--primary)]">//</span> HOURLY HEATMAP
+            </div>
+            <div class="analytics-card-body">
+              <div id="hourly-heatmap" class="flex gap-1 justify-center items-end h-32">
+                <!-- Will be populated by JS -->
+              </div>
+              <div class="flex justify-between text-xs text-[var(--text-muted)] mt-2 font-mono">
+                <span>0h</span>
+                <span>6h</span>
+                <span>12h</span>
+                <span>18h</span>
+                <span>24h</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Language Distribution -->
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <span class="text-[var(--primary)]">//</span> LANGUAGES
+            </div>
+            <div class="analytics-card-body flex items-center justify-center">
+              <div id="language-chart" class="relative w-40 h-40">
+                <!-- Will be populated by JS -->
+              </div>
+              <div id="language-legend" class="ml-6 space-y-2 font-mono text-sm">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Topics -->
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <span class="text-[var(--primary)]">//</span> TOP TOPICS
+            </div>
+            <div class="analytics-card-body">
+              <div id="topics-chart" class="space-y-3">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Word Cloud -->
+          <div class="analytics-card md:col-span-2">
+            <div class="analytics-card-header">
+              <span class="text-[var(--primary)]">//</span> WORD CLOUD
+            </div>
+            <div class="analytics-card-body">
+              <div id="wordcloud-chart" class="flex flex-wrap justify-center items-center gap-2 min-h-[200px]">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Potential Leads -->
+          <div class="analytics-card">
+            <div class="analytics-card-header flex items-center justify-between">
+              <span><span class="text-[var(--primary)]">//</span> POTENTIAL LEADS</span>
+              <span id="leads-count" class="text-xs px-2 py-0.5 bg-[var(--color-neon-green)]/20 text-[var(--color-neon-green)] rounded">0</span>
+            </div>
+            <div class="analytics-card-body">
+              <div id="leads-list" class="space-y-2 max-h-[250px] overflow-y-auto">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Engaging Conversations -->
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <span class="text-[var(--primary)]">//</span> TOP ENGAGING
+            </div>
+            <div class="analytics-card-body">
+              <div id="engagement-list" class="space-y-2 max-h-[250px] overflow-y-auto">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Cost Analytics -->
+          <div class="analytics-card md:col-span-2">
+            <div class="analytics-card-header flex items-center justify-between">
+              <span><span class="text-[var(--primary)]">//</span> COST ANALYTICS</span>
+              <span id="total-cost" class="text-sm font-mono text-[var(--secondary)]">$0.00</span>
+            </div>
+            <div class="analytics-card-body">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div class="cost-stat">
+                  <div class="cost-stat-label">Total Tokens</div>
+                  <div class="cost-stat-value" id="cost-tokens">0</div>
+                </div>
+                <div class="cost-stat">
+                  <div class="cost-stat-label">Messages</div>
+                  <div class="cost-stat-value" id="cost-messages">0</div>
+                </div>
+                <div class="cost-stat">
+                  <div class="cost-stat-label">Avg/Message</div>
+                  <div class="cost-stat-value" id="cost-avg-tokens">0</div>
+                </div>
+                <div class="cost-stat">
+                  <div class="cost-stat-label">Avg/Conv</div>
+                  <div class="cost-stat-value" id="cost-avg-conv">$0.00</div>
+                </div>
+              </div>
+              <div id="cost-chart" class="h-24">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {currentTab === 'trash' && (
+      <div class="max-w-7xl mx-auto flex" style="height: calc(100vh - 120px);">
+        <!-- Sidebar: Deleted conversations list -->
+        <aside class="w-80 border-r border-[var(--border-color)] overflow-y-auto">
+          <div class="p-3 border-b border-[var(--border-color)]">
+            <div class="flex items-center gap-2 text-[var(--text-muted)] font-mono text-xs">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span>DELETED CONVERSATIONS</span>
+            </div>
+          </div>
+          <div id="trash-list" class="divide-y divide-[var(--border-color)]">
+            <div class="p-4 text-center text-[var(--text-muted)] font-mono text-sm">
+              Loading...
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main: Trash detail -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+          <div id="trash-detail" class="flex-1 overflow-y-auto p-6">
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 opacity-20">
+                  <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </div>
+                <div>Select a deleted conversation</div>
+                <div class="text-xs mt-2 text-[var(--text-muted)]">
+                  Items in trash can be restored or permanently deleted
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    )}
+
+    {currentTab === 'settings' && (
+      <div class="max-w-4xl mx-auto p-6" id="settings-container">
+        <!-- System Prompt Section -->
+        <div class="settings-card mb-6">
+          <div class="settings-card-header flex items-center justify-between">
+            <span><span class="text-[var(--primary)]">//</span> SYSTEM PROMPT</span>
+            <div class="flex items-center gap-2">
+              <span id="prompt-status" class="text-xs text-[var(--text-muted)]">Loading...</span>
+            </div>
+          </div>
+          <div class="settings-card-body">
+            <div class="mb-3 text-xs text-[var(--text-muted)]">
+              Customize the AI persona and behavior. Changes take effect immediately.
+            </div>
+            <textarea
+              id="system-prompt-editor"
+              class="w-full h-80 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded p-4 font-mono text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] resize-y"
+              placeholder="Loading system prompt..."
+            ></textarea>
+            <div class="flex items-center justify-between mt-4">
+              <div class="flex items-center gap-2">
+                <span id="prompt-char-count" class="text-xs text-[var(--text-muted)]">0 characters</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  id="reset-prompt-btn"
+                  class="px-3 py-1.5 border border-[var(--border-color)] rounded font-mono text-xs hover:bg-[var(--bg-secondary)] transition-colors"
+                >
+                  Reset to Default
+                </button>
+                <button
+                  id="save-prompt-btn"
+                  class="px-4 py-1.5 bg-[var(--primary)] text-[var(--bg-primary)] rounded font-mono text-xs font-semibold hover:opacity-90 transition-opacity"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Temperature Section -->
+        <div class="settings-card mb-6">
+          <div class="settings-card-header">
+            <span class="text-[var(--primary)]">//</span> AI TEMPERATURE
+          </div>
+          <div class="settings-card-body">
+            <div class="mb-4 text-xs text-[var(--text-muted)]">
+              Controls response creativity. Lower = more focused, Higher = more creative.
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-xs text-[var(--text-muted)] w-16">Focused</span>
+              <input
+                type="range"
+                id="temperature-slider"
+                min="0"
+                max="1"
+                step="0.1"
+                value="0.5"
+                class="flex-1 temperature-slider"
+              />
+              <span class="text-xs text-[var(--text-muted)] w-16 text-right">Creative</span>
+            </div>
+            <div class="flex items-center justify-between mt-3">
+              <span id="temperature-value" class="font-mono text-lg text-[var(--primary)]">0.5</span>
+              <div class="flex items-center gap-2">
+                <button
+                  id="reset-temperature-btn"
+                  class="px-3 py-1.5 border border-[var(--border-color)] rounded font-mono text-xs hover:bg-[var(--bg-secondary)] transition-colors"
+                >
+                  Reset to 0.5
+                </button>
+                <button
+                  id="save-temperature-btn"
+                  class="px-4 py-1.5 bg-[var(--primary)] text-[var(--bg-primary)] rounded font-mono text-xs font-semibold hover:opacity-90 transition-opacity"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Config History Section -->
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <span class="text-[var(--primary)]">//</span> CHANGE HISTORY
+          </div>
+          <div class="settings-card-body">
+            <div id="config-history" class="space-y-2 max-h-60 overflow-y-auto">
+              <div class="text-center text-[var(--text-muted)] py-4 text-sm">
+                Loading history...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {currentTab === 'moderation' && (
+      <div class="max-w-6xl mx-auto p-6" id="moderation-container">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div class="moderation-stat-card">
+            <div class="label">Rate Limit Events (24h)</div>
+            <div class="value" data-stat="total-events">--</div>
+          </div>
+          <div class="moderation-stat-card">
+            <div class="label">Blocked Requests</div>
+            <div class="value" data-stat="blocked-count">--</div>
+          </div>
+          <div class="moderation-stat-card">
+            <div class="label">Pending Flags</div>
+            <div class="value" data-stat="pending-flags">--</div>
+          </div>
+          <div class="moderation-stat-card warning">
+            <div class="label">High Priority</div>
+            <div class="value" data-stat="high-priority">--</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Rate Limiting Section -->
+          <div class="moderation-card">
+            <div class="moderation-card-header">
+              <span class="text-[var(--secondary)]">//</span> RATE LIMITING
+            </div>
+            <div class="moderation-card-body">
+              <div class="mb-3 flex items-center justify-between">
+                <span class="text-xs text-[var(--text-muted)]">Recent rate limit events</span>
+                <label class="flex items-center gap-2 text-xs">
+                  <input type="checkbox" id="blocked-only" class="accent-[var(--secondary)]" />
+                  <span class="text-[var(--text-muted)]">Blocked only</span>
+                </label>
+              </div>
+              <div id="rate-limit-list" class="space-y-2 max-h-80 overflow-y-auto">
+                <div class="text-center text-[var(--text-muted)] py-4 text-sm">Loading...</div>
+              </div>
+              <div class="mt-4 pt-3 border-t border-[var(--border-color)]">
+                <div class="text-xs text-[var(--text-muted)] mb-2">Top Blocked IPs (7 days)</div>
+                <div id="top-blocked-list" class="space-y-1">
+                  <div class="text-center text-[var(--text-muted)] py-2 text-xs">Loading...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Flagged Conversations Section -->
+          <div class="moderation-card">
+            <div class="moderation-card-header flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span><span class="text-[var(--secondary)]">//</span> FLAGGED CONVERSATIONS</span>
+                <span id="scan-result" class="hidden text-xs text-[var(--secondary)] font-normal"></span>
+              </div>
+              <button
+                id="scan-spam-btn"
+                class="px-3 py-1 bg-[var(--secondary)] text-[var(--bg-primary)] rounded font-mono text-xs font-semibold hover:opacity-90 transition-opacity"
+              >
+                Scan for Spam
+              </button>
+            </div>
+            <div class="moderation-card-body">
+              <div class="mb-3 flex items-center justify-between">
+                <span class="text-xs text-[var(--text-muted)]">Conversations requiring review</span>
+                <label class="flex items-center gap-2 text-xs">
+                  <input type="checkbox" id="show-reviewed" class="accent-[var(--secondary)]" />
+                  <span class="text-[var(--text-muted)]">Show reviewed</span>
+                </label>
+              </div>
+              <div id="flagged-list" class="space-y-2 max-h-96 overflow-y-auto">
+                <div class="text-center text-[var(--text-muted)] py-4 text-sm">Loading...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+      <div class="modal-backdrop absolute inset-0 bg-black/70"></div>
+      <div class="modal-content relative bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg w-full max-w-md mx-4 shadow-2xl">
+        <div class="terminal-header">
+          <span class="terminal-dot bg-red-500"></span>
+          <span class="terminal-dot bg-yellow-500"></span>
+          <span class="terminal-dot bg-green-500"></span>
+          <span class="ml-4 text-xs opacity-70" id="modal-title">confirm.delete</span>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-mono font-semibold" id="modal-heading">Delete Conversation?</h3>
+              <p class="text-sm text-[var(--text-muted)]" id="modal-description">
+                This will move the conversation to trash.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-6">
+            <button
+              id="modal-cancel"
+              class="flex-1 px-4 py-2 border border-[var(--border-color)] rounded font-mono text-sm hover:bg-[var(--bg-secondary)] transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              id="modal-confirm"
+              class="flex-1 px-4 py-2 bg-red-500 text-white rounded font-mono text-sm hover:bg-red-600 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  /* Login backdrop */
+  .login-backdrop {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, transparent 70%);
+    opacity: 0.8;
+  }
+
+  /* Login window with glassmorphism */
+  .login-window {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--bg-secondary-rgb, 20, 20, 30), 0.95) 0%,
+      rgba(var(--bg-tertiary-rgb, 30, 30, 45), 0.9) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(var(--primary-rgb, 0, 255, 255), 0.1),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 0 60px rgba(var(--primary-rgb, 0, 255, 255), 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    position: relative;
+  }
+
+  .login-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(var(--primary-rgb, 0, 255, 255), 0.3) 0%,
+      transparent 50%,
+      rgba(var(--secondary-rgb, 255, 0, 255), 0.2) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .terminal-header {
+    background: rgba(var(--bg-tertiary-rgb, 30, 30, 45), 0.8);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  /* Tabs */
+  .tab-link {
+    padding: 12px 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .tab-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  /* Live indicator */
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-neon-green);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Conversation list items */
+  .conversation-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+  }
+
+  .conversation-item:hover {
+    background: var(--color-bg-tertiary, rgba(255, 255, 255, 0.05));
+    border-left-color: var(--color-neon-cyan);
+    transform: translateX(2px);
+  }
+
+  .conversation-item.active {
+    background: var(--color-bg-tertiary, rgba(255, 255, 255, 0.05));
+    border-left-color: var(--color-neon-cyan);
+  }
+
+  /* Message styles */
+  .admin-message {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 57%;
+    margin-bottom: 12px;
+  }
+
+  .admin-message.user {
+    align-self: flex-end;
+    margin-left: auto;
+  }
+
+  .admin-message.assistant {
+    align-self: flex-start;
+  }
+
+  .admin-message-meta {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+    opacity: 0.7;
+  }
+
+  .admin-message.user .admin-message-meta {
+    text-align: right;
+  }
+
+  .admin-message-content {
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .admin-message.user .admin-message-content {
+    background: var(--color-neon-cyan);
+    color: var(--color-bg-terminal);
+    border-radius: 12px 12px 4px 12px;
+    font-weight: 500;
+  }
+
+  .admin-message.assistant .admin-message-content {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 2px solid var(--color-neon-green);
+    color: var(--color-text-primary);
+    border-radius: 0 8px 8px 0;
+    padding-left: 12px;
+  }
+
+  .admin-message.assistant .admin-message-content::before {
+    content: '>';
+    color: var(--color-neon-green);
+    margin-right: 6px;
+    font-weight: bold;
+  }
+
+  /* Analytics cards */
+  .analytics-card {
+    background: rgba(var(--bg-secondary-rgb, 20, 20, 30), 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .analytics-card-header {
+    padding: 12px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .analytics-card-body {
+    padding: 20px;
+    min-height: 180px;
+  }
+
+  /* Heatmap bar */
+  .heatmap-bar {
+    width: 12px;
+    min-height: 4px;
+    border-radius: 2px 2px 0 0;
+    transition: all 0.3s ease;
+  }
+
+  /* Topic bar */
+  .topic-bar {
+    height: 24px;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  /* Search results */
+  .search-result {
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .search-result:last-child {
+    border-bottom: none;
+  }
+
+  .search-result:hover {
+    background: var(--bg-secondary);
+  }
+
+  /* Search highlight */
+  .search-highlight {
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.3);
+    color: var(--primary);
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* Filter chips */
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.15);
+    border: 1px solid rgba(var(--primary-rgb, 0, 255, 255), 0.3);
+    border-radius: 4px;
+    color: var(--primary);
+  }
+
+  .filter-chip-remove {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .filter-chip-remove:hover {
+    opacity: 1;
+  }
+
+  /* Filters chevron rotation */
+  #filters-chevron.open {
+    transform: rotate(180deg);
+  }
+
+  /* Tag badges */
+  .tag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 6px;
+    font-size: 9px;
+    font-family: var(--font-mono);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .tag-badge-remove {
+    cursor: pointer;
+    opacity: 0.7;
+    margin-left: 2px;
+    font-size: 10px;
+  }
+
+  .tag-badge-remove:hover {
+    opacity: 1;
+  }
+
+  /* Tag selector */
+  .tag-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+
+  .tag-option {
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    border-radius: 3px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .tag-option:hover {
+    opacity: 1;
+  }
+
+  .tag-option.selected {
+    opacity: 1;
+    box-shadow: 0 0 0 1px currentColor;
+  }
+
+  /* Modal animations */
+  #delete-modal .modal-backdrop {
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  #delete-modal .modal-content {
+    animation: slideUp 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Trash item styles */
+  .trash-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    opacity: 0.7;
+  }
+
+  .trash-item:hover {
+    background: var(--color-bg-tertiary, rgba(255, 255, 255, 0.05));
+    border-left-color: var(--color-neon-magenta);
+    transform: translateX(2px);
+    opacity: 1;
+  }
+
+  .trash-item.active {
+    background: var(--color-bg-tertiary, rgba(255, 255, 255, 0.05));
+    border-left-color: var(--color-neon-magenta);
+    opacity: 1;
+  }
+
+  /* Trash action buttons */
+  .trash-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .trash-action-btn.restore {
+    background: rgba(var(--color-neon-green-rgb, 0, 255, 136), 0.15);
+    border: 1px solid rgba(var(--color-neon-green-rgb, 0, 255, 136), 0.4);
+    color: var(--color-neon-green);
+  }
+
+  .trash-action-btn.restore:hover {
+    background: rgba(var(--color-neon-green-rgb, 0, 255, 136), 0.25);
+    border-color: var(--color-neon-green);
+  }
+
+  .trash-action-btn.delete-permanent {
+    background: rgba(255, 100, 100, 0.15);
+    border: 1px solid rgba(255, 100, 100, 0.4);
+    color: #ff6464;
+  }
+
+  .trash-action-btn.delete-permanent:hover {
+    background: rgba(255, 100, 100, 0.25);
+    border-color: #ff6464;
+  }
+
+  /* Delete button in conversation header */
+  .delete-conversation-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    border-radius: 4px;
+    color: rgba(255, 100, 100, 0.8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+  }
+
+  .delete-conversation-btn:hover {
+    background: rgba(255, 100, 100, 0.1);
+    border-color: rgba(255, 100, 100, 0.6);
+    color: #ff6464;
+  }
+
+  /* Bulk selection styles */
+  .bulk-checkbox {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  .bulk-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .bulk-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  .bulk-btn.delete:hover {
+    background: rgba(255, 100, 100, 0.15);
+    border-color: rgba(255, 100, 100, 0.4);
+    color: #ff6464;
+  }
+
+  .bulk-btn.tag:hover {
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.15);
+    border-color: rgba(var(--primary-rgb, 0, 255, 255), 0.4);
+    color: var(--primary);
+  }
+
+  .bulk-btn.export:hover {
+    background: rgba(var(--color-neon-green-rgb, 0, 255, 136), 0.15);
+    border-color: rgba(var(--color-neon-green-rgb, 0, 255, 136), 0.4);
+    color: var(--color-neon-green);
+  }
+
+  /* Conversation item with checkbox */
+  .conversation-item-checkbox {
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .conversation-item:hover .conversation-item-checkbox,
+  .conversation-item.selected .conversation-item-checkbox,
+  .bulk-mode .conversation-item-checkbox {
+    opacity: 1;
+  }
+
+  .conversation-item.selected {
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.08);
+  }
+
+  .bulk-mode .conversation-item {
+    padding-left: 32px;
+  }
+
+  /* Bulk tag dropdown */
+  #bulk-tag-dropdown {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .bulk-tag-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  .bulk-tag-option:hover {
+    background: var(--bg-secondary);
+  }
+
+  .bulk-tag-option .tag-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+
+  /* Word Cloud styles */
+  .wordcloud-word {
+    display: inline-block;
+    padding: 2px 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    border-radius: 2px;
+  }
+
+  .wordcloud-word:hover {
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.2);
+    transform: scale(1.1);
+  }
+
+  /* Lead item styles */
+  .lead-item {
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    border-left: 3px solid var(--color-neon-green);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .lead-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateX(2px);
+  }
+
+  .lead-score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    border-radius: 10px;
+  }
+
+  .lead-score.high {
+    background: rgba(var(--color-neon-green-rgb, 0, 255, 136), 0.2);
+    color: var(--color-neon-green);
+  }
+
+  .lead-score.medium {
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.2);
+    color: var(--primary);
+  }
+
+  .lead-score.low {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+  }
+
+  /* Lead keyword tags */
+  .lead-keyword {
+    display: inline-block;
+    padding: 1px 4px;
+    font-size: 9px;
+    font-family: var(--font-mono);
+    background: rgba(var(--primary-rgb, 0, 255, 255), 0.1);
+    color: var(--primary);
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Engagement item styles */
+  .engagement-item {
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    border-left: 3px solid var(--primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .engagement-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: translateX(2px);
+  }
+
+  .engagement-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+  }
+
+  .engagement-stat .value {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* Comparison Stats */
+  .comparison-stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .comparison-stat-card .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .comparison-stat-card .value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+  }
+
+  .comparison-stat-card .change {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 8px;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+
+  .comparison-stat-card .change.positive {
+    color: var(--color-neon-green);
+    background: rgba(57, 255, 20, 0.1);
+  }
+
+  .comparison-stat-card .change.negative {
+    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+  }
+
+  .comparison-stat-card .change.neutral {
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+  }
+
+  .comparison-stat-card .previous {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Cost Analytics */
+  .cost-stat {
+    text-align: center;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+  }
+
+  .cost-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .cost-stat-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+  }
+
+  .cost-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 100%;
+  }
+
+  .cost-bar-item {
+    flex: 1;
+    background: var(--primary);
+    opacity: 0.7;
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+    transition: opacity 0.2s, height 0.3s;
+  }
+
+  .cost-bar-item:hover {
+    opacity: 1;
+  }
+
+  /* Settings Cards */
+  .settings-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .settings-card-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .settings-card-body {
+    padding: 16px;
+  }
+
+  /* Temperature Slider */
+  .temperature-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-tertiary);
+    outline: none;
+  }
+
+  .temperature-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .temperature-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+
+  .temperature-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+  }
+
+  /* Config History Items */
+  .history-item {
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .history-item .key {
+    color: var(--secondary);
+    font-weight: 600;
+  }
+
+  .history-item .time {
+    color: var(--text-muted);
+  }
+
+  .history-item .value-change {
+    color: var(--text-muted);
+    margin-top: 4px;
+    word-break: break-all;
+  }
+
+  /* Moderation Tab */
+  .moderation-stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .moderation-stat-card.warning {
+    border-color: var(--secondary);
+    background: rgba(255, 107, 107, 0.05);
+  }
+
+  .moderation-stat-card .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .moderation-stat-card .value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+  }
+
+  .moderation-stat-card.warning .value {
+    color: var(--secondary);
+  }
+
+  .moderation-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .moderation-card-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .moderation-card-body {
+    padding: 16px;
+  }
+
+  .rate-limit-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    font-size: 11px;
+  }
+
+  .rate-limit-item.blocked {
+    border-left: 3px solid var(--secondary);
+  }
+
+  .rate-limit-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rate-limit-ip {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .rate-limit-meta {
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .rate-limit-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .rate-limit-time {
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .status-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .status-badge.blocked {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--secondary);
+  }
+
+  .status-badge.allowed {
+    background: rgba(57, 255, 20, 0.1);
+    color: var(--color-neon-green);
+  }
+
+  .flagged-item {
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border-left: 3px solid var(--text-muted);
+  }
+
+  .flagged-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .flagged-severity {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .flagged-severity.high {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--secondary);
+  }
+
+  .flagged-severity.medium {
+    background: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+  }
+
+  .flagged-severity.low {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+  }
+
+  .flagged-reason {
+    font-size: 12px;
+    color: var(--text-primary);
+  }
+
+  .flagged-meta {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .flagged-preview {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+  }
+
+  .flagged-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .btn-action:hover {
+    opacity: 0.8;
+  }
+
+  .btn-action.view {
+    background: var(--primary);
+    color: var(--bg-primary);
+    border: none;
+  }
+
+  .btn-action.dismiss {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+  }
+
+  .blocked-ip-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    font-size: 11px;
+  }
+
+  .block-count {
+    font-size: 10px;
+    color: var(--secondary);
+    font-weight: 600;
+  }
+
+  .blocked-ip-item .count {
+    color: var(--text-muted);
+  }
+</style>
+
+<script define:vars={{ currentTab }}>
+  class AdminPanel {
+    constructor() {
+      this.authenticated = false;
+      this.conversations = [];
+      this.selectedConversationId = null;
+      this.currentTab = currentTab;
+      this.eventSource = null;
+      this.searchDebounceTimer = null;
+      this.currentSearchQuery = '';
+      this.isSearching = false;
+      this.filters = {
+        dateFrom: null,
+        dateTo: null,
+        language: null,
+        minMessages: null,
+        maxMessages: null,
+        hasTag: null,
+      };
+      this.availableTags = [];
+      this.conversationTags = {}; // Map of conversationId -> tags array
+      // Trash state
+      this.trashConversations = [];
+      this.selectedTrashId = null;
+      // Modal state
+      this.modalResolve = null;
+      this.pendingDeleteAction = null;
+      // Bulk selection state
+      this.selectedIds = new Set();
+      this.bulkMode = false;
+      // Moderation state
+      this.rateLimitLogs = [];
+      this.flaggedConversations = [];
+      this.moderationStats = null;
+      this.init();
+    }
+
+    async init() {
+      await this.checkAuth();
+      this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+      document.getElementById('login-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.login();
+      });
+
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        this.logout();
+      });
+
+      this.setupSearchEventListeners();
+      this.setupFilterEventListeners();
+      this.setupModalEventListeners();
+      this.setupBulkEventListeners();
+      this.loadFiltersFromURL();
+    }
+
+    setupBulkEventListeners() {
+      const selectAllCheckbox = document.getElementById('select-all-checkbox');
+      const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+      const bulkTagBtn = document.getElementById('bulk-tag-btn');
+      const bulkExportBtn = document.getElementById('bulk-export-btn');
+      const bulkTagDropdown = document.getElementById('bulk-tag-dropdown');
+
+      // Select all checkbox
+      selectAllCheckbox?.addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        if (checked) {
+          this.conversations.forEach((c) => this.selectedIds.add(c.id));
+        } else {
+          this.selectedIds.clear();
+        }
+        this.updateBulkUI();
+        this.renderConversationsList();
+      });
+
+      // Bulk delete button
+      bulkDeleteBtn?.addEventListener('click', async () => {
+        if (this.selectedIds.size === 0) return;
+        await this.bulkDelete();
+      });
+
+      // Bulk tag button - toggle dropdown
+      bulkTagBtn?.addEventListener('click', () => {
+        if (this.selectedIds.size === 0) return;
+        bulkTagDropdown?.classList.toggle('hidden');
+        if (!bulkTagDropdown?.classList.contains('hidden')) {
+          this.populateBulkTagDropdown();
+        }
+      });
+
+      // Bulk export button
+      bulkExportBtn?.addEventListener('click', async () => {
+        if (this.selectedIds.size === 0) return;
+        await this.bulkExport();
+      });
+
+      // Close tag dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!bulkTagBtn?.contains(e.target) && !bulkTagDropdown?.contains(e.target)) {
+          bulkTagDropdown?.classList.add('hidden');
+        }
+      });
+    }
+
+    setupModalEventListeners() {
+      const modal = document.getElementById('delete-modal');
+      const cancelBtn = document.getElementById('modal-cancel');
+      const confirmBtn = document.getElementById('modal-confirm');
+
+      // Cancel button
+      cancelBtn?.addEventListener('click', () => {
+        this.closeModal(false);
+      });
+
+      // Confirm button
+      confirmBtn?.addEventListener('click', () => {
+        this.closeModal(true);
+      });
+
+      // Click on backdrop to close
+      modal?.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+        this.closeModal(false);
+      });
+
+      // Escape key to close
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
+          this.closeModal(false);
+        }
+      });
+    }
+
+    setupSearchEventListeners() {
+      const searchInput = document.getElementById('search-input');
+      const searchResults = document.getElementById('search-results');
+      const searchContainer = searchInput?.parentElement?.parentElement;
+
+      if (!searchInput) return;
+
+      // Input with debounce
+      searchInput.addEventListener('input', () => {
+        if (this.searchDebounceTimer) {
+          clearTimeout(this.searchDebounceTimer);
+        }
+
+        const query = searchInput.value.trim();
+        this.currentSearchQuery = query;
+
+        if (query.length < 2) {
+          this.hideSearchResults();
+          return;
+        }
+
+        this.searchDebounceTimer = setTimeout(() => {
+          this.performSearch(query);
+        }, 300);
+      });
+
+      // Focus/blur for showing/hiding results
+      searchInput.addEventListener('focus', () => {
+        if (this.currentSearchQuery.length >= 2 && searchResults?.innerHTML.trim()) {
+          this.showSearchResults();
+        }
+      });
+
+      // Click outside to close
+      document.addEventListener('click', (e) => {
+        if (!searchContainer?.contains(e.target)) {
+          this.hideSearchResults();
+        }
+      });
+
+      // Keyboard: Escape to close
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          this.hideSearchResults();
+          searchInput.blur();
+        }
+      });
+
+      // Global "/" shortcut to focus search
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== searchInput && this.currentTab === 'conversations') {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      });
+    }
+
+    async checkAuth() {
+      try {
+        const response = await fetch('/api/admin/auth');
+        const data = await response.json();
+
+        if (data.authenticated) {
+          this.showAdminView();
+          if (this.currentTab === 'conversations') {
+            await this.loadConversations();
+          } else if (this.currentTab === 'analytics') {
+            await this.loadAnalytics();
+            this.setupComparisonListeners();
+          } else if (this.currentTab === 'trash') {
+            await this.loadTrash();
+          } else if (this.currentTab === 'settings') {
+            await this.loadSettings();
+            this.setupSettingsListeners();
+          } else if (this.currentTab === 'moderation') {
+            await this.loadModeration();
+            this.setupModerationListeners();
+          }
+        } else {
+          this.showLoginView();
+        }
+      } catch {
+        this.showLoginView();
+      }
+    }
+
+    async login() {
+      const passwordInput = document.getElementById('password-input');
+      const errorEl = document.getElementById('login-error');
+      const password = passwordInput?.value;
+
+      if (!password) return;
+
+      try {
+        const response = await fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        if (response.ok) {
+          errorEl?.classList.add('hidden');
+          this.showAdminView();
+          if (this.currentTab === 'conversations') {
+            await this.loadConversations();
+          } else if (this.currentTab === 'analytics') {
+            await this.loadAnalytics();
+            this.setupComparisonListeners();
+          } else if (this.currentTab === 'trash') {
+            await this.loadTrash();
+          } else if (this.currentTab === 'settings') {
+            await this.loadSettings();
+            this.setupSettingsListeners();
+          } else if (this.currentTab === 'moderation') {
+            await this.loadModeration();
+            this.setupModerationListeners();
+          }
+        } else {
+          errorEl?.classList.remove('hidden');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      } catch {
+        errorEl?.classList.remove('hidden');
+      }
+    }
+
+    async logout() {
+      if (this.eventSource) {
+        this.eventSource.close();
+        this.eventSource = null;
+      }
+      this.clearSearch();
+      await fetch('/api/admin/auth', { method: 'DELETE' });
+      this.showLoginView();
+    }
+
+    showLoginView() {
+      document.getElementById('login-view')?.classList.remove('hidden');
+      document.getElementById('admin-view')?.classList.add('hidden');
+      document.getElementById('password-input')?.focus();
+      this.hideLiveIndicator();
+    }
+
+    showAdminView() {
+      document.getElementById('login-view')?.classList.add('hidden');
+      document.getElementById('admin-view')?.classList.remove('hidden');
+      this.startLiveConnection();
+      this.loadTags(); // Load available tags for filtering
+    }
+
+    // ========== LIVE USERS SSE ==========
+
+    startLiveConnection() {
+      if (this.eventSource) {
+        this.eventSource.close();
+      }
+
+      try {
+        this.eventSource = new EventSource('/api/admin/live');
+
+        this.eventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            this.updateLiveIndicator(data.count, data.users);
+          } catch (e) {
+            console.error('Failed to parse SSE data:', e);
+          }
+        };
+
+        this.eventSource.onerror = () => {
+          // SSE connection failed or closed, hide indicator
+          this.hideLiveIndicator();
+          // Reconnect after 30 seconds
+          setTimeout(() => {
+            if (document.getElementById('admin-view')?.classList.contains('hidden') === false) {
+              this.startLiveConnection();
+            }
+          }, 30000);
+        };
+      } catch (e) {
+        console.error('Failed to start SSE:', e);
+      }
+    }
+
+    updateLiveIndicator(count, users) {
+      const indicator = document.getElementById('live-indicator');
+      const countEl = document.getElementById('live-count');
+
+      if (count > 0) {
+        indicator?.classList.remove('hidden');
+        indicator?.classList.add('flex');
+        if (countEl) countEl.textContent = count.toString();
+      } else {
+        this.hideLiveIndicator();
+      }
+    }
+
+    hideLiveIndicator() {
+      const indicator = document.getElementById('live-indicator');
+      indicator?.classList.add('hidden');
+      indicator?.classList.remove('flex');
+    }
+
+    // ========== CONVERSATIONS TAB ==========
+
+    async loadConversations() {
+      try {
+        // Build URL with filters
+        const url = new URL('/api/admin/conversations', window.location.origin);
+
+        if (this.filters.dateFrom) url.searchParams.set('dateFrom', this.filters.dateFrom);
+        if (this.filters.dateTo) url.searchParams.set('dateTo', this.filters.dateTo);
+        if (this.filters.language) url.searchParams.set('language', this.filters.language);
+        if (this.filters.minMessages) url.searchParams.set('minMessages', this.filters.minMessages.toString());
+        if (this.filters.maxMessages) url.searchParams.set('maxMessages', this.filters.maxMessages.toString());
+        if (this.filters.hasTag) url.searchParams.set('hasTag', this.filters.hasTag.toString());
+
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Failed to fetch');
+        }
+
+        const data = await response.json();
+        this.conversations = data.conversations;
+        this.updateStats(data.stats);
+        this.renderConversationsList();
+      } catch (error) {
+        console.error('Failed to load conversations:', error);
+      }
+    }
+
+    updateStats(stats) {
+      document.getElementById('stat-conversations').textContent = stats.totalConversations?.toString() || '0';
+      document.getElementById('stat-messages').textContent = stats.totalMessages?.toString() || '0';
+      document.getElementById('stat-today').textContent = stats.messagesToday?.toString() || '0';
+    }
+
+    renderConversationsList() {
+      const container = document.getElementById('conversations-list');
+      if (!container) return;
+
+      // Show/hide bulk action bar based on selection
+      this.updateBulkUI();
+
+      if (this.conversations.length === 0) {
+        const hasFilters = this.hasActiveFilters();
+        container.innerHTML = `
+          <div class="p-4 text-center text-[var(--text-muted)] font-mono text-sm">
+            ${hasFilters
+              ? 'No conversations match filters'
+              : 'No conversations yet'
+            }
+          </div>
+        `;
+        return;
+      }
+
+      // Add bulk-mode class if any items are selected
+      if (this.selectedIds.size > 0) {
+        container.classList.add('bulk-mode');
+      } else {
+        container.classList.remove('bulk-mode');
+      }
+
+      container.innerHTML = this.conversations.map(conv => {
+        const lastMessageAt = conv.lastMessageAt ? this.formatTimeAgo(conv.lastMessageAt) : 'No messages';
+        const preview = conv.lastMessage ? this.truncate(conv.lastMessage, 50) : 'Empty conversation';
+        const isActive = conv.id === this.selectedConversationId;
+        const isSelected = this.selectedIds.has(conv.id);
+        const shortId = conv.userId ? conv.userId.substring(0, 8) : 'unknown';
+
+        return `
+          <div class="conversation-item ${isActive ? 'active' : ''} ${isSelected ? 'selected' : ''}" data-id="${conv.id}" style="position: relative;">
+            <input
+              type="checkbox"
+              class="conversation-item-checkbox bulk-checkbox"
+              data-id="${conv.id}"
+              ${isSelected ? 'checked' : ''}
+            />
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-sm text-[var(--primary)]">${shortId}...</span>
+              <span class="text-xs text-[var(--text-muted)]">${lastMessageAt}</span>
+            </div>
+            <div class="text-sm text-[var(--text-muted)] truncate">${this.escapeHtml(preview)}</div>
+            <div class="text-xs text-[var(--text-muted)] mt-1 flex items-center gap-1">
+              <span class="text-[var(--secondary)]">${conv.messageCount || 0}</span>
+              <span>messages</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add checkbox handlers
+      container.querySelectorAll('.conversation-item-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('click', (e) => {
+          e.stopPropagation(); // Don't trigger conversation selection
+          const id = parseInt(checkbox.getAttribute('data-id'), 10);
+          if (checkbox.checked) {
+            this.selectedIds.add(id);
+          } else {
+            this.selectedIds.delete(id);
+          }
+          this.updateBulkUI();
+          // Update visual state without full re-render
+          const item = checkbox.closest('.conversation-item');
+          item?.classList.toggle('selected', checkbox.checked);
+        });
+      });
+
+      // Add click handlers for conversation selection
+      container.querySelectorAll('.conversation-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          // If clicking on checkbox, don't select conversation
+          if (e.target.classList.contains('conversation-item-checkbox')) return;
+          const id = parseInt(item.getAttribute('data-id'));
+          this.selectConversation(id);
+        });
+      });
+    }
+
+    async selectConversation(id) {
+      this.selectedConversationId = id;
+      this.renderConversationsList();
+
+      const detailContainer = document.getElementById('conversation-detail');
+      if (!detailContainer) return;
+
+      detailContainer.innerHTML = `
+        <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+          <div>Loading messages...</div>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`/api/admin/conversation/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch');
+
+        const data = await response.json();
+        this.renderConversationDetail(data.conversation, data.messages);
+      } catch (error) {
+        console.error('Failed to load conversation:', error);
+        detailContainer.innerHTML = `
+          <div class="h-full flex items-center justify-center text-red-400 font-mono">
+            <div>Failed to load conversation</div>
+          </div>
+        `;
+      }
+    }
+
+    renderConversationDetail(conversation, messages) {
+      const container = document.getElementById('conversation-detail');
+      if (!container) return;
+
+      const header = `
+        <div class="mb-6 pb-4 border-b border-[var(--border-color)]">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-[var(--primary)] font-mono">&gt;</span>
+              <span class="font-mono font-semibold">User: ${conversation.user_id}</span>
+            </div>
+            <button class="delete-conversation-btn" data-conversation-id="${conversation.id}">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              DELETE
+            </button>
+          </div>
+          <div class="text-sm text-[var(--text-muted)] font-mono">
+            Started: ${this.formatDate(conversation.created_at)}
+          </div>
+        </div>
+      `;
+
+      const messagesHtml = messages.map(msg => `
+        <div class="admin-message ${msg.role}">
+          <div class="admin-message-meta">
+            ${msg.role === 'user' ? 'USER' : 'AARON.AI'} · ${this.formatTime(msg.created_at)}
+          </div>
+          <div class="admin-message-content">${this.escapeHtml(msg.content)}</div>
+        </div>
+      `).join('');
+
+      container.innerHTML = header + `<div>${messagesHtml}</div>`;
+      container.scrollTop = container.scrollHeight;
+
+      // Add delete button event listener
+      container.querySelector('.delete-conversation-btn')?.addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        const conversationId = parseInt(btn.getAttribute('data-conversation-id'), 10);
+        if (conversationId) {
+          await this.deleteConversation(conversationId);
+        }
+      });
+    }
+
+    // ========== ANALYTICS TAB ==========
+
+    async loadAnalytics() {
+      try {
+        // Load stats for header
+        const statsResponse = await fetch('/api/admin/conversations');
+        if (statsResponse.ok) {
+          const data = await statsResponse.json();
+          this.updateStats(data.stats);
+        }
+
+        // Load comparison data with selected period
+        const comparisonDays = document.getElementById('comparison-period')?.value || '7';
+        await this.loadComparison(comparisonDays);
+
+        // Load all analytics data in parallel
+        const [activityRes, hourlyRes, languagesRes, topicsRes, wordcloudRes, leadsRes, engagementRes, costsRes] = await Promise.all([
+          fetch('/api/admin/analytics/activity'),
+          fetch('/api/admin/analytics/hourly'),
+          fetch('/api/admin/analytics/languages'),
+          fetch('/api/admin/analytics/topics'),
+          fetch('/api/admin/analytics/wordcloud?limit=80'),
+          fetch('/api/admin/analytics/leads?limit=10'),
+          fetch('/api/admin/analytics/engagement?limit=5'),
+          fetch('/api/admin/analytics/costs?days=30'),
+        ]);
+
+        if (activityRes.ok) {
+          const { activity } = await activityRes.json();
+          this.renderActivityChart(activity);
+        }
+
+        if (hourlyRes.ok) {
+          const { hourly } = await hourlyRes.json();
+          this.renderHourlyHeatmap(hourly);
+        }
+
+        if (languagesRes.ok) {
+          const { languages, total } = await languagesRes.json();
+          this.renderLanguageChart(languages, total);
+        }
+
+        if (topicsRes.ok) {
+          const { topics } = await topicsRes.json();
+          this.renderTopicsChart(topics);
+        }
+
+        if (wordcloudRes.ok) {
+          const data = await wordcloudRes.json();
+          this.renderWordCloud(data.words);
+        }
+
+        if (leadsRes.ok) {
+          const data = await leadsRes.json();
+          this.renderLeads(data.leads, data.stats);
+        }
+
+        if (engagementRes.ok) {
+          const data = await engagementRes.json();
+          this.renderEngagement(data.conversations);
+        }
+
+        if (costsRes.ok) {
+          const data = await costsRes.json();
+          this.renderCosts(data);
+        }
+      } catch (error) {
+        console.error('Failed to load analytics:', error);
+      }
+    }
+
+    renderActivityChart(data) {
+      const canvas = document.getElementById('activity-chart');
+      if (!canvas || !(canvas instanceof HTMLCanvasElement)) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const width = canvas.width = canvas.parentElement?.clientWidth || 400;
+      const height = canvas.height = 200;
+      const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+
+      const maxCount = Math.max(...data.map(d => d.count), 1);
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Get CSS custom properties
+      const style = getComputedStyle(document.documentElement);
+      const primaryColor = style.getPropertyValue('--primary').trim() || '#00ffff';
+      const textColor = style.getPropertyValue('--text-muted').trim() || '#888';
+
+      // Draw grid lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartHeight / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+      }
+
+      // Draw line chart
+      if (data.length > 0) {
+        ctx.strokeStyle = primaryColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        data.forEach((d, i) => {
+          const x = padding.left + (i / (data.length - 1 || 1)) * chartWidth;
+          const y = padding.top + chartHeight - (d.count / maxCount) * chartHeight;
+
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        ctx.stroke();
+
+        // Draw dots
+        ctx.fillStyle = primaryColor;
+        data.forEach((d, i) => {
+          const x = padding.left + (i / (data.length - 1 || 1)) * chartWidth;
+          const y = padding.top + chartHeight - (d.count / maxCount) * chartHeight;
+          ctx.beginPath();
+          ctx.arc(x, y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // Y-axis labels
+      ctx.fillStyle = textColor;
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'right';
+      for (let i = 0; i <= 4; i++) {
+        const value = Math.round(maxCount * (4 - i) / 4);
+        const y = padding.top + (chartHeight / 4) * i + 4;
+        ctx.fillText(value.toString(), padding.left - 8, y);
+      }
+    }
+
+    renderHourlyHeatmap(data) {
+      const container = document.getElementById('hourly-heatmap');
+      if (!container) return;
+
+      const maxCount = Math.max(...data.map(d => d.count), 1);
+
+      container.innerHTML = data.map(d => {
+        const intensity = d.count / maxCount;
+        const height = Math.max(4, Math.round(intensity * 100));
+        const opacity = 0.2 + intensity * 0.8;
+
+        return `
+          <div
+            class="heatmap-bar"
+            style="height: ${height}px; background: rgba(0, 255, 255, ${opacity});"
+            title="${d.hour}:00 - ${d.count} messages"
+          ></div>
+        `;
+      }).join('');
+    }
+
+    renderLanguageChart(languages, total) {
+      const chartContainer = document.getElementById('language-chart');
+      const legendContainer = document.getElementById('language-legend');
+      if (!chartContainer || !legendContainer) return;
+
+      const colors = {
+        es: '#ff6b6b',
+        en: '#4ecdc4',
+        other: '#a8a8a8'
+      };
+
+      // Simple donut chart using CSS
+      let offset = 0;
+      const segments = languages.map(lang => {
+        const segment = {
+          color: colors[lang.code] || colors.other,
+          percentage: lang.percentage,
+          offset: offset
+        };
+        offset += lang.percentage;
+        return segment;
+      });
+
+      const gradientStops = segments.map(s =>
+        `${s.color} ${s.offset}% ${s.offset + s.percentage}%`
+      ).join(', ');
+
+      chartContainer.innerHTML = `
+        <div
+          style="
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(${gradientStops || 'rgba(255,255,255,0.1) 0% 100%'});
+            position: relative;
+          "
+        >
+          <div
+            style="
+              position: absolute;
+              inset: 25%;
+              background: var(--bg-primary);
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <span class="text-xl font-bold font-mono">${total}</span>
+          </div>
+        </div>
+      `;
+
+      legendContainer.innerHTML = languages.map(lang => `
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded" style="background: ${colors[lang.code] || colors.other}"></div>
+          <span>${lang.name}</span>
+          <span class="text-[var(--text-muted)]">${lang.percentage}%</span>
+        </div>
+      `).join('');
+    }
+
+    renderTopicsChart(topics) {
+      const container = document.getElementById('topics-chart');
+      if (!container) return;
+
+      if (topics.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-8">
+            No topic data available
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = topics.slice(0, 6).map(topic => `
+        <div class="flex items-center gap-3">
+          <div class="w-24 text-xs font-mono text-[var(--text-muted)] truncate">${topic.name}</div>
+          <div class="flex-1 h-6 bg-[var(--bg-primary)] rounded overflow-hidden">
+            <div
+              class="topic-bar h-full"
+              style="width: ${topic.percentage}%; background: linear-gradient(90deg, var(--primary), var(--secondary));"
+            ></div>
+          </div>
+          <div class="w-8 text-xs font-mono text-right">${topic.count}</div>
+        </div>
+      `).join('');
+    }
+
+    renderWordCloud(words) {
+      const container = document.getElementById('wordcloud-chart');
+      if (!container) return;
+
+      if (!words || words.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-8">
+            No word data available
+          </div>
+        `;
+        return;
+      }
+
+      // Generate colors based on size
+      const getColor = (size) => {
+        if (size >= 70) return 'var(--primary)';
+        if (size >= 50) return 'var(--secondary)';
+        if (size >= 30) return 'var(--color-neon-green)';
+        return 'var(--text-muted)';
+      };
+
+      // Map size (10-100) to font size (10-32px)
+      const getFontSize = (size) => {
+        return Math.round(10 + (size / 100) * 22);
+      };
+
+      container.innerHTML = words.map(w => `
+        <span
+          class="wordcloud-word"
+          style="font-size: ${getFontSize(w.size)}px; color: ${getColor(w.size)}; opacity: ${0.5 + (w.size / 200)};"
+          title="${w.word}: ${w.count} occurrences"
+          data-word="${this.escapeHtml(w.word)}"
+        >
+          ${this.escapeHtml(w.word)}
+        </span>
+      `).join('');
+
+      // Add click handlers to filter by word
+      container.querySelectorAll('.wordcloud-word').forEach(el => {
+        el.addEventListener('click', () => {
+          const word = el.getAttribute('data-word');
+          if (word) {
+            // Navigate to conversations with search
+            window.location.href = `/admin/conversations?search=${encodeURIComponent(word)}`;
+          }
+        });
+      });
+    }
+
+    renderLeads(leads, stats) {
+      const container = document.getElementById('leads-list');
+      const countBadge = document.getElementById('leads-count');
+      if (!container) return;
+
+      // Update count badge
+      if (countBadge) {
+        countBadge.textContent = stats?.total?.toString() || '0';
+      }
+
+      if (!leads || leads.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-8 text-sm">
+            No potential leads detected
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = leads.map(lead => {
+        const scoreClass = lead.score >= 5 ? 'high' : lead.score >= 3 ? 'medium' : 'low';
+        const shortUserId = lead.userId.substring(0, 8);
+        const preview = lead.lastMessage
+          ? this.truncate(lead.lastMessage, 60)
+          : 'No preview';
+
+        return `
+          <div class="lead-item" data-conversation-id="${lead.conversationId}">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-xs text-[var(--primary)]">${shortUserId}...</span>
+              <span class="lead-score ${scoreClass}">${lead.score}</span>
+            </div>
+            <div class="text-xs text-[var(--text-muted)] truncate mb-1">${this.escapeHtml(preview)}</div>
+            <div class="flex flex-wrap gap-1">
+              ${lead.matchedKeywords.slice(0, 3).map(k => `
+                <span class="lead-keyword">${k}</span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.lead-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.getAttribute('data-conversation-id');
+          if (id) {
+            window.location.href = `/admin/conversations?select=${id}`;
+          }
+        });
+      });
+    }
+
+    renderEngagement(conversations) {
+      const container = document.getElementById('engagement-list');
+      if (!container) return;
+
+      if (!conversations || conversations.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-8 text-sm">
+            No engagement data available
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = conversations.map(conv => {
+        const shortUserId = conv.userId.substring(0, 8);
+        const preview = conv.preview
+          ? this.truncate(conv.preview, 50)
+          : 'No preview';
+
+        // Format duration
+        let duration = '';
+        if (conv.durationMinutes >= 60) {
+          const hours = Math.floor(conv.durationMinutes / 60);
+          const mins = conv.durationMinutes % 60;
+          duration = `${hours}h ${mins}m`;
+        } else {
+          duration = `${conv.durationMinutes}m`;
+        }
+
+        return `
+          <div class="engagement-item" data-conversation-id="${conv.id}">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-xs text-[var(--primary)]">${shortUserId}...</span>
+              <span class="text-xs text-[var(--secondary)] font-mono">${conv.engagementScore}</span>
+            </div>
+            <div class="text-xs text-[var(--text-muted)] truncate mb-2">${this.escapeHtml(preview)}</div>
+            <div class="flex items-center gap-3">
+              <span class="engagement-stat">
+                <span class="value">${conv.messageCount}</span> msgs
+              </span>
+              <span class="engagement-stat">
+                <span class="value">${duration}</span>
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.engagement-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.getAttribute('data-conversation-id');
+          if (id) {
+            window.location.href = `/admin/conversations?select=${id}`;
+          }
+        });
+      });
+    }
+
+    // ========== PERIOD COMPARISON ==========
+
+    async loadComparison(days) {
+      try {
+        const response = await fetch(`/api/admin/analytics/comparison?days=${days}`);
+        if (response.ok) {
+          const data = await response.json();
+          this.renderComparison(data);
+        }
+      } catch (error) {
+        console.error('Failed to load comparison:', error);
+      }
+    }
+
+    renderComparison(data) {
+      const container = document.getElementById('comparison-stats');
+      if (!container) return;
+
+      const { current, previous, changes, period } = data;
+
+      const formatChange = (value) => {
+        if (value === 0) return { text: '0%', class: 'neutral', icon: '' };
+        const arrow = value > 0 ? '↑' : '↓';
+        const absValue = Math.abs(value);
+        return {
+          text: `${arrow} ${absValue}%`,
+          class: value > 0 ? 'positive' : 'negative',
+          icon: arrow
+        };
+      };
+
+      const metrics = [
+        { label: 'Conversations', current: current.conversations, previous: previous.conversations, change: changes.conversations },
+        { label: 'Messages', current: current.messages, previous: previous.messages, change: changes.messages },
+        { label: 'Unique Users', current: current.users, previous: previous.users, change: changes.users },
+        { label: 'Avg Msgs/Conv', current: current.avgMessagesPerConversation, previous: previous.avgMessagesPerConversation, change: changes.avgMessagesPerConversation },
+      ];
+
+      container.innerHTML = metrics.map(metric => {
+        const change = formatChange(metric.change);
+        return `
+          <div class="comparison-stat-card">
+            <div class="label">${metric.label}</div>
+            <div class="value">${metric.current}</div>
+            <span class="change ${change.class}">${change.text}</span>
+            <div class="previous">vs ${metric.previous} prev</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    setupComparisonListeners() {
+      const periodSelect = document.getElementById('comparison-period');
+      if (periodSelect) {
+        periodSelect.addEventListener('change', (e) => {
+          this.loadComparison(e.target.value);
+        });
+      }
+    }
+
+    // ========== COST ANALYTICS ==========
+
+    renderCosts(data) {
+      const { daily, summary } = data;
+
+      // Update summary stats
+      const totalCostEl = document.getElementById('total-cost');
+      const tokensEl = document.getElementById('cost-tokens');
+      const messagesEl = document.getElementById('cost-messages');
+      const avgTokensEl = document.getElementById('cost-avg-tokens');
+      const avgConvEl = document.getElementById('cost-avg-conv');
+
+      if (totalCostEl) totalCostEl.textContent = `$${summary.totalCost.toFixed(4)}`;
+      if (tokensEl) tokensEl.textContent = this.formatNumber(summary.totalTokens);
+      if (messagesEl) messagesEl.textContent = this.formatNumber(summary.totalMessages);
+      if (avgTokensEl) avgTokensEl.textContent = this.formatNumber(summary.avgTokensPerMessage);
+      if (avgConvEl) avgConvEl.textContent = `$${summary.avgCostPerConversation.toFixed(4)}`;
+
+      // Render daily cost chart (bar chart)
+      const chartContainer = document.getElementById('cost-chart');
+      if (!chartContainer || !daily || daily.length === 0) return;
+
+      const maxTokens = Math.max(...daily.map(d => d.tokens), 1);
+
+      chartContainer.innerHTML = `
+        <div class="cost-bar">
+          ${daily.map(d => {
+            const height = (d.tokens / maxTokens) * 100;
+            return `
+              <div
+                class="cost-bar-item"
+                style="height: ${Math.max(height, 2)}%"
+                title="${d.date}: ${d.tokens} tokens ($${d.cost.toFixed(4)})"
+              ></div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    }
+
+    // ========== SETTINGS TAB ==========
+
+    async loadSettings() {
+      try {
+        // Load prompt, temperature, and history in parallel
+        const [promptRes, tempRes, historyRes] = await Promise.all([
+          fetch('/api/admin/config/prompt'),
+          fetch('/api/admin/config/temperature'),
+          fetch('/api/admin/config/history?limit=20'),
+        ]);
+
+        if (promptRes.ok) {
+          const data = await promptRes.json();
+          this.renderPromptEditor(data);
+        }
+
+        if (tempRes.ok) {
+          const data = await tempRes.json();
+          this.renderTemperature(data);
+        }
+
+        if (historyRes.ok) {
+          const data = await historyRes.json();
+          this.renderConfigHistory(data.history);
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    }
+
+    renderPromptEditor(data) {
+      const editor = document.getElementById('system-prompt-editor');
+      const status = document.getElementById('prompt-status');
+      const charCount = document.getElementById('prompt-char-count');
+
+      if (editor) {
+        editor.value = data.prompt;
+        editor.dataset.isDefault = data.isDefault ? 'true' : 'false';
+      }
+
+      if (status) {
+        status.textContent = data.isDefault ? 'Using default' : `Last updated: ${this.formatTimeAgo(data.updatedAt)}`;
+        status.className = `text-xs ${data.isDefault ? 'text-[var(--text-muted)]' : 'text-[var(--color-neon-green)]'}`;
+      }
+
+      if (charCount && editor) {
+        charCount.textContent = `${editor.value.length} characters`;
+      }
+    }
+
+    renderTemperature(data) {
+      const slider = document.getElementById('temperature-slider');
+      const value = document.getElementById('temperature-value');
+
+      if (slider) {
+        slider.value = data.temperature.toString();
+      }
+
+      if (value) {
+        value.textContent = data.temperature.toFixed(1);
+      }
+    }
+
+    renderConfigHistory(history) {
+      const container = document.getElementById('config-history');
+      if (!container) return;
+
+      if (!history || history.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-4 text-sm">
+            No configuration changes yet
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = history.map(entry => {
+        const keyLabel = entry.configKey === 'system_prompt' ? 'System Prompt' : 'Temperature';
+        const timeAgo = this.formatTimeAgo(entry.changedAt);
+
+        // Truncate values for display
+        const oldVal = entry.oldValue
+          ? (entry.oldValue.length > 50 ? entry.oldValue.substring(0, 50) + '...' : entry.oldValue)
+          : '(empty)';
+        const newVal = entry.newValue.length > 50
+          ? entry.newValue.substring(0, 50) + '...'
+          : entry.newValue;
+
+        return `
+          <div class="history-item">
+            <div class="flex items-center justify-between">
+              <span class="key">${keyLabel}</span>
+              <span class="time">${timeAgo}</span>
+            </div>
+            <div class="value-change">${oldVal} → ${newVal}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    setupSettingsListeners() {
+      // Prompt editor character count
+      const editor = document.getElementById('system-prompt-editor');
+      const charCount = document.getElementById('prompt-char-count');
+
+      if (editor && charCount) {
+        editor.addEventListener('input', () => {
+          charCount.textContent = `${editor.value.length} characters`;
+        });
+      }
+
+      // Save prompt button
+      document.getElementById('save-prompt-btn')?.addEventListener('click', () => {
+        this.savePrompt();
+      });
+
+      // Reset prompt button
+      document.getElementById('reset-prompt-btn')?.addEventListener('click', () => {
+        this.resetPrompt();
+      });
+
+      // Temperature slider
+      const slider = document.getElementById('temperature-slider');
+      const tempValue = document.getElementById('temperature-value');
+
+      if (slider && tempValue) {
+        slider.addEventListener('input', () => {
+          tempValue.textContent = parseFloat(slider.value).toFixed(1);
+        });
+      }
+
+      // Save temperature button
+      document.getElementById('save-temperature-btn')?.addEventListener('click', () => {
+        this.saveTemperature();
+      });
+
+      // Reset temperature button
+      document.getElementById('reset-temperature-btn')?.addEventListener('click', () => {
+        this.resetTemperature();
+      });
+    }
+
+    async savePrompt() {
+      const editor = document.getElementById('system-prompt-editor');
+      const status = document.getElementById('prompt-status');
+      if (!editor) return;
+
+      const prompt = editor.value.trim();
+
+      if (prompt.length < 50) {
+        alert('Prompt must be at least 50 characters');
+        return;
+      }
+
+      try {
+        status.textContent = 'Saving...';
+        status.className = 'text-xs text-[var(--secondary)]';
+
+        const response = await fetch('/api/admin/config/prompt', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+        });
+
+        if (response.ok) {
+          status.textContent = 'Saved successfully!';
+          status.className = 'text-xs text-[var(--color-neon-green)]';
+
+          // Reload history
+          const historyRes = await fetch('/api/admin/config/history?limit=20');
+          if (historyRes.ok) {
+            const data = await historyRes.json();
+            this.renderConfigHistory(data.history);
+          }
+
+          setTimeout(() => {
+            status.textContent = 'Using custom prompt';
+          }, 2000);
+        } else {
+          const error = await response.json();
+          status.textContent = error.error || 'Failed to save';
+          status.className = 'text-xs text-red-400';
+        }
+      } catch (error) {
+        console.error('Failed to save prompt:', error);
+        status.textContent = 'Error saving prompt';
+        status.className = 'text-xs text-red-400';
+      }
+    }
+
+    async resetPrompt() {
+      if (!confirm('Reset system prompt to default? This cannot be undone.')) {
+        return;
+      }
+
+      const status = document.getElementById('prompt-status');
+
+      try {
+        status.textContent = 'Resetting...';
+
+        const response = await fetch('/api/admin/config/prompt', {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const editor = document.getElementById('system-prompt-editor');
+          if (editor) {
+            editor.value = data.prompt;
+          }
+
+          status.textContent = 'Using default';
+          status.className = 'text-xs text-[var(--text-muted)]';
+
+          // Reload history
+          const historyRes = await fetch('/api/admin/config/history?limit=20');
+          if (historyRes.ok) {
+            const historyData = await historyRes.json();
+            this.renderConfigHistory(historyData.history);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to reset prompt:', error);
+      }
+    }
+
+    async saveTemperature() {
+      const slider = document.getElementById('temperature-slider');
+      if (!slider) return;
+
+      const temperature = parseFloat(slider.value);
+
+      try {
+        const response = await fetch('/api/admin/config/temperature', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ temperature }),
+        });
+
+        if (response.ok) {
+          alert('Temperature saved!');
+
+          // Reload history
+          const historyRes = await fetch('/api/admin/config/history?limit=20');
+          if (historyRes.ok) {
+            const data = await historyRes.json();
+            this.renderConfigHistory(data.history);
+          }
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to save temperature');
+        }
+      } catch (error) {
+        console.error('Failed to save temperature:', error);
+      }
+    }
+
+    async resetTemperature() {
+      try {
+        const response = await fetch('/api/admin/config/temperature', {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const slider = document.getElementById('temperature-slider');
+          const value = document.getElementById('temperature-value');
+
+          if (slider) slider.value = data.temperature.toString();
+          if (value) value.textContent = data.temperature.toFixed(1);
+
+          // Reload history
+          const historyRes = await fetch('/api/admin/config/history?limit=20');
+          if (historyRes.ok) {
+            const historyData = await historyRes.json();
+            this.renderConfigHistory(historyData.history);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to reset temperature:', error);
+      }
+    }
+
+    // ========== SEARCH ==========
+
+    async performSearch(query) {
+      if (this.isSearching) return;
+      this.isSearching = true;
+
+      const searchResults = document.getElementById('search-results');
+      if (!searchResults) return;
+
+      // Show loading state
+      searchResults.innerHTML = `
+        <div class="p-4 text-center text-[var(--text-muted)] font-mono text-sm">
+          Searching...
+        </div>
+      `;
+      this.showSearchResults();
+
+      try {
+        const response = await fetch(`/api/admin/search?q=${encodeURIComponent(query)}&limit=10`);
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Search failed');
+        }
+
+        const data = await response.json();
+        this.renderSearchResults(data);
+      } catch (error) {
+        console.error('Search error:', error);
+        searchResults.innerHTML = `
+          <div class="p-4 text-center text-red-400 font-mono text-sm">
+            Search failed. Please try again.
+          </div>
+        `;
+      } finally {
+        this.isSearching = false;
+      }
+    }
+
+    renderSearchResults(data) {
+      const searchResults = document.getElementById('search-results');
+      if (!searchResults) return;
+
+      if (data.results.length === 0) {
+        searchResults.innerHTML = `
+          <div class="p-4 text-center text-[var(--text-muted)] font-mono text-sm">
+            No results found for "${this.escapeHtml(data.query)}"
+          </div>
+        `;
+        return;
+      }
+
+      const resultsHtml = data.results.map(result => {
+        const timeAgo = result.createdAt ? this.formatTimeAgo(result.createdAt) : '';
+        const shortUserId = result.userId.substring(0, 8);
+
+        // Convert highlight markers to HTML
+        const highlightedContent = this.escapeHtml(result.highlight)
+          .replace(/\[\[MATCH\]\]/g, '<mark class="search-highlight">')
+          .replace(/\[\[\/MATCH\]\]/g, '</mark>');
+
+        return `
+          <div
+            data-conversation-id="${result.conversationId}"
+            class="search-result p-3 cursor-pointer transition-colors"
+          >
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-xs text-[var(--primary)]">
+                ${shortUserId}...
+              </span>
+              <span class="text-xs text-[var(--text-muted)]">${timeAgo}</span>
+            </div>
+            <div class="text-sm text-[var(--text-primary)]">
+              ${highlightedContent}
+            </div>
+            <div class="text-xs text-[var(--text-muted)] mt-1">
+              ${result.role === 'user' ? 'User message' : 'AI response'}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const footer = data.pagination.total > data.results.length
+        ? `
+          <div class="p-3 text-center text-xs text-[var(--text-muted)] border-t border-[var(--border-color)]">
+            Showing ${data.results.length} of ${data.pagination.total} results
+          </div>
+        `
+        : '';
+
+      searchResults.innerHTML = resultsHtml + footer;
+
+      // Add click handlers
+      searchResults.querySelectorAll('[data-conversation-id]').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = parseInt(el.getAttribute('data-conversation-id'), 10);
+          if (id) {
+            this.hideSearchResults();
+            document.getElementById('search-input').value = '';
+            this.currentSearchQuery = '';
+            this.selectConversation(id);
+          }
+        });
+      });
+    }
+
+    showSearchResults() {
+      document.getElementById('search-results')?.classList.remove('hidden');
+    }
+
+    hideSearchResults() {
+      document.getElementById('search-results')?.classList.add('hidden');
+    }
+
+    clearSearch() {
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) searchInput.value = '';
+      this.currentSearchQuery = '';
+      this.hideSearchResults();
+    }
+
+    // ========== MODAL ==========
+
+    showModal(options = {}) {
+      const modal = document.getElementById('delete-modal');
+      const title = document.getElementById('modal-title');
+      const heading = document.getElementById('modal-heading');
+      const description = document.getElementById('modal-description');
+      const confirmBtn = document.getElementById('modal-confirm');
+
+      if (title) title.textContent = options.title || 'confirm.delete';
+      if (heading) heading.textContent = options.heading || 'Delete Conversation?';
+      if (description) description.textContent = options.description || 'This will move the conversation to trash.';
+      if (confirmBtn) {
+        confirmBtn.textContent = options.confirmText || 'Delete';
+        confirmBtn.className = options.confirmClass || 'flex-1 px-4 py-2 bg-red-500 text-white rounded font-mono text-sm hover:bg-red-600 transition-colors';
+      }
+
+      modal?.classList.remove('hidden');
+
+      return new Promise((resolve) => {
+        this.modalResolve = resolve;
+      });
+    }
+
+    closeModal(confirmed) {
+      const modal = document.getElementById('delete-modal');
+      modal?.classList.add('hidden');
+
+      if (this.modalResolve) {
+        this.modalResolve(confirmed);
+        this.modalResolve = null;
+      }
+    }
+
+    // ========== DELETE / TRASH ==========
+
+    async deleteConversation(conversationId) {
+      const confirmed = await this.showModal({
+        title: 'confirm.delete',
+        heading: 'Delete Conversation?',
+        description: 'This will move the conversation to trash. You can restore it later.',
+        confirmText: 'Delete',
+      });
+
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch(`/api/admin/conversation/${conversationId}/delete`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Failed to delete');
+        }
+
+        // Clear selection and reload
+        this.selectedConversationId = null;
+        await this.loadConversations();
+
+        // Reset detail view
+        const detailContainer = document.getElementById('conversation-detail');
+        if (detailContainer) {
+          detailContainer.innerHTML = `
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 opacity-20">&gt;_</div>
+                <div>Conversation deleted</div>
+                <div class="text-xs mt-2">Moved to trash</div>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Failed to delete conversation:', error);
+      }
+    }
+
+    async loadTrash() {
+      try {
+        const response = await fetch('/api/admin/trash');
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Failed to fetch');
+        }
+
+        const data = await response.json();
+        this.trashConversations = data.conversations || [];
+        this.renderTrashList();
+      } catch (error) {
+        console.error('Failed to load trash:', error);
+      }
+    }
+
+    renderTrashList() {
+      const container = document.getElementById('trash-list');
+      if (!container) return;
+
+      if (this.trashConversations.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-[var(--text-muted)] font-mono text-sm">
+            <div class="text-2xl mb-3 opacity-30">
+              <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>Trash is empty</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = this.trashConversations.map(conv => {
+        const deletedAt = conv.updatedAt ? this.formatTimeAgo(conv.updatedAt) : 'Unknown';
+        const preview = conv.lastMessage ? this.truncate(conv.lastMessage, 40) : 'Empty conversation';
+        const isActive = conv.id === this.selectedTrashId;
+        const shortId = conv.userId.substring(0, 8);
+
+        return `
+          <div class="trash-item ${isActive ? 'active' : ''}" data-id="${conv.id}">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-sm text-[var(--secondary)]">${shortId}...</span>
+              <span class="text-xs text-[var(--text-muted)]">Deleted ${deletedAt}</span>
+            </div>
+            <div class="text-sm text-[var(--text-muted)] truncate">${this.escapeHtml(preview)}</div>
+            <div class="text-xs text-[var(--text-muted)] mt-1">
+              <span class="text-[var(--secondary)]">${conv.messageCount}</span> messages
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.trash-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const id = parseInt(item.getAttribute('data-id'), 10);
+          this.selectTrashItem(id);
+        });
+      });
+    }
+
+    async selectTrashItem(id) {
+      this.selectedTrashId = id;
+      this.renderTrashList();
+
+      const detailContainer = document.getElementById('trash-detail');
+      if (!detailContainer) return;
+
+      detailContainer.innerHTML = `
+        <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+          <div>Loading...</div>
+        </div>
+      `;
+
+      try {
+        // Fetch conversation detail (even if deleted)
+        const response = await fetch(`/api/admin/conversation/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch');
+
+        const data = await response.json();
+        this.renderTrashDetail(data.conversation, data.messages);
+      } catch (error) {
+        console.error('Failed to load trash detail:', error);
+        detailContainer.innerHTML = `
+          <div class="h-full flex items-center justify-center text-red-400 font-mono">
+            <div>Failed to load conversation</div>
+          </div>
+        `;
+      }
+    }
+
+    renderTrashDetail(conversation, messages) {
+      const container = document.getElementById('trash-detail');
+      if (!container) return;
+
+      const header = `
+        <div class="mb-6 pb-4 border-b border-[var(--border-color)]">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-[var(--secondary)] font-mono">&gt;</span>
+              <span class="font-mono font-semibold text-[var(--text-muted)]">User: ${conversation.user_id}</span>
+              <span class="text-xs px-2 py-0.5 bg-red-500/20 text-red-400 rounded font-mono">DELETED</span>
+            </div>
+          </div>
+          <div class="text-sm text-[var(--text-muted)] font-mono mb-4">
+            Started: ${this.formatDate(conversation.created_at)}
+          </div>
+          <div class="flex gap-3">
+            <button class="trash-action-btn restore" data-conversation-id="${conversation.id}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+              </svg>
+              RESTORE
+            </button>
+            <button class="trash-action-btn delete-permanent" data-conversation-id="${conversation.id}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              DELETE FOREVER
+            </button>
+          </div>
+        </div>
+      `;
+
+      const messagesHtml = messages.map(msg => `
+        <div class="admin-message ${msg.role}" style="opacity: 0.6;">
+          <div class="admin-message-meta">
+            ${msg.role === 'user' ? 'USER' : 'AARON.AI'} · ${this.formatTime(msg.created_at)}
+          </div>
+          <div class="admin-message-content">${this.escapeHtml(msg.content)}</div>
+        </div>
+      `).join('');
+
+      container.innerHTML = header + `<div>${messagesHtml}</div>`;
+
+      // Add action button handlers
+      container.querySelector('.trash-action-btn.restore')?.addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        const conversationId = parseInt(btn.getAttribute('data-conversation-id'), 10);
+        if (conversationId) {
+          await this.restoreConversation(conversationId);
+        }
+      });
+
+      container.querySelector('.trash-action-btn.delete-permanent')?.addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        const conversationId = parseInt(btn.getAttribute('data-conversation-id'), 10);
+        if (conversationId) {
+          await this.permanentDeleteConversation(conversationId);
+        }
+      });
+    }
+
+    async restoreConversation(conversationId) {
+      try {
+        const response = await fetch(`/api/admin/conversation/${conversationId}/restore`, {
+          method: 'POST',
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Failed to restore');
+        }
+
+        // Clear selection and reload trash
+        this.selectedTrashId = null;
+        await this.loadTrash();
+
+        // Show success message
+        const detailContainer = document.getElementById('trash-detail');
+        if (detailContainer) {
+          detailContainer.innerHTML = `
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 text-[var(--color-neon-green)]">
+                  <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div class="text-[var(--color-neon-green)]">Conversation restored</div>
+                <div class="text-xs mt-2">Available in Conversations tab</div>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Failed to restore conversation:', error);
+      }
+    }
+
+    async permanentDeleteConversation(conversationId) {
+      const confirmed = await this.showModal({
+        title: 'confirm.permanent_delete',
+        heading: 'Delete Permanently?',
+        description: 'This action cannot be undone. All messages will be lost forever.',
+        confirmText: 'Delete Forever',
+        confirmClass: 'flex-1 px-4 py-2 bg-red-600 text-white rounded font-mono text-sm hover:bg-red-700 transition-colors',
+      });
+
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch(`/api/admin/conversation/${conversationId}/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ permanent: true }),
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Failed to permanently delete');
+        }
+
+        // Clear selection and reload trash
+        this.selectedTrashId = null;
+        await this.loadTrash();
+
+        // Show success message
+        const detailContainer = document.getElementById('trash-detail');
+        if (detailContainer) {
+          detailContainer.innerHTML = `
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 opacity-20">
+                  <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </div>
+                <div>Permanently deleted</div>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Failed to permanently delete conversation:', error);
+      }
+    }
+
+    // ========== BULK ACTIONS ==========
+
+    updateBulkUI() {
+      const bulkBar = document.getElementById('bulk-action-bar');
+      const selectedCount = document.getElementById('selected-count');
+      const selectAllCheckbox = document.getElementById('select-all-checkbox');
+
+      if (this.selectedIds.size > 0) {
+        bulkBar?.classList.remove('hidden');
+        if (selectedCount) selectedCount.textContent = this.selectedIds.size.toString();
+
+        // Update select-all checkbox state
+        if (selectAllCheckbox) {
+          selectAllCheckbox.checked = this.selectedIds.size === this.conversations.length;
+          selectAllCheckbox.indeterminate = this.selectedIds.size > 0 && this.selectedIds.size < this.conversations.length;
+        }
+      } else {
+        bulkBar?.classList.add('hidden');
+        if (selectAllCheckbox) {
+          selectAllCheckbox.checked = false;
+          selectAllCheckbox.indeterminate = false;
+        }
+      }
+    }
+
+    async bulkDelete() {
+      const count = this.selectedIds.size;
+      const confirmed = await this.showModal({
+        title: 'confirm.bulk_delete',
+        heading: `Delete ${count} Conversation${count > 1 ? 's' : ''}?`,
+        description: `This will move ${count} conversation${count > 1 ? 's' : ''} to trash. You can restore them later.`,
+        confirmText: `Delete ${count}`,
+      });
+
+      if (!confirmed) return;
+
+      try {
+        const ids = Array.from(this.selectedIds);
+        const response = await fetch('/api/admin/conversations/bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids, action: 'delete' }),
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Bulk delete failed');
+        }
+
+        const result = await response.json();
+
+        // Clear selection and reload
+        this.selectedIds.clear();
+        this.selectedConversationId = null;
+        await this.loadConversations();
+
+        // Show result in detail view
+        const detailContainer = document.getElementById('conversation-detail');
+        if (detailContainer) {
+          detailContainer.innerHTML = `
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 opacity-20">&gt;_</div>
+                <div>${result.result.success} conversation${result.result.success !== 1 ? 's' : ''} deleted</div>
+                ${result.result.failed > 0 ? `<div class="text-xs text-red-400 mt-1">${result.result.failed} failed</div>` : ''}
+                <div class="text-xs mt-2">Moved to trash</div>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Bulk delete failed:', error);
+      }
+    }
+
+    populateBulkTagDropdown() {
+      const container = document.getElementById('bulk-tag-options');
+      if (!container) return;
+
+      if (this.availableTags.length === 0) {
+        container.innerHTML = `
+          <div class="text-xs text-[var(--text-muted)] p-2">
+            No tags available. Create tags first.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = this.availableTags.map(tag => `
+        <div class="bulk-tag-option" data-tag-id="${tag.id}">
+          <div class="tag-color" style="background: ${tag.color};"></div>
+          <span class="text-xs font-mono">${this.escapeHtml(tag.name)}</span>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.bulk-tag-option').forEach(option => {
+        option.addEventListener('click', async () => {
+          const tagId = parseInt(option.getAttribute('data-tag-id'), 10);
+          if (tagId) {
+            document.getElementById('bulk-tag-dropdown')?.classList.add('hidden');
+            await this.bulkTag(tagId);
+          }
+        });
+      });
+    }
+
+    async bulkTag(tagId) {
+      const count = this.selectedIds.size;
+      const tag = this.availableTags.find(t => t.id === tagId);
+      if (!tag) return;
+
+      try {
+        const ids = Array.from(this.selectedIds);
+        const response = await fetch('/api/admin/conversations/bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids, action: 'tag', tagId }),
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Bulk tag failed');
+        }
+
+        const result = await response.json();
+
+        // Clear selection and reload
+        this.selectedIds.clear();
+        await this.loadConversations();
+
+        // Show success feedback
+        const detailContainer = document.getElementById('conversation-detail');
+        if (detailContainer && !this.selectedConversationId) {
+          detailContainer.innerHTML = `
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 text-[var(--primary)]">
+                  <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                </div>
+                <div>Tagged ${result.result.success} conversation${result.result.success !== 1 ? 's' : ''}</div>
+                <div class="text-xs mt-2 flex items-center justify-center gap-1">
+                  <span class="tag-badge" style="background: ${tag.color}20; color: ${tag.color};">${tag.name}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Bulk tag failed:', error);
+      }
+    }
+
+    async bulkExport() {
+      const count = this.selectedIds.size;
+
+      try {
+        const ids = Array.from(this.selectedIds);
+        const response = await fetch('/api/admin/conversations/bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids, action: 'export' }),
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+          throw new Error('Bulk export failed');
+        }
+
+        const result = await response.json();
+
+        // Create downloadable JSON file
+        const blob = new Blob([JSON.stringify(result.result.data, null, 2)], {
+          type: 'application/json',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `conversations-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // Clear selection
+        this.selectedIds.clear();
+        this.updateBulkUI();
+        this.renderConversationsList();
+
+        // Show success feedback
+        const detailContainer = document.getElementById('conversation-detail');
+        if (detailContainer && !this.selectedConversationId) {
+          detailContainer.innerHTML = `
+            <div class="h-full flex items-center justify-center text-[var(--text-muted)] font-mono">
+              <div class="text-center">
+                <div class="text-4xl mb-4 text-[var(--color-neon-green)]">
+                  <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                  </svg>
+                </div>
+                <div class="text-[var(--color-neon-green)]">Exported ${result.result.success} conversation${result.result.success !== 1 ? 's' : ''}</div>
+                <div class="text-xs mt-2">Download started</div>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Bulk export failed:', error);
+      }
+    }
+
+    // ========== FILTERS ==========
+
+    setupFilterEventListeners() {
+      const filtersToggle = document.getElementById('filters-toggle');
+      const filtersPanel = document.getElementById('filters-panel');
+      const filtersChevron = document.getElementById('filters-chevron');
+      const applyBtn = document.getElementById('apply-filters-btn');
+      const clearBtn = document.getElementById('clear-filters-btn');
+
+      // Toggle filters panel
+      filtersToggle?.addEventListener('click', () => {
+        filtersPanel?.classList.toggle('hidden');
+        filtersChevron?.classList.toggle('open');
+      });
+
+      // Apply filters
+      applyBtn?.addEventListener('click', () => {
+        this.applyFilters();
+      });
+
+      // Clear filters
+      clearBtn?.addEventListener('click', () => {
+        this.clearFilters();
+      });
+    }
+
+    loadFiltersFromURL() {
+      const url = new URL(window.location.href);
+      const dateFrom = url.searchParams.get('dateFrom');
+      const dateTo = url.searchParams.get('dateTo');
+      const language = url.searchParams.get('language');
+      const minMessages = url.searchParams.get('minMessages');
+      const maxMessages = url.searchParams.get('maxMessages');
+      const hasTag = url.searchParams.get('hasTag');
+
+      // Populate form fields
+      if (dateFrom) {
+        document.getElementById('filter-date-from').value = dateFrom;
+        this.filters.dateFrom = dateFrom;
+      }
+      if (dateTo) {
+        document.getElementById('filter-date-to').value = dateTo;
+        this.filters.dateTo = dateTo;
+      }
+      if (language) {
+        document.getElementById('filter-language').value = language;
+        this.filters.language = language;
+      }
+      if (minMessages) {
+        document.getElementById('filter-min-messages').value = minMessages;
+        this.filters.minMessages = parseInt(minMessages, 10);
+      }
+      if (maxMessages) {
+        document.getElementById('filter-max-messages').value = maxMessages;
+        this.filters.maxMessages = parseInt(maxMessages, 10);
+      }
+      if (hasTag) {
+        document.getElementById('filter-tag').value = hasTag;
+        this.filters.hasTag = parseInt(hasTag, 10);
+      }
+
+      this.updateFilterChips();
+    }
+
+    async loadTags() {
+      try {
+        const response = await fetch('/api/admin/tags');
+        if (response.ok) {
+          const data = await response.json();
+          this.availableTags = data.tags || [];
+          this.populateTagFilter();
+        }
+      } catch (error) {
+        console.error('Failed to load tags:', error);
+      }
+    }
+
+    populateTagFilter() {
+      const select = document.getElementById('filter-tag');
+      if (!select) return;
+
+      // Keep the first "All tags" option
+      select.innerHTML = '<option value="">All tags</option>';
+
+      this.availableTags.forEach(tag => {
+        const option = document.createElement('option');
+        option.value = tag.id.toString();
+        option.textContent = tag.name;
+        option.style.color = tag.color;
+        select.appendChild(option);
+      });
+
+      // Restore selected value if filter is active
+      if (this.filters.hasTag) {
+        select.value = this.filters.hasTag.toString();
+      }
+    }
+
+    applyFilters() {
+      // Read form values
+      this.filters.dateFrom = document.getElementById('filter-date-from')?.value || null;
+      this.filters.dateTo = document.getElementById('filter-date-to')?.value || null;
+      this.filters.language = document.getElementById('filter-language')?.value || null;
+      const minMsgVal = document.getElementById('filter-min-messages')?.value;
+      const maxMsgVal = document.getElementById('filter-max-messages')?.value;
+      const tagVal = document.getElementById('filter-tag')?.value;
+      this.filters.minMessages = minMsgVal ? parseInt(minMsgVal, 10) : null;
+      this.filters.maxMessages = maxMsgVal ? parseInt(maxMsgVal, 10) : null;
+      this.filters.hasTag = tagVal ? parseInt(tagVal, 10) : null;
+
+      // Update URL
+      this.updateFilterURL();
+
+      // Update chips
+      this.updateFilterChips();
+
+      // Reload conversations
+      this.loadConversations();
+
+      // Collapse filters panel
+      document.getElementById('filters-panel')?.classList.add('hidden');
+      document.getElementById('filters-chevron')?.classList.remove('open');
+    }
+
+    clearFilters() {
+      // Clear form fields
+      document.getElementById('filter-date-from').value = '';
+      document.getElementById('filter-date-to').value = '';
+      document.getElementById('filter-language').value = '';
+      document.getElementById('filter-min-messages').value = '';
+      document.getElementById('filter-max-messages').value = '';
+      document.getElementById('filter-tag').value = '';
+
+      // Clear filter state
+      this.filters = {
+        dateFrom: null,
+        dateTo: null,
+        language: null,
+        minMessages: null,
+        maxMessages: null,
+        hasTag: null,
+      };
+
+      // Update URL
+      this.updateFilterURL();
+
+      // Update chips
+      this.updateFilterChips();
+
+      // Reload conversations
+      this.loadConversations();
+    }
+
+    updateFilterURL() {
+      const url = new URL(window.location.href);
+
+      // Clear existing filter params
+      ['dateFrom', 'dateTo', 'language', 'minMessages', 'maxMessages', 'hasTag'].forEach(key => {
+        url.searchParams.delete(key);
+      });
+
+      // Add active filters
+      if (this.filters.dateFrom) url.searchParams.set('dateFrom', this.filters.dateFrom);
+      if (this.filters.dateTo) url.searchParams.set('dateTo', this.filters.dateTo);
+      if (this.filters.language) url.searchParams.set('language', this.filters.language);
+      if (this.filters.minMessages) url.searchParams.set('minMessages', this.filters.minMessages.toString());
+      if (this.filters.maxMessages) url.searchParams.set('maxMessages', this.filters.maxMessages.toString());
+      if (this.filters.hasTag) url.searchParams.set('hasTag', this.filters.hasTag.toString());
+
+      // Update URL without reload
+      window.history.replaceState({}, '', url.toString());
+    }
+
+    updateFilterChips() {
+      const chipsContainer = document.getElementById('active-filters-chips');
+      const countBadge = document.getElementById('active-filters-count');
+      if (!chipsContainer) return;
+
+      const chips = [];
+
+      if (this.filters.dateFrom) {
+        chips.push({ key: 'dateFrom', label: `From: ${this.filters.dateFrom}` });
+      }
+      if (this.filters.dateTo) {
+        chips.push({ key: 'dateTo', label: `To: ${this.filters.dateTo}` });
+      }
+      if (this.filters.language) {
+        const langNames = { es: 'Spanish', en: 'English' };
+        chips.push({ key: 'language', label: langNames[this.filters.language] || this.filters.language });
+      }
+      if (this.filters.minMessages) {
+        chips.push({ key: 'minMessages', label: `≥${this.filters.minMessages} msgs` });
+      }
+      if (this.filters.maxMessages) {
+        chips.push({ key: 'maxMessages', label: `≤${this.filters.maxMessages} msgs` });
+      }
+      if (this.filters.hasTag) {
+        const tag = this.availableTags.find(t => t.id === this.filters.hasTag);
+        if (tag) {
+          chips.push({ key: 'hasTag', label: `Tag: ${tag.name}` });
+        }
+      }
+
+      // Update count badge
+      if (countBadge) {
+        if (chips.length > 0) {
+          countBadge.textContent = chips.length.toString();
+          countBadge.classList.remove('hidden');
+        } else {
+          countBadge.classList.add('hidden');
+        }
+      }
+
+      // Render chips
+      if (chips.length === 0) {
+        chipsContainer.classList.add('hidden');
+        chipsContainer.classList.remove('flex');
+        chipsContainer.innerHTML = '';
+        return;
+      }
+
+      chipsContainer.classList.remove('hidden');
+      chipsContainer.classList.add('flex');
+      chipsContainer.innerHTML = chips.map(chip => `
+        <span class="filter-chip" data-filter-key="${chip.key}">
+          ${chip.label}
+          <span class="filter-chip-remove" data-remove="${chip.key}">×</span>
+        </span>
+      `).join('');
+
+      // Add remove handlers
+      chipsContainer.querySelectorAll('.filter-chip-remove').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const key = el.getAttribute('data-remove');
+          this.removeFilter(key);
+        });
+      });
+    }
+
+    removeFilter(key) {
+      this.filters[key] = null;
+
+      // Clear form field
+      const fieldIds = {
+        dateFrom: 'filter-date-from',
+        dateTo: 'filter-date-to',
+        language: 'filter-language',
+        minMessages: 'filter-min-messages',
+        maxMessages: 'filter-max-messages',
+        hasTag: 'filter-tag',
+      };
+
+      const fieldEl = document.getElementById(fieldIds[key]);
+      if (fieldEl) fieldEl.value = '';
+
+      // Update URL and chips
+      this.updateFilterURL();
+      this.updateFilterChips();
+
+      // Reload conversations
+      this.loadConversations();
+    }
+
+    hasActiveFilters() {
+      return Object.values(this.filters).some(v => v !== null && v !== '');
+    }
+
+    // ========== MODERATION ==========
+
+    async loadModeration() {
+      try {
+        // Load rate limit logs and flagged conversations in parallel
+        const [rateLimitsRes, flaggedRes] = await Promise.all([
+          fetch('/api/admin/moderation/rate-limits'),
+          fetch('/api/admin/moderation/flagged'),
+        ]);
+
+        if (rateLimitsRes.status === 401 || flaggedRes.status === 401) {
+          this.showLoginView();
+          return;
+        }
+
+        const rateLimitsData = await rateLimitsRes.json();
+        const flaggedData = await flaggedRes.json();
+
+        this.rateLimitLogs = rateLimitsData.logs || [];
+        this.flaggedConversations = flaggedData.flagged || [];
+        this.moderationStats = {
+          rateLimits: rateLimitsData.stats || {},
+          flagged: flaggedData.stats || {},
+          topBlocked: rateLimitsData.topBlocked || [],
+        };
+
+        this.renderModerationStats();
+        this.renderRateLimits();
+        this.renderFlagged();
+        this.renderTopBlocked();
+      } catch (error) {
+        console.error('Failed to load moderation data:', error);
+      }
+    }
+
+    renderModerationStats() {
+      const stats = this.moderationStats;
+      if (!stats) return;
+
+      // Rate limit stats
+      const totalEvents = document.querySelector('[data-stat="total-events"]');
+      const blockedCount = document.querySelector('[data-stat="blocked-count"]');
+      const blockRate = document.querySelector('[data-stat="block-rate"]');
+      const uniqueIPs = document.querySelector('[data-stat="unique-ips"]');
+
+      if (totalEvents) totalEvents.textContent = stats.rateLimits.totalEvents || 0;
+      if (blockedCount) blockedCount.textContent = stats.rateLimits.totalBlocked || 0;
+      if (blockRate) blockRate.textContent = `${stats.rateLimits.blockRate || 0}%`;
+      if (uniqueIPs) uniqueIPs.textContent = stats.rateLimits.uniqueIPs || 0;
+
+      // Flagged stats
+      const pendingFlags = document.querySelector('[data-stat="pending-flags"]');
+      const highPriority = document.querySelector('[data-stat="high-priority"]');
+
+      if (pendingFlags) pendingFlags.textContent = stats.flagged.pending || 0;
+      if (highPriority) highPriority.textContent = stats.flagged.highPriority || 0;
+    }
+
+    renderRateLimits() {
+      const container = document.getElementById('rate-limit-list');
+      if (!container) return;
+
+      if (this.rateLimitLogs.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-8 font-mono text-xs">
+            No rate limit events in the last 24 hours
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = this.rateLimitLogs.slice(0, 20).map(log => `
+        <div class="rate-limit-item ${log.blocked ? 'blocked' : ''}">
+          <div class="rate-limit-info">
+            <div class="rate-limit-ip font-mono">${this.escapeHtml(log.ip)}</div>
+            <div class="rate-limit-meta">
+              <span>${log.endpoint || '/api/chat'}</span>
+              ${log.userId ? `<span>• ${this.truncate(log.userId, 10)}</span>` : ''}
+            </div>
+          </div>
+          <div class="rate-limit-status">
+            ${log.blocked
+              ? '<span class="status-badge blocked">Blocked</span>'
+              : '<span class="status-badge allowed">Allowed</span>'}
+            <span class="rate-limit-time">${this.formatTimeAgo(log.createdAt)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderFlagged() {
+      const container = document.getElementById('flagged-list');
+      if (!container) return;
+
+      if (this.flaggedConversations.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-8 font-mono text-xs">
+            No flagged conversations pending review
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = this.flaggedConversations.map(flag => `
+        <div class="flagged-item" data-flag-id="${flag.id}" data-conversation-id="${flag.conversationId}">
+          <div class="flagged-header">
+            <div class="flagged-severity ${flag.severity}">${flag.severity.toUpperCase()}</div>
+            <div class="flagged-reason">${this.escapeHtml(flag.reason)}</div>
+          </div>
+          <div class="flagged-meta">
+            <span class="font-mono text-xs">${this.truncate(flag.userId, 12)}</span>
+            <span>• ${flag.messageCount} messages</span>
+            <span>• ${this.formatTimeAgo(flag.createdAt)}</span>
+          </div>
+          ${flag.lastMessage ? `
+            <div class="flagged-preview">${this.escapeHtml(this.truncate(flag.lastMessage, 100))}</div>
+          ` : ''}
+          <div class="flagged-actions">
+            <button class="btn-action view" data-conversation-id="${flag.conversationId}">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              View
+            </button>
+            <button class="btn-action dismiss" data-flag-id="${flag.id}">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Dismiss
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderTopBlocked() {
+      const container = document.getElementById('top-blocked-list');
+      if (!container || !this.moderationStats?.topBlocked) return;
+
+      const topBlocked = this.moderationStats.topBlocked;
+
+      if (topBlocked.length === 0) {
+        container.innerHTML = `
+          <div class="text-center text-[var(--text-muted)] py-4 font-mono text-xs">
+            No blocked IPs in the last 7 days
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = topBlocked.map(item => `
+        <div class="blocked-ip-item">
+          <span class="font-mono">${this.escapeHtml(item.ip)}</span>
+          <span class="block-count">${item.block_count} blocks</span>
+        </div>
+      `).join('');
+    }
+
+    setupModerationListeners() {
+      // Scan for spam button
+      const scanBtn = document.getElementById('scan-spam-btn');
+      scanBtn?.addEventListener('click', async () => {
+        scanBtn.disabled = true;
+        scanBtn.textContent = 'Scanning...';
+
+        try {
+          const response = await fetch('/api/admin/moderation/scan', { method: 'POST' });
+          if (response.status === 401) {
+            this.showLoginView();
+            return;
+          }
+
+          const result = await response.json();
+
+          // Show result message
+          const resultEl = document.getElementById('scan-result');
+          if (resultEl) {
+            resultEl.textContent = result.message || `Scanned: ${result.scanned}, Flagged: ${result.flagged}`;
+            resultEl.classList.remove('hidden');
+            setTimeout(() => resultEl.classList.add('hidden'), 5000);
+          }
+
+          // Reload flagged conversations
+          await this.loadModeration();
+        } catch (error) {
+          console.error('Scan failed:', error);
+        } finally {
+          scanBtn.disabled = false;
+          scanBtn.textContent = 'Scan for Spam';
+        }
+      });
+
+      // Show blocked only checkbox
+      const blockedOnlyCheckbox = document.getElementById('blocked-only');
+      blockedOnlyCheckbox?.addEventListener('change', async (e) => {
+        const blockedOnly = e.target.checked;
+        try {
+          const response = await fetch(`/api/admin/moderation/rate-limits?blocked=${blockedOnly}`);
+          if (response.ok) {
+            const data = await response.json();
+            this.rateLimitLogs = data.logs || [];
+            this.renderRateLimits();
+          }
+        } catch (error) {
+          console.error('Failed to filter rate limits:', error);
+        }
+      });
+
+      // Show reviewed checkbox
+      const showReviewedCheckbox = document.getElementById('show-reviewed');
+      showReviewedCheckbox?.addEventListener('change', async (e) => {
+        const showReviewed = e.target.checked;
+        try {
+          const response = await fetch(`/api/admin/moderation/flagged?reviewed=${showReviewed}`);
+          if (response.ok) {
+            const data = await response.json();
+            this.flaggedConversations = data.flagged || [];
+            this.renderFlagged();
+          }
+        } catch (error) {
+          console.error('Failed to filter flagged:', error);
+        }
+      });
+
+      // Flagged item actions (delegated)
+      const flaggedList = document.getElementById('flagged-list');
+      flaggedList?.addEventListener('click', async (e) => {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const flagId = target.dataset.flagId;
+        const conversationId = target.dataset.conversationId;
+
+        if (target.classList.contains('view') && conversationId) {
+          // Navigate to conversation
+          window.location.href = `/admin/conversations?id=${conversationId}`;
+        } else if (target.classList.contains('dismiss') && flagId) {
+          // Dismiss flag
+          try {
+            const response = await fetch('/api/admin/moderation/flagged', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: parseInt(flagId, 10), action: 'dismiss' }),
+            });
+
+            if (response.ok) {
+              // Remove from list
+              this.flaggedConversations = this.flaggedConversations.filter(f => f.id !== parseInt(flagId, 10));
+              this.renderFlagged();
+
+              // Update stats
+              if (this.moderationStats?.flagged?.pending > 0) {
+                this.moderationStats.flagged.pending--;
+                this.renderModerationStats();
+              }
+            }
+          } catch (error) {
+            console.error('Failed to dismiss flag:', error);
+          }
+        }
+      });
+    }
+
+    // ========== HELPERS ==========
+
+    formatTimeAgo(dateStr) {
+      const date = new Date(dateStr + 'Z');
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      return date.toLocaleDateString();
+    }
+
+    formatDate(dateStr) {
+      const date = new Date(dateStr + 'Z');
+      return date.toLocaleString();
+    }
+
+    formatTime(dateStr) {
+      const date = new Date(dateStr + 'Z');
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    truncate(str, len) {
+      return str.length > len ? str.substring(0, len) + '...' : str;
+    }
+
+    escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  }
+
+  // Singleton pattern to prevent multiple instances
+  let adminPanelInstance = null;
+
+  function initAdminPanel() {
+    // Cleanup previous instance
+    if (adminPanelInstance) {
+      if (adminPanelInstance.eventSource) {
+        adminPanelInstance.eventSource.close();
+        adminPanelInstance.eventSource = null;
+      }
+      adminPanelInstance = null;
+    }
+    adminPanelInstance = new AdminPanel();
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminPanel);
+  } else {
+    initAdminPanel();
+  }
+
+  // Also handle Astro View Transitions
+  document.addEventListener('astro:page-load', initAdminPanel);
+</script>
