@@ -300,9 +300,13 @@ export class AIChatWidget {
 
 /**
  * Initialize all chat widgets on the page
+ * Skips elements that are already initialized to prevent duplicates
  */
 export function initChatWidgets(): void {
   document.querySelectorAll<HTMLElement>('[data-chat-widget]').forEach((el) => {
-    new AIChatWidget(el);
+    if (!el.dataset.initialized) {
+      el.dataset.initialized = 'true';
+      new AIChatWidget(el);
+    }
   });
 }

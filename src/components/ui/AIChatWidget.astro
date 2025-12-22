@@ -522,6 +522,7 @@ const presetQuestions = [
 <script>
   import { initChatWidgets } from '../../scripts/modules/chat';
 
-  // Initialize chat widgets
+  // Initialize chat widgets on initial load and after View Transitions
   initChatWidgets();
+  document.addEventListener('astro:page-load', () => initChatWidgets());
 </script>
