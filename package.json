@@ -7,9 +7,10 @@
     "dev:local": "astro build && wrangler pages dev dist",
     "dev:remote": "astro build && wrangler pages deploy dist --branch preview",
     "start:dev": "astro dev --host",
-    "build": "astro build",
+    "generate-cv": "node scripts/generate-cv-pdf.mjs",
+    "build": "astro build && npm run generate-cv",
     "preview": "astro preview",
-    "deploy": "astro build && wrangler pages deploy dist",
+    "deploy": "astro build && npm run generate-cv && wrangler pages deploy dist",
     "deploy:preview": "astro build && wrangler pages deploy dist --branch preview",
     "astro": "astro",
     "db:migrate:local": "wrangler d1 execute portfolio-chat --local --file=./drizzle/0000_crazy_zarda.sql && wrangler d1 execute portfolio-chat --local --file=./drizzle/0001_mature_changeling.sql",
@@ -39,6 +40,7 @@
     "@vitest/ui": "^4.0.16",
     "drizzle-kit": "^0.31.8",
     "happy-dom": "^20.0.11",
+    "puppeteer": "^24.34.0",
     "vitest": "^4.0.16",
     "wrangler": "^4.54.0"
   }
