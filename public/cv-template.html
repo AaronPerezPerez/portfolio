@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aarón Pérez Pérez - CV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* Dracula Color Palette */
+    /* Dracula Color Palette - Refined for WCAG AA */
     :root {
       --bg: #282a36;
       --bg-light: #44475a;
       --fg: #f8f8f2;
-      --comment: #6272a4;
+      --comment: #8b9dc3;  /* Improved contrast: 5.2:1 vs bg */
       --cyan: #8be9fd;
       --green: #50fa7b;
       --orange: #ffb86c;
@@ -32,7 +35,7 @@
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       font-size: 10pt;
       line-height: 1.5;
       color: var(--fg);
@@ -44,65 +47,79 @@
       min-height: 297mm;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 70mm 1fr;
+      grid-template-columns: 68mm 1fr;
     }
 
-    /* Sidebar */
+    /* ═══════════════════════════════════════════════════════════
+       SIDEBAR
+       ═══════════════════════════════════════════════════════════ */
     .sidebar {
       background: var(--bg-light);
-      padding: 20mm 8mm;
+      padding: 10mm 8mm 10mm 8mm;
       display: flex;
       flex-direction: column;
-      gap: 6mm;
+      gap: 2mm;
     }
 
     .photo-container {
       display: flex;
       justify-content: center;
-      margin-bottom: 4mm;
+      margin-bottom: 3mm;
     }
 
     .photo {
-      width: 45mm;
-      height: 45mm;
+      width: 32mm;
+      height: 32mm;
       border-radius: 50%;
-      border: 3px solid var(--cyan);
+      border: 2px solid var(--cyan);
       object-fit: cover;
-      box-shadow: 0 0 20px rgba(139, 233, 253, 0.3);
+      box-shadow: 0 0 12px rgba(139, 233, 253, 0.25);
     }
 
     .sidebar-section {
-      margin-bottom: 5mm;
+      margin-bottom: 2mm;
     }
 
+    /* Section title con línea extendida (de manu) */
     .sidebar-title {
-      font-size: 9pt;
-      font-weight: 700;
+      font-size: 8pt;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       color: var(--cyan);
       margin-bottom: 3mm;
-      padding-bottom: 1mm;
-      border-bottom: 1px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--comment);
     }
 
     .contact-item {
       display: flex;
       align-items: center;
-      gap: 2mm;
+      gap: 2.5mm;
       margin-bottom: 2mm;
-      font-size: 8.5pt;
+      font-size: 8pt;
       color: var(--fg);
     }
 
     .contact-icon {
-      width: 4mm;
+      width: 14px;
+      height: 14px;
       color: var(--pink);
+      flex-shrink: 0;
     }
 
     .contact-link {
       color: var(--fg);
       text-decoration: none;
+      word-break: break-all;
     }
 
     .contact-link:hover {
@@ -110,14 +127,17 @@
     }
 
     .skill-category {
-      margin-bottom: 3mm;
+      margin-bottom: 2mm;
     }
 
+    /* Label de categoría en monospace - subtle */
     .skill-category-name {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 8pt;
       font-weight: 600;
-      color: var(--green);
-      margin-bottom: 1mm;
+      color: var(--comment);  /* Was green - reduced color noise */
+      margin-bottom: 1.5mm;
+      letter-spacing: 0.3px;
     }
 
     .skill-tags {
@@ -127,127 +147,112 @@
     }
 
     .skill-tag {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 7pt;
-      padding: 1mm 2.5mm;
-      background: var(--bg);
+      padding: 0.8mm 2mm;
+      background: transparent;  /* Was filled - now border-only */
       color: var(--purple);
       border-radius: 2mm;
-      border: 0.5px solid var(--purple);
+      border: 1px solid rgba(189, 147, 249, 0.5);
     }
 
     .skill-tag.primary {
       background: var(--cyan);
       color: var(--bg);
       border-color: var(--cyan);
-      font-weight: 600;
+      font-weight: 500;
     }
 
-    /* Main Content */
+    /* Languages & Education */
+    .language-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8pt;
+      margin-bottom: 1.5mm;
+    }
+
+    .language-level {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: var(--comment);
+    }
+
+    .education-item {
+      margin-bottom: 1.5mm;
+    }
+
+    .degree {
+      font-size: 8pt;
+      font-weight: 500;
+      color: var(--fg);
+    }
+
+    .institution {
+      font-size: 8pt;
+      color: var(--comment);
+      line-height: 1.4;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MAIN CONTENT
+       ═══════════════════════════════════════════════════════════ */
     .main-content {
-      padding: 15mm 12mm;
+      padding: 10mm 12mm 10mm 10mm;
     }
 
     .header {
-      margin-bottom: 8mm;
+      margin-bottom: 4mm;
+      padding-bottom: 3mm;
       border-bottom: 2px solid var(--pink);
-      padding-bottom: 5mm;
     }
 
     .name {
-      font-size: 22pt;
+      font-size: 20pt;
       font-weight: 700;
       color: var(--cyan);
-      letter-spacing: 0.5px;
-      margin-bottom: 2mm;
+      letter-spacing: -0.3px;
+      margin-bottom: 1.5mm;
     }
 
     .title {
       font-size: 12pt;
-      font-weight: 400;
-      color: var(--pink);
-      margin-bottom: 1mm;
+      font-weight: 500;
+      color: var(--fg);  /* Was pink - reduced color noise */
+      margin-bottom: 0.5mm;
     }
 
     .subtitle {
-      font-size: 10pt;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
       color: var(--comment);
     }
 
     .section {
-      margin-bottom: 6mm;
+      margin-bottom: 3mm;
     }
 
+    /* Section title con línea extendida (de manu) */
     .section-title {
-      font-size: 11pt;
-      font-weight: 700;
+      font-size: 10pt;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--cyan);
       margin-bottom: 4mm;
-      padding-bottom: 1mm;
-      border-bottom: 1px solid var(--cyan);
-    }
-
-    .experience-item {
-      margin-bottom: 5mm;
-      page-break-inside: avoid;
-    }
-
-    .experience-header {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1mm;
+      align-items: center;
+      gap: 8px;
     }
 
-    .company {
-      font-size: 10.5pt;
-      font-weight: 700;
-      color: var(--pink);
-    }
-
-    .dates {
-      font-size: 8pt;
-      color: var(--comment);
-      text-align: right;
-    }
-
-    .role {
-      font-size: 9.5pt;
-      font-weight: 600;
-      color: var(--fg);
-      margin-bottom: 0.5mm;
-    }
-
-    .location {
-      font-size: 8pt;
-      color: var(--comment);
-      margin-bottom: 1.5mm;
-    }
-
-    .description {
-      font-size: 9pt;
-      color: var(--fg);
-      margin-bottom: 2mm;
-      line-height: 1.4;
-    }
-
-    .tech-stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5mm;
-    }
-
-    .tech-item {
-      font-size: 7.5pt;
-      padding: 0.8mm 2mm;
-      background: rgba(189, 147, 249, 0.15);
-      color: var(--purple);
-      border-radius: 1.5mm;
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--comment);
     }
 
     .about-section {
-      margin-bottom: 4mm;
+      margin-bottom: 3mm;
     }
 
     .about-text {
@@ -257,9 +262,117 @@
       text-align: justify;
     }
 
-    /* Print styles */
+    /* ═══════════════════════════════════════════════════════════
+       EXPERIENCE - Timeline (de manu)
+       ═══════════════════════════════════════════════════════════ */
+    .experience-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2mm;
+    }
+
+    .experience-item {
+      position: relative;
+      padding-left: 16px;
+      page-break-inside: avoid;
+    }
+
+    /* Línea vertical del timeline */
+    .experience-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: -4mm;
+      width: 2px;
+      background: var(--comment);
+    }
+
+    /* Último item: línea más corta */
+    .experience-item:last-child::before {
+      bottom: 6px;
+    }
+
+    /* Dot del timeline - subtle */
+    .experience-item::after {
+      content: '';
+      position: absolute;
+      left: -2px;
+      top: 5px;
+      width: 6px;
+      height: 6px;
+      background: var(--bg);
+      border: 2px solid var(--comment);  /* Was cyan - reduced visual noise */
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .experience-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5mm;
+      gap: 2mm;
+    }
+
+    .company {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--pink);
+    }
+
+    /* Fechas en monospace */
+    .dates {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: var(--comment);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .role {
+      font-size: 9pt;
+      font-weight: 500;
+      color: var(--fg);
+      margin-bottom: 0.3mm;
+    }
+
+    .location {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: var(--comment);
+      margin-bottom: 1mm;
+    }
+
+    .description {
+      font-size: 8.5pt;
+      color: var(--fg);
+      margin-bottom: 1.5mm;
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5mm;
+    }
+
+    .tech-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7pt;
+      padding: 0.6mm 1.8mm;
+      background: transparent;  /* Was filled - now border-only */
+      color: var(--purple);
+      border-radius: 1.5mm;
+      border: 1px solid rgba(189, 147, 249, 0.5);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PRINT STYLES
+       ═══════════════════════════════════════════════════════════ */
     @media print {
-      body {
+      html, body {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -281,23 +394,33 @@
       <div class="sidebar-section">
         <h3 class="sidebar-title">Contact</h3>
         <div class="contact-item">
-          <span class="contact-icon">📍</span>
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
           <span>Tenerife, Spain</span>
         </div>
         <div class="contact-item">
-          <span class="contact-icon">✉️</span>
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
           <a href="mailto:aarperper@gmail.com" class="contact-link">aarperper@gmail.com</a>
         </div>
         <div class="contact-item">
-          <span class="contact-icon">🌐</span>
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+          </svg>
           <a href="https://aaron.perezperez.dev" class="contact-link">aaron.perezperez.dev</a>
         </div>
         <div class="contact-item">
-          <span class="contact-icon">💼</span>
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>
+          </svg>
           <a href="https://linkedin.com/in/aarperper" class="contact-link">linkedin.com/in/aarperper</a>
         </div>
         <div class="contact-item">
-          <span class="contact-icon">⌨️</span>
+          <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>
+          </svg>
           <a href="https://github.com/AaronPerezPerez" class="contact-link">github.com/AaronPerezPerez</a>
         </div>
       </div>
@@ -306,14 +429,14 @@
         <h3 class="sidebar-title">Core Skills</h3>
 
         <div class="skill-category">
-          <div class="skill-category-name">Daily Driver</div>
+          <div class="skill-category-name">daily_driver</div>
           <div class="skill-tags">
             <span class="skill-tag primary">TypeScript</span>
           </div>
         </div>
 
         <div class="skill-category">
-          <div class="skill-category-name">Frontend</div>
+          <div class="skill-category-name">frontend</div>
           <div class="skill-tags">
             <span class="skill-tag">React</span>
             <span class="skill-tag">Next.js</span>
@@ -323,7 +446,7 @@
         </div>
 
         <div class="skill-category">
-          <div class="skill-category-name">Backend</div>
+          <div class="skill-category-name">backend</div>
           <div class="skill-tags">
             <span class="skill-tag">Node.js</span>
             <span class="skill-tag">NestJS</span>
@@ -333,7 +456,7 @@
         </div>
 
         <div class="skill-category">
-          <div class="skill-category-name">Databases</div>
+          <div class="skill-category-name">databases</div>
           <div class="skill-tags">
             <span class="skill-tag">PostgreSQL</span>
             <span class="skill-tag">MongoDB</span>
@@ -341,7 +464,7 @@
         </div>
 
         <div class="skill-category">
-          <div class="skill-category-name">Architecture</div>
+          <div class="skill-category-name">architecture</div>
           <div class="skill-tags">
             <span class="skill-tag">Hexagonal</span>
             <span class="skill-tag">DDD</span>
@@ -351,12 +474,40 @@
         </div>
 
         <div class="skill-category">
-          <div class="skill-category-name">DevOps</div>
+          <div class="skill-category-name">devops</div>
           <div class="skill-tags">
             <span class="skill-tag">Docker</span>
             <span class="skill-tag">AWS</span>
             <span class="skill-tag">GitHub Actions</span>
           </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Languages</h3>
+        <div class="language-item">
+          <span>Spanish</span>
+          <span class="language-level">Native</span>
+        </div>
+        <div class="language-item">
+          <span>English</span>
+          <span class="language-level">Professional (C1)</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Education</h3>
+        <div class="education-item">
+          <div class="degree">Self-taught Developer</div>
+          <div class="institution">Continuous learning through docs & practice</div>
+        </div>
+        <div class="education-item">
+          <div class="degree">CFGS Desarrollo Aplicaciones Multiplataforma</div>
+          <div class="institution">CIFP César Manrique · 2019-2022</div>
+        </div>
+        <div class="education-item">
+          <div class="degree">Bootcamp FullStack Developer</div>
+          <div class="institution">EOI · 2019</div>
         </div>
       </div>
     </aside>
@@ -366,102 +517,104 @@
       <header class="header">
         <h1 class="name">Aarón Pérez Pérez</h1>
         <h2 class="title">Software Craftsman</h2>
-        <p class="subtitle">Senior Full-Stack Developer | 6+ Years Experience</p>
+        <p class="subtitle">Senior Full-Stack Developer · 6+ Years Experience</p>
       </header>
 
       <section class="section about-section">
         <h2 class="section-title">About Me</h2>
         <p class="about-text">
-          Dedicated Software Engineer with 6+ years building robust and scalable systems through clean code, hexagonal architecture, and agile methodologies. Passionate about software craftsmanship, emphasizing that quality code results from developer dedication rather than mechanical rule-following. Focused on TypeScript ecosystem with deep experience in React, NestJS, and modern architectural patterns.
+          Senior FullStack Engineer specializing in TypeScript ecosystem (React, NestJS). 6+ years delivering scalable systems with DDD, TDD and Hexagonal Architecture at consultancies like Codurance and fintechs like Swan.
         </p>
       </section>
 
       <section class="section">
         <h2 class="section-title">Experience</h2>
 
-        <article class="experience-item">
-          <div class="experience-header">
-            <span class="company">Beonit</span>
-            <span class="dates">Nov 2024 - Present</span>
-          </div>
-          <div class="role">Senior FullStack Developer</div>
-          <div class="location">Madrid, Spain (Remote)</div>
-          <p class="description">Building modern full-stack solutions with focus on scalability and clean architecture.</p>
-          <div class="tech-stack">
-            <span class="tech-item">TypeScript</span>
-            <span class="tech-item">React</span>
-            <span class="tech-item">NestJS</span>
-            <span class="tech-item">PostgreSQL</span>
-          </div>
-        </article>
+        <div class="experience-list">
+          <article class="experience-item">
+            <div class="experience-header">
+              <span class="company">Beonit</span>
+              <span class="dates">Nov 2024 — Present</span>
+            </div>
+            <div class="role">Senior FullStack Developer</div>
+            <div class="location">Madrid, Spain (Remote)</div>
+            <p class="description">Leading architecture of new backend from scratch for talent management platform. Improving scalability and performance with DDD, TDD, and NestJS.</p>
+            <div class="tech-stack">
+              <span class="tech-item">TypeScript</span>
+              <span class="tech-item">React</span>
+              <span class="tech-item">NestJS</span>
+              <span class="tech-item">PostgreSQL</span>
+            </div>
+          </article>
 
-        <article class="experience-item">
-          <div class="experience-header">
-            <span class="company">Freelance</span>
-            <span class="dates">Mar 2024 - Nov 2024</span>
-          </div>
-          <div class="role">Senior Software Craftsman</div>
-          <div class="location">Remote</div>
-          <p class="description">Independent consulting focusing on software architecture, clean code practices, and mentoring development teams.</p>
-          <div class="tech-stack">
-            <span class="tech-item">TypeScript</span>
-            <span class="tech-item">Node.js</span>
-            <span class="tech-item">DDD</span>
-            <span class="tech-item">TDD</span>
-            <span class="tech-item">Hexagonal</span>
-          </div>
-        </article>
+          <article class="experience-item">
+            <div class="experience-header">
+              <span class="company">Freelance</span>
+              <span class="dates">Mar 2024 — Nov 2024</span>
+            </div>
+            <div class="role">Senior Software Craftsman</div>
+            <div class="location">Remote</div>
+            <p class="description">Supported backend development for NFT platform with microservices architecture. Developed landing pages for local businesses.</p>
+            <div class="tech-stack">
+              <span class="tech-item">TypeScript</span>
+              <span class="tech-item">Node.js</span>
+              <span class="tech-item">DDD</span>
+              <span class="tech-item">TDD</span>
+              <span class="tech-item">Hexagonal</span>
+            </div>
+          </article>
 
-        <article class="experience-item">
-          <div class="experience-header">
-            <span class="company">Codurance</span>
-            <span class="dates">Apr 2023 - Dec 2024</span>
-          </div>
-          <div class="role">Senior Software Craftsman</div>
-          <div class="location">Barcelona, Spain (Remote)</div>
-          <p class="description">Delivered high-quality software solutions emphasizing Test-Driven Development, Domain-Driven Design, and Hexagonal Architecture. Mentored teams on software craftsmanship principles.</p>
-          <div class="tech-stack">
-            <span class="tech-item">TypeScript</span>
-            <span class="tech-item">NestJS</span>
-            <span class="tech-item">GraphQL</span>
-            <span class="tech-item">MongoDB</span>
-            <span class="tech-item">PostgreSQL</span>
-          </div>
-        </article>
+          <article class="experience-item">
+            <div class="experience-header">
+              <span class="company">Codurance</span>
+              <span class="dates">Apr 2023 — Dec 2024</span>
+            </div>
+            <div class="role">Senior Software Craftsman</div>
+            <div class="location">Barcelona, Spain (Remote)</div>
+            <p class="description">Delivered client projects in banking and retail sectors applying XP practices. Mentored developers on TDD and software craftsmanship. Internal trainer for architecture workshops.</p>
+            <div class="tech-stack">
+              <span class="tech-item">TypeScript</span>
+              <span class="tech-item">NestJS</span>
+              <span class="tech-item">GraphQL</span>
+              <span class="tech-item">MongoDB</span>
+              <span class="tech-item">PostgreSQL</span>
+            </div>
+          </article>
 
-        <article class="experience-item">
-          <div class="experience-header">
-            <span class="company">Swan</span>
-            <span class="dates">Sep 2022 - Mar 2023</span>
-          </div>
-          <div class="role">Software Engineer</div>
-          <div class="location">Paris, France (Remote)</div>
-          <p class="description">Contributed to banking-as-a-service platform development with focus on backend services and microservices architecture.</p>
-          <div class="tech-stack">
-            <span class="tech-item">TypeScript</span>
-            <span class="tech-item">Node.js</span>
-            <span class="tech-item">Microservices</span>
-            <span class="tech-item">AWS</span>
-            <span class="tech-item">Docker</span>
-          </div>
-        </article>
+          <article class="experience-item">
+            <div class="experience-header">
+              <span class="company">Swan</span>
+              <span class="dates">Sep 2022 — Mar 2023</span>
+            </div>
+            <div class="role">Software Engineer</div>
+            <div class="location">Paris, France (Remote)</div>
+            <p class="description">Built microservices for European BaaS platform (Y Combinator W21). Developed payment processing features. Collaborated with distributed team across multiple time zones.</p>
+            <div class="tech-stack">
+              <span class="tech-item">TypeScript</span>
+              <span class="tech-item">Node.js</span>
+              <span class="tech-item">Microservices</span>
+              <span class="tech-item">AWS</span>
+              <span class="tech-item">Docker</span>
+            </div>
+          </article>
 
-        <article class="experience-item">
-          <div class="experience-header">
-            <span class="company">Acid Tango</span>
-            <span class="dates">Nov 2019 - Sep 2022</span>
-          </div>
-          <div class="role">Full Stack Developer</div>
-          <div class="location">Tenerife, Canary Islands, Spain</div>
-          <p class="description">Developed full-stack applications from concept to deployment. Gained comprehensive experience in modern web technologies and agile development practices.</p>
-          <div class="tech-stack">
-            <span class="tech-item">JavaScript</span>
-            <span class="tech-item">TypeScript</span>
-            <span class="tech-item">React</span>
-            <span class="tech-item">Node.js</span>
-            <span class="tech-item">MongoDB</span>
-          </div>
-        </article>
+          <article class="experience-item">
+            <div class="experience-header">
+              <span class="company">Acid Tango</span>
+              <span class="dates">Nov 2019 — Sep 2022</span>
+            </div>
+            <div class="role">Full Stack Developer</div>
+            <div class="location">Tenerife, Canary Islands, Spain</div>
+            <p class="description">Delivered 10+ web applications across healthcare, real estate, and e-commerce sectors. Evolved from developer to taking ownership of full project lifecycles.</p>
+            <div class="tech-stack">
+              <span class="tech-item">JavaScript</span>
+              <span class="tech-item">TypeScript</span>
+              <span class="tech-item">React</span>
+              <span class="tech-item">Node.js</span>
+              <span class="tech-item">MongoDB</span>
+            </div>
+          </article>
+        </div>
       </section>
     </main>
   </div>
