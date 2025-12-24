@@ -419,18 +419,25 @@
     'R1', 'R2', 'L1', 'cross', 'left', 'down', 'right', 'up', 'left', 'down', 'right', 'up'
   ];
 
+  // Store instance and handlers to prevent duplicates with View Transitions
+  let konamiInstance: KonamiEasterEgg | null = null;
+  let konamiKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+  let escapeKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+
   class KonamiEasterEgg {
-    private popup: HTMLElement;
-    private progressFill: HTMLElement;
-    private progressText: HTMLElement;
+    private popup: HTMLElement | null;
+    private progressFill: HTMLElement | null;
+    private progressText: HTMLElement | null;
     private konamiIndex = 0;
     private psIndex = 0;
     private isActive = false;
 
     constructor() {
-      this.popup = document.getElementById('konami-popup')!;
-      this.progressFill = document.getElementById('progress-fill')!;
-      this.progressText = document.getElementById('progress-text')!;
+      this.popup = document.getElementById('konami-popup');
+      this.progressFill = document.getElementById('progress-fill');
+      this.progressText = document.getElementById('progress-text');
+
+      if (!this.popup) return;
 
       this.init();
     }
@@ -441,23 +448,35 @@
         this.showSteamBadge();
       }
 
-      // Listen for Konami code
-      document.addEventListener('keydown', (e) => this.handleKonamiKey(e));
+      // Remove old handlers if they exist
+      if (konamiKeyHandler) {
+        document.removeEventListener('keydown', konamiKeyHandler);
+      }
+      if (escapeKeyHandler) {
+        document.removeEventListener('keydown', escapeKeyHandler);
+      }
 
-      // Listen for button clicks
-      this.popup.querySelectorAll('.controller-btn').forEach(btn => {
-        btn.addEventListener('click', () => this.handleButtonClick(btn as HTMLButtonElement));
-      });
-
-      // ESC to close
-      document.addEventListener('keydown', (e) => {
+      // Create new handlers
+      konamiKeyHandler = (e: KeyboardEvent) => this.handleKonamiKey(e);
+      escapeKeyHandler = (e: KeyboardEvent) => {
         if (e.key === 'Escape' && this.isActive) {
           this.closePopup();
         }
+      };
+
+      // Listen for Konami code
+      document.addEventListener('keydown', konamiKeyHandler);
+
+      // ESC to close
+      document.addEventListener('keydown', escapeKeyHandler);
+
+      // Listen for button clicks
+      this.popup?.querySelectorAll('.controller-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.handleButtonClick(btn as HTMLButtonElement));
       });
 
       // Click backdrop to close
-      this.popup.querySelector('.popup-backdrop')?.addEventListener('click', () => {
+      this.popup?.querySelector('.popup-backdrop')?.addEventListener('click', () => {
         if (this.isActive) this.closePopup();
       });
     }
@@ -469,8 +488,8 @@
         return;
       }
 
-      // Don't trigger if popup is already open
-      if (this.isActive) return;
+      // Don't trigger if popup is already open or doesn't exist
+      if (this.isActive || !this.popup) return;
 
       if (e.code === KONAMI_CODE[this.konamiIndex]) {
         this.konamiIndex++;
@@ -511,12 +530,14 @@
     }
 
     private updateProgress() {
+      if (!this.progressFill || !this.progressText) return;
       const percent = (this.psIndex / PS_SEQUENCE.length) * 100;
       this.progressFill.style.width = `${percent}%`;
       this.progressText.textContent = `${this.psIndex}/${PS_SEQUENCE.length}`;
     }
 
     private openPopup() {
+      if (!this.popup) return;
       this.isActive = true;
       this.psIndex = 0;
       this.updateProgress();
@@ -525,6 +546,7 @@
     }
 
     private closePopup() {
+      if (!this.popup) return;
       this.isActive = false;
       this.popup.classList.remove('active', 'success');
       this.popup.setAttribute('aria-hidden', 'true');
@@ -533,6 +555,8 @@
     }
 
     private onSuccess() {
+      if (!this.popup) return;
+
       // Success animation
       this.popup.classList.add('success');
 
@@ -564,8 +588,11 @@
     }
   }
 
-  // Initialize on DOM ready
-  document.addEventListener('DOMContentLoaded', () => {
-    new KonamiEasterEgg();
-  });
+  // Initialize function
+  function initKonamiEasterEgg() {
+    konamiInstance = new KonamiEasterEgg();
+  }
+
+  // Initialize on page load (works with View Transitions)
+  document.addEventListener('astro:page-load', initKonamiEasterEgg);
 </script>
