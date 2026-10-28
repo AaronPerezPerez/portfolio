@@ -352,6 +352,31 @@
       opacity: 0.9;
     }
 
+    /* Lista de logros dentro de una experiencia */
+    .description-list {
+      list-style: none;
+      font-size: 8.5pt;
+      color: var(--fg);
+      line-height: 1.4;
+      opacity: 0.9;
+      margin-bottom: 1.5mm;
+    }
+
+    .description-list li {
+      position: relative;
+      padding-left: 3.5mm;
+      margin-bottom: 0.8mm;
+    }
+
+    .description-list li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      top: -0.2mm;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
     .tech-stack {
       display: flex;
       flex-wrap: wrap;
@@ -534,23 +559,32 @@
           <article class="experience-item">
             <div class="experience-header">
               <span class="company">Beonit</span>
-              <span class="dates">Nov 2024 — Present</span>
+              <span class="dates">2025 — Present</span>
             </div>
             <div class="role">Senior FullStack Developer</div>
             <div class="location">Madrid, Spain (Remote)</div>
-            <p class="description">Leading architecture of new backend from scratch for talent management platform. Improving scalability and performance with DDD, TDD, and NestJS.</p>
+            <ul class="description-list">
+              <li>Own the architecture in a 4-person team migrating a legacy B2B employee management and training platform, serving ~10 corporate clients, to a new backend built with DDD and Hexagonal Architecture.</li>
+              <li>Designed a multi-tenant architecture on PostgreSQL/MySQL, with a Unit of Work based on AsyncLocalStorage to isolate tenants.</li>
+              <li>Implemented communication between bounded contexts through domain and integration events, the Outbox Pattern and a BullMQ-based event bus.</li>
+              <li>Set up observability with New Relic and OpenTelemetry, load testing with k6, and CI/CD pipelines.</li>
+              <li>Introduced AI-assisted development workflows with Claude Code: agent-driven commit/PR automation and AI-powered code and architecture reviews.</li>
+            </ul>
             <div class="tech-stack">
               <span class="tech-item">TypeScript</span>
-              <span class="tech-item">React</span>
               <span class="tech-item">NestJS</span>
               <span class="tech-item">PostgreSQL</span>
+              <span class="tech-item">MySQL</span>
+              <span class="tech-item">Drizzle ORM</span>
+              <span class="tech-item">BullMQ</span>
+              <span class="tech-item">OpenTelemetry</span>
             </div>
           </article>
 
           <article class="experience-item">
             <div class="experience-header">
               <span class="company">Freelance</span>
-              <span class="dates">Mar 2024 — Nov 2024</span>
+              <span class="dates">2025</span>
             </div>
             <div class="role">Senior Software Craftsman</div>
             <div class="location">Remote</div>
